@@ -181,7 +181,7 @@ const Payments = () => {
     if (exchangeRates) {
       fetchPayments();
     }
-  }, [fetchPayments]);
+  }, [exchangeRates]); // Remove fetchPayments dependency
 
   const getStatusColor = (status) => {
     switch (status) {

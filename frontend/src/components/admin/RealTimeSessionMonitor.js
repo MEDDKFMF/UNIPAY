@@ -50,14 +50,14 @@ const RealTimeSessionMonitor = () => {
 
   useEffect(() => {
     fetchSessionData();
-  }, [fetchSessionData]);
+  }, []); // Remove fetchSessionData dependency
 
   useEffect(() => {
     if (autoRefresh) {
       const interval = setInterval(fetchSessionData, 5000); // Refresh every 5 seconds
       return () => clearInterval(interval);
     }
-  }, [autoRefresh, fetchSessionData]);
+  }, [autoRefresh]); // Remove fetchSessionData dependency
 
   const terminateSession = async (sessionId, reason = 'Terminated by admin') => {
     try {

@@ -129,7 +129,7 @@ const Dashboard = () => {
     if (exchangeRates) {
       fetchDashboardData();
     }
-  }, [exchangeRates, fetchDashboardData]);
+  }, [exchangeRates]); // Remove fetchDashboardData dependency
 
   // Refresh data when user returns to the dashboard
   useEffect(() => {

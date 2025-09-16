@@ -105,7 +105,7 @@ const CreateInvoice = () => {
 
   useEffect(() => {
     fetchClients();
-  }, [fetchClients]);
+  }, []); // Remove fetchClients dependency
 
 
 

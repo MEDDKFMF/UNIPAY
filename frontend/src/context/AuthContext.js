@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
   // Check authentication status on mount
   useEffect(() => {
     checkAuthStatus();
-  }, [checkAuthStatus]);
+  }, []); // Remove checkAuthStatus dependency
 
   const login = async (credentials) => {
     try {

@@ -21,26 +21,29 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-me-in-producti
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 # Configure ALLOWED_HOSTS for different environments
+# Always include Render URLs regardless of DEBUG setting
+ALLOWED_HOSTS = [
+    'unipay-1gus.onrender.com',
+    '*.onrender.com',
+    'localhost',
+    '127.0.0.1'
+]
+
+# Add hosts from environment variable if provided
+env_hosts = config('ALLOWED_HOSTS', default='', cast=lambda v: [s.strip() for s in v.split(',') if s.strip()])
+ALLOWED_HOSTS.extend(env_hosts)
+
+# Add development hosts if DEBUG is True
 if DEBUG:
-    ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
-else:
-    # In production, explicitly allow Render URLs and any configured hosts
-    ALLOWED_HOSTS = [
-        'unipay-1gus.onrender.com',
-        '*.onrender.com',
-        'localhost',
-        '127.0.0.1'
-    ]
-    # Add any additional hosts from environment variable
-    env_hosts = config('ALLOWED_HOSTS', default='', cast=lambda v: [s.strip() for s in v.split(',') if s.strip()])
-    ALLOWED_HOSTS.extend(env_hosts)
-    # Remove duplicates
-    ALLOWED_HOSTS = list(set(ALLOWED_HOSTS))
-    
-    # Debug logging for production
-    print(f"DEBUG: DEBUG={DEBUG}")
-    print(f"DEBUG: ALLOWED_HOSTS={ALLOWED_HOSTS}")
-    print(f"DEBUG: Environment ALLOWED_HOSTS={config('ALLOWED_HOSTS', default='NOT_SET')}")
+    ALLOWED_HOSTS.extend(['localhost', '127.0.0.1'])
+
+# Remove duplicates
+ALLOWED_HOSTS = list(set(ALLOWED_HOSTS))
+
+# Debug logging
+print(f"DEBUG: DEBUG={DEBUG}")
+print(f"DEBUG: ALLOWED_HOSTS={ALLOWED_HOSTS}")
+print(f"DEBUG: Environment ALLOWED_HOSTS={config('ALLOWED_HOSTS', default='NOT_SET')}")
 
 # Application definition
 DJANGO_APPS = [

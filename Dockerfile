@@ -36,6 +36,7 @@ RUN mkdir -p /app/staticfiles /app/media
 # Set environment variables for collectstatic
 ENV DEBUG=False
 ENV SECRET_KEY=django-insecure-temp-key-for-build
+ENV ALLOWED_HOSTS=unipay-1gus.onrender.com,*.onrender.com
 
 # Try to collect static files, but don't fail if it doesn't work
 RUN python manage.py collectstatic --noinput || echo "Static files collection skipped"

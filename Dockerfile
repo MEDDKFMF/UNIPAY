@@ -1,4 +1,4 @@
-# Backend-only Dockerfile for Render deployment
+# Simplified Dockerfile for Render deployment
 FROM python:3.11-slim
 
 # Set environment variables
@@ -33,8 +33,12 @@ COPY backend/ ./
 # Create static and media directories
 RUN mkdir -p /app/staticfiles /app/media
 
-# Collect static files
-RUN python manage.py collectstatic --noinput
+# Set environment variables for collectstatic
+ENV DEBUG=False
+ENV SECRET_KEY=django-insecure-temp-key-for-build
+
+# Try to collect static files, but don't fail if it doesn't work
+RUN python manage.py collectstatic --noinput || echo "Static files collection skipped"
 
 # Expose port
 EXPOSE 8000

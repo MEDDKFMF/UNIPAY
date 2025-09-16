@@ -50,7 +50,7 @@ services:
         destination: /index.html
     envVars:
       - key: REACT_APP_API_URL
-        value: https://unipay-1gus.onrender.com/api
+        value: https://unipay-1gus.onrender.com
       - key: REACT_APP_BASE_URL
         value: https://unipay-frontend-c9ss.onrender.com
       - key: NODE_ENV

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'https://unipay-1gus.onrender.com/api',
+  baseURL: process.env.REACT_APP_API_URL || 'https://unipay-1gus.onrender.com',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -32,7 +32,7 @@ api.interceptors.response.use(
       try {
         const refreshToken = localStorage.getItem('refresh_token');
         if (refreshToken) {
-          const response = await api.post('/auth/refresh/', {
+          const response = await api.post('/api/auth/refresh/', {
             refresh: refreshToken
           });
           
@@ -63,26 +63,26 @@ api.interceptors.response.use(
 
 // Auth API
 export const authAPI = {
-  login: (credentials) => api.post('/auth/login/', credentials),
-  register: (userData) => api.post('/auth/register/', userData),
-  logout: () => api.post('/auth/logout/'),
-  getProfile: () => api.get('/auth/profile/'),
-  updateProfile: (profileData) => api.put('/auth/profile/update/', profileData),
-  refreshToken: (refresh) => api.post('/auth/refresh/', { refresh }),
-  getStats: () => api.get('/auth/stats/'),
+  login: (credentials) => api.post('/api/auth/login/', credentials),
+  register: (userData) => api.post('/api/auth/register/', userData),
+  logout: () => api.post('/api/auth/logout/'),
+  getProfile: () => api.get('/api/auth/profile/'),
+  updateProfile: (profileData) => api.put('/api/auth/profile/update/', profileData),
+  refreshToken: (refresh) => api.post('/api/auth/refresh/', { refresh }),
+  getStats: () => api.get('/api/auth/stats/'),
 };
 
 // Invoice API
 export const invoiceAPI = {
-  getInvoices: (params = {}) => api.get('/invoices/', { params }),
-  getInvoice: (id) => api.get(`/invoices/${id}/`),
-  createInvoice: (invoiceData) => api.post('/invoices/', invoiceData),
-  updateInvoice: (id, invoiceData) => api.put(`/invoices/${id}/`, invoiceData),
-  deleteInvoice: (id) => api.delete(`/invoices/${id}/`),
-  updateStatus: (id, status) => api.patch(`/invoices/${id}/status/`, { status }),
-  getPDF: (id) => api.get(`/invoices/${id}/pdf/`, { responseType: 'blob' }),
-  getStats: () => api.get('/invoices/stats/'),
-  exportCSV: (params = {}) => api.get('/invoices/export/', { 
+  getInvoices: (params = {}) => api.get('/api/invoices/', { params }),
+  getInvoice: (id) => api.get(`/api/invoices/${id}/`),
+  createInvoice: (invoiceData) => api.post('/api/invoices/', invoiceData),
+  updateInvoice: (id, invoiceData) => api.put(`/api/invoices/${id}/`, invoiceData),
+  deleteInvoice: (id) => api.delete(`/api/invoices/${id}/`),
+  updateStatus: (id, status) => api.patch(`/api/invoices/${id}/status/`, { status }),
+  getPDF: (id) => api.get(`/api/invoices/${id}/pdf/`, { responseType: 'blob' }),
+  getStats: () => api.get('/api/invoices/stats/'),
+  exportCSV: (params = {}) => api.get('/api/invoices/export/', { 
     params, 
     responseType: 'blob' 
   }),
@@ -90,34 +90,34 @@ export const invoiceAPI = {
 
 // Client API
 export const clientAPI = {
-  getClients: (params = {}) => api.get('/clients/', { params }),
-  getClient: (id) => api.get(`/clients/${id}/`),
-  createClient: (clientData) => api.post('/clients/', clientData),
-  updateClient: (id, clientData) => api.put(`/clients/${id}/`, clientData),
-  deleteClient: (id) => api.delete(`/clients/${id}/`),
-  searchClients: (query) => api.get('/clients/search/', { params: { q: query } }),
+  getClients: (params = {}) => api.get('/api/clients/', { params }),
+  getClient: (id) => api.get(`/api/clients/${id}/`),
+  createClient: (clientData) => api.post('/api/clients/', clientData),
+  updateClient: (id, clientData) => api.put(`/api/clients/${id}/`, clientData),
+  deleteClient: (id) => api.delete(`/api/clients/${id}/`),
+  searchClients: (query) => api.get('/api/clients/search/', { params: { q: query } }),
 };
 
 // Payment API
 export const paymentAPI = {
-  createCheckoutSession: (data) => api.post('/payments/create-checkout/', data),
-  getPaymentStatus: (paymentId) => api.get(`/payments/status/${paymentId}/`),
-  getInvoicePayments: (invoiceId) => api.get(`/payments/invoice/${invoiceId}/`),
+  createCheckoutSession: (data) => api.post('/api/payments/create-checkout/', data),
+  getPaymentStatus: (paymentId) => api.get(`/api/payments/status/${paymentId}/`),
+  getInvoicePayments: (invoiceId) => api.get(`/api/payments/invoice/${invoiceId}/`),
 };
 
 // Messaging API
 export const messagingAPI = {
-  sendInvoiceNotification: (data) => api.post('/messaging/send-invoice/', data),
-  sendPaymentConfirmation: (data) => api.post('/messaging/send-payment-confirmation/', data),
-  sendPaymentReminder: (data) => api.post('/messaging/send-reminder/', data),
-  getTemplates: () => api.get('/messaging/templates/'),
-  getTemplate: (id) => api.get(`/messaging/templates/${id}/`),
-  createTemplate: (templateData) => api.post('/messaging/templates/', templateData),
-  updateTemplate: (id, templateData) => api.put(`/messaging/templates/${id}/`, templateData),
-  deleteTemplate: (id) => api.delete(`/messaging/templates/${id}/`),
-  getNotifications: (params = {}) => api.get('/messaging/notifications/', { params }),
-  getNotification: (id) => api.get(`/messaging/notifications/${id}/`),
-  retryFailedNotifications: () => api.post('/messaging/retry-failed/'),
+  sendInvoiceNotification: (data) => api.post('/api/messaging/send-invoice/', data),
+  sendPaymentConfirmation: (data) => api.post('/api/messaging/send-payment-confirmation/', data),
+  sendPaymentReminder: (data) => api.post('/api/messaging/send-reminder/', data),
+  getTemplates: () => api.get('/api/messaging/templates/'),
+  getTemplate: (id) => api.get(`/api/messaging/templates/${id}/`),
+  createTemplate: (templateData) => api.post('/api/messaging/templates/', templateData),
+  updateTemplate: (id, templateData) => api.put(`/api/messaging/templates/${id}/`, templateData),
+  deleteTemplate: (id) => api.delete(`/api/messaging/templates/${id}/`),
+  getNotifications: (params = {}) => api.get('/api/messaging/notifications/', { params }),
+  getNotification: (id) => api.get(`/api/messaging/notifications/${id}/`),
+  retryFailedNotifications: () => api.post('/api/messaging/retry-failed/'),
 };
 
 // Utility functions

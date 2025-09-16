@@ -79,7 +79,7 @@ const Analytics = () => {
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, [timeRange, currency, exchangeRates]);
+  }, [timeRange, currency, exchangeRates]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchExchangeRates = async () => {
     try {

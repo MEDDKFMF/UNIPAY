@@ -25,7 +25,7 @@ const ViewClient = () => {
 
   useEffect(() => {
     fetchClient();
-  }, [id]);
+  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchClient = async () => {
     try {

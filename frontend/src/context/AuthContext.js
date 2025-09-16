@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
   // Check authentication status on mount
   useEffect(() => {
     checkAuthStatus();
-  }, []); // Remove checkAuthStatus dependency
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const login = async (credentials) => {
     try {

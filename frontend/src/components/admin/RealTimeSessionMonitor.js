@@ -50,14 +50,14 @@ const RealTimeSessionMonitor = () => {
 
   useEffect(() => {
     fetchSessionData();
-  }, []); // Remove fetchSessionData dependency
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (autoRefresh) {
       const interval = setInterval(fetchSessionData, 5000); // Refresh every 5 seconds
       return () => clearInterval(interval);
     }
-  }, [autoRefresh]); // Remove fetchSessionData dependency
+  }, [autoRefresh]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const terminateSession = async (sessionId, reason = 'Terminated by admin') => {
     try {

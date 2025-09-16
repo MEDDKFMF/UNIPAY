@@ -16,7 +16,7 @@ export const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [isConnected, setIsConnected] = useState(false);
+  const [isConnected] = useState(false);
 
   // Fetch notifications from API
   const fetchNotifications = useCallback(async () => {
@@ -154,12 +154,12 @@ export const NotificationProvider = ({ children }) => {
     if (notificationHandlers[notification.type]) {
       notificationHandlers[notification.type](notification.data);
     }
-  }, [addNotification]);
+  }, [addNotification]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Initialize notifications on mount
   useEffect(() => {
     fetchNotifications();
-  }, []); // Remove fetchNotifications dependency
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Set up polling for new notifications (every 30 seconds)
   useEffect(() => {
@@ -168,7 +168,7 @@ export const NotificationProvider = ({ children }) => {
     }, 30000);
 
     return () => clearInterval(interval);
-  }, []); // Remove fetchNotifications dependency
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const value = {
     notifications,

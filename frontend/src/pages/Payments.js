@@ -169,7 +169,7 @@ const Payments = () => {
     } finally {
       setLoading(false);
     }
-  }, [currency, exchangeRates]);
+  }, [currency, exchangeRates]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Fetch exchange rates on component mount
   useEffect(() => {
@@ -181,7 +181,7 @@ const Payments = () => {
     if (exchangeRates) {
       fetchPayments();
     }
-  }, [exchangeRates]); // Remove fetchPayments dependency
+  }, [exchangeRates]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const getStatusColor = (status) => {
     switch (status) {

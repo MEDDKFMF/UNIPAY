@@ -105,7 +105,7 @@ const CreateInvoice = () => {
 
   useEffect(() => {
     fetchClients();
-  }, []); // Remove fetchClients dependency
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
 
 

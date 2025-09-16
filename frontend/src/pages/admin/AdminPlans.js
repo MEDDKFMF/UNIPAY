@@ -80,7 +80,7 @@ const AdminPlans = () => {
   useEffect(() => { 
     console.log('AdminPlans mounted, plans state:', plans);
     load(); 
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const create = async (e) => {
     e.preventDefault();

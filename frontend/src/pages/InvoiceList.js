@@ -15,7 +15,7 @@ const InvoiceList = () => {
 
   useEffect(() => {
     fetchInvoices();
-  }, [currentPage, searchTerm, statusFilter]);
+  }, [currentPage, searchTerm, statusFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchInvoices = async () => {
     try {

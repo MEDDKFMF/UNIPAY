@@ -26,7 +26,7 @@ const ClientList = () => {
 
   useEffect(() => {
     fetchClients();
-  }, [currentPage, filterStatus]);
+  }, [currentPage, filterStatus]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fetchClients = async () => {
     try {

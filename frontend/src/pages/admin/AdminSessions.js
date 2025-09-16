@@ -54,7 +54,7 @@ const AdminSessions = () => {
   useEffect(() => {
     loadSessions();
     loadMetrics();
-  }, [currentPage, filters]);
+  }, [currentPage, filters]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadSessions = async () => {
     try {

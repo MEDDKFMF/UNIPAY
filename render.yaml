@@ -43,7 +43,7 @@ services:
     region: singapore
     plan: free
     buildCommand: cd frontend && npm install && npm run build
-    staticPublishPath: ./frontend/build
+    staticPublishPath: frontend/build
     rootDir: ./
     envVars:
       - key: REACT_APP_API_URL

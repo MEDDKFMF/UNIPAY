@@ -36,7 +36,7 @@ services:
       - key: CELERY_RESULT_BACKEND
         value: redis://localhost:6379/0
 
-  # Frontend Static Site
+  # Frontend Static Site - Updated for Render deployment
   - type: web
     name: unipay-frontend
     env: static

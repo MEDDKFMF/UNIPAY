@@ -2,10 +2,11 @@ services:
   # Backend Web Service
   - type: web
     name: unipay-backend
-    env: docker
+    env: python
     region: singapore
     plan: free
-    dockerfilePath: ./Dockerfile
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
     rootDir: ./
     envVars:
       - key: DEBUG

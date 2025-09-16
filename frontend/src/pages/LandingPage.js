@@ -42,7 +42,7 @@ const LandingPage = () => {
     const fetchPlans = async () => {
       try {
         console.log('Fetching plans from API...');
-        const response = await fetch('http://localhost:8000/api/payments/plans/public/');
+        const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8000/api'}/payments/plans/public/`);
         const data = await response.json();
         console.log('Plans API response:', data);
         

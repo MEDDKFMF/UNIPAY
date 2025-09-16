@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000/api/auth/admin';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://unipay-1gus.onrender.com';
 
 // Create axios instance with default config
 const sessionAPI = axios.create({
@@ -33,7 +33,7 @@ sessionAPI.interceptors.response.use(
       try {
         const refreshToken = localStorage.getItem('refresh_token');
         if (refreshToken) {
-          const response = await axios.post('http://localhost:8000/api/auth/refresh/', {
+          const response = await axios.post(`${API_BASE_URL}/api/auth/refresh/`, {
             refresh: refreshToken
           });
           
@@ -59,7 +59,7 @@ export const sessionMonitoringService = {
   // Get real-time session data
   getRealTimeSessions: async () => {
     try {
-      const response = await sessionAPI.get('/sessions/realtime/');
+      const response = await sessionAPI.get('/api/auth/admin/api/auth/admin/sessions/realtime/');
       return response.data;
     } catch (error) {
       console.error('Error fetching real-time sessions:', error);
@@ -70,7 +70,7 @@ export const sessionMonitoringService = {
   // Get session metrics
   getSessionMetrics: async () => {
     try {
-      const response = await sessionAPI.get('/sessions/metrics/');
+      const response = await sessionAPI.get('/api/auth/admin/sessions/metrics/');
       return response.data;
     } catch (error) {
       console.error('Error fetching session metrics:', error);
@@ -81,7 +81,7 @@ export const sessionMonitoringService = {
   // Get paginated session list
   getSessions: async (params = {}) => {
     try {
-      const response = await sessionAPI.get('/sessions/', { params });
+      const response = await sessionAPI.get('/api/auth/admin/sessions/', { params });
       return response.data;
     } catch (error) {
       console.error('Error fetching sessions:', error);
@@ -92,7 +92,7 @@ export const sessionMonitoringService = {
   // Get session details
   getSessionDetails: async (sessionId) => {
     try {
-      const response = await sessionAPI.get(`/sessions/${sessionId}/`);
+      const response = await sessionAPI.get(`/api/auth/admin/sessions/${sessionId}/`);
       return response.data;
     } catch (error) {
       console.error('Error fetching session details:', error);
@@ -103,7 +103,7 @@ export const sessionMonitoringService = {
   // Terminate a session
   terminateSession: async (sessionId, reason = 'Terminated by admin') => {
     try {
-      const response = await sessionAPI.post(`/sessions/terminate/${sessionId}/`, {
+      const response = await sessionAPI.post(`/api/auth/admin/sessions/terminate/${sessionId}/`, {
         reason
       });
       return response.data;
@@ -116,7 +116,7 @@ export const sessionMonitoringService = {
   // Bulk session actions
   bulkAction: async (sessionIds, action, reason = '') => {
     try {
-      const response = await sessionAPI.post('/sessions/bulk-action/', {
+      const response = await sessionAPI.post('/api/auth/admin/sessions/bulk-action/', {
         session_ids: sessionIds,
         action,
         reason
@@ -131,7 +131,7 @@ export const sessionMonitoringService = {
   // Get security alerts
   getSecurityAlerts: async (params = {}) => {
     try {
-      const response = await sessionAPI.get('/security-alerts/', { params });
+      const response = await sessionAPI.get('/api/auth/admin/security-alerts/', { params });
       return response.data;
     } catch (error) {
       console.error('Error fetching security alerts:', error);

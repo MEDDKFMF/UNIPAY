@@ -1,7 +1,7 @@
 // Exchange rate service for real-time currency conversion
 import api from './api';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
 // Cache for exchange rates to avoid excessive API calls
 let exchangeRatesCache = null;
@@ -53,7 +53,7 @@ export const getExchangeRate = async (fromCurrency, toCurrency = 'KSH') => {
 
   try {
     const token = localStorage.getItem('access_token');
-    const response = await fetch(`${API_BASE_URL}/exchange-rates/rate/?from=${fromCurrency}&to=${toCurrency}`, {
+    const response = await fetch(`${API_BASE_URL}/api/exchange-rates/rate/?from=${fromCurrency}&to=${toCurrency}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -76,7 +76,7 @@ export const getExchangeRate = async (fromCurrency, toCurrency = 'KSH') => {
 export const getAvailableCurrencies = async () => {
   try {
     const token = localStorage.getItem('access_token');
-    const response = await fetch(`${API_BASE_URL}/exchange-rates/currencies/`, {
+    const response = await fetch(`${API_BASE_URL}/api/exchange-rates/currencies/`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -105,7 +105,7 @@ export const convertCurrency = async (amount, fromCurrency, toCurrency = 'KSH') 
 export const getFormattedExchangeRate = async (fromCurrency, toCurrency = 'KSH') => {
   try {
     const token = localStorage.getItem('access_token');
-    const response = await fetch(`${API_BASE_URL}/exchange-rates/rate/?from=${fromCurrency}&to=${toCurrency}`, {
+    const response = await fetch(`${API_BASE_URL}/api/exchange-rates/rate/?from=${fromCurrency}&to=${toCurrency}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
         'Content-Type': 'application/json',

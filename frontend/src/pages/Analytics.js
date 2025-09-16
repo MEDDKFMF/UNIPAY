@@ -2,22 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { 
   BarChart3, 
   TrendingUp, 
-  TrendingDown, 
   DollarSign, 
   FileText, 
   Users, 
-  Calendar,
-  Eye,
   Download,
-  Filter,
   RefreshCw,
   Clock,
   AlertTriangle,
   CheckCircle,
-  XCircle,
-  PieChart,
-  Target,
-  Percent
+  Target
 } from 'lucide-react';
 import { getInvoices, getClients } from '../services/invoiceService';
 import { getExchangeRates } from '../services/exchangeRateService';

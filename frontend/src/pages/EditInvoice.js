@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Save, Plus, Trash2, Calendar, User, DollarSign, Percent, Send } from 'lucide-react';
+import { ArrowLeft, Save, Plus, Trash2, User, DollarSign, Percent, Send } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { getInvoice, updateInvoice, getClients, updateInvoiceStatus } from '../services/invoiceService';
 import { sendInvoiceNotification } from '../services/messagingService';

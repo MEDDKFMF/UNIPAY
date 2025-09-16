@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Search, Edit, Download, Filter, FileText, Send } from 'lucide-react';
+import { Plus, Search, Edit, Download, FileText, Send } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { getInvoices, downloadInvoicePDF, updateInvoiceStatus } from '../services/invoiceService';
 import { sendInvoiceNotification } from '../services/messagingService';

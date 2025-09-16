@@ -8,6 +8,7 @@ from django.conf.urls.static import static
 from . import views
 
 urlpatterns = [
+    path('', views.api_info, name='api_info'),
     path('admin/', admin.site.urls),
     path('api/auth/', include('accounts.urls')),
     path('api/invoices/', include('invoices.urls')),

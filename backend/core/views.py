@@ -3,10 +3,35 @@ Core views for exchange rates and utilities.
 """
 
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework import status
 from .exchange_rates import get_exchange_rate, get_exchange_rates, get_available_currencies, refresh_exchange_rates
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def api_info(request):
+    """
+    API information endpoint.
+    """
+    return Response({
+        'message': 'UniPay Invoice Platform API',
+        'version': '1.0.0',
+        'status': 'active',
+        'endpoints': {
+            'authentication': '/api/auth/',
+            'invoices': '/api/invoices/',
+            'clients': '/api/clients/',
+            'payments': '/api/payments/',
+            'messaging': '/api/messaging/',
+            'settings': '/api/settings/',
+            'exchange_rates': '/api/exchange-rates/',
+            'admin': '/admin/'
+        },
+        'documentation': 'https://github.com/MEDDKFMF/unipay',
+        'frontend_url': 'https://unipay-frontend.onrender.com'
+    })
 
 
 @api_view(['GET'])

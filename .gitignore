@@ -66,7 +66,7 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # React
-build/
+# build/ - Commented out to allow build folder for deployment
 dist/
 
 # Logs
@@ -123,7 +123,7 @@ dist
 
 # Gatsby files
 .cache/
-public
+# public  # Commented out - React needs public folder
 
 # Storybook build outputs
 .out

@@ -1,0 +1,76 @@
+services:
+  - type: web
+    name: invoice-platform-backend
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput
+    startCommand: gunicorn core.wsgi:application
+    envVars:
+      - key: DEBUG
+        value: False
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        value: invoice-platform-backend.onrender.com
+      - key: DB_HOST
+        fromDatabase:
+          name: invoice-platform-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: invoice-platform-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: invoice-platform-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: invoice-platform-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: invoice-platform-db
+          property: password
+      - key: DB_SSL
+        value: true
+      - key: FRONTEND_URL
+        value: https://your-frontend-url.onrender.com
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: invoice-platform-redis
+          property: connectionString
+      - key: EMAIL_HOST
+        value: smtp.gmail.com
+      - key: EMAIL_PORT
+        value: 587
+      - key: EMAIL_USE_TLS
+        value: true
+      - key: EMAIL_HOST_USER
+        value: your-email@gmail.com
+      - key: EMAIL_HOST_PASSWORD
+        value: your-app-password
+      - key: DEFAULT_FROM_EMAIL
+        value: your-email@gmail.com
+      - key: STRIPE_SECRET_KEY
+        value: your-stripe-secret-key
+      - key: STRIPE_PUBLISHABLE_KEY
+        value: your-stripe-publishable-key
+      - key: STRIPE_WEBHOOK_SECRET
+        value: your-stripe-webhook-secret
+      - key: TWILIO_ACCOUNT_SID
+        value: your-twilio-account-sid
+      - key: TWILIO_AUTH_TOKEN
+        value: your-twilio-auth-token
+      - key: TWILIO_PHONE_NUMBER
+        value: your-twilio-phone-number
+
+databases:
+  - name: invoice-platform-db
+    plan: free
+    databaseName: invoice_platform
+    user: invoice_platform_user
+
+  - name: invoice-platform-redis
+    plan: free

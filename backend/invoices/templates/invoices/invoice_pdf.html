@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Invoice {{ invoice.invoice_number }}</title>
+  <style>
+    :root { --primary: #2563eb; --text: #111827; --muted: #6b7280; --border: #e5e7eb; --bg: #ffffff; }
+    * { box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji'; color: var(--text); background: #f9fafb; margin: 0; }
+    .container { max-width: 900px; margin: 24px auto; padding: 24px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; }
+    .row { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+    .header { border-bottom: 2px solid var(--border); padding-bottom: 16px; margin-bottom: 24px; }
+    .company-name { font-size: 22px; font-weight: 700; margin: 0; color: #1f2937; }
+    .muted { color: var(--muted); }
+    .title { font-size: 28px; font-weight: 800; color: var(--primary); margin: 0; }
+    .badge { display: inline-block; padding: 4px 10px; background: #eef2ff; color: #3730a3; border-radius: 999px; font-size: 12px; font-weight: 600; }
+    .meta { margin-top: 8px; font-size: 14px; color: var(--muted); }
+    .section { margin: 20px 0; }
+    .section h3 { font-size: 14px; margin: 0 0 8px; color: #374151; text-transform: uppercase; letter-spacing: .04em; }
+    .card { border: 1px solid var(--border); border-radius: 8px; padding: 16px; background: #fff; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th { text-align: left; font-size: 12px; color: var(--muted); padding: 10px 12px; background: #f9fafb; border-bottom: 1px solid var(--border); text-transform: uppercase; letter-spacing: .03em; }
+    tbody td { font-size: 14px; padding: 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tfoot td { padding: 8px 12px; font-size: 14px; }
+    .right { text-align: right; }
+    .totals { width: 320px; margin-left: auto; }
+    .totals tr td:first-child { color: var(--muted); }
+    .totals .grand td { font-weight: 700; font-size: 16px; border-top: 2px solid var(--border); padding-top: 12px; }
+    .notes { white-space: pre-wrap; line-height: 1.5; }
+    .logo { max-height: 56px; }
+  </style>
+  {% if base_url %}
+  <base href="{{ base_url }}" />
+  {% endif %}
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="row">
+        <div>
+          {% if header_data.company_name %}
+            <h1 class="company-name">{{ header_data.company_name }}</h1>
+          {% endif %}
+          {% if header_data.header_custom_text %}
+            <div class="muted" style="margin-top: 4px;">{{ header_data.header_custom_text }}</div>
+          {% endif %}
+          <div class="muted" style="margin-top: 8px;">
+            {% if header_data.show_address and header_data.company_address %}
+              <div>{{ header_data.company_address }}</div>
+            {% endif %}
+            {% if header_data.show_contact %}
+              {% if header_data.company_phone %}<div>Phone: {{ header_data.company_phone }}</div>{% endif %}
+              {% if header_data.company_email %}<div>Email: {{ header_data.company_email }}</div>{% endif %}
+              {% if header_data.company_website %}<div>Website: {{ header_data.company_website }}</div>{% endif %}
+            {% endif %}
+          </div>
+        </div>
+        <div class="right">
+          {% if header_data.company_logo %}
+            <img class="logo" src="{{ header_data.company_logo }}" alt="Logo"/>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-bottom: 12px;">
+      <div>
+        <div class="title">INVOICE</div>
+        <div class="meta">Invoice #{{ invoice.invoice_number }}</div>
+      </div>
+      <div class="right">
+        <div class="badge">{{ invoice.get_status_display }}</div>
+        <div class="meta">Issue Date: {{ invoice.issue_date|date:'F d, Y' }}</div>
+        <div class="meta">Due Date: {{ invoice.due_date|date:'F d, Y' }}</div>
+        <div class="meta">Currency: {{ invoice.currency }}</div>
+      </div>
+    </div>
+
+    <div class="grid-2 section">
+      <div class="card">
+        <h3>Bill To</h3>
+        <div>{{ invoice.client.name }}</div>
+        {% if invoice.client.company_name %}<div>{{ invoice.client.company_name }}</div>{% endif %}
+        {% if invoice.client.email %}<div class="muted">{{ invoice.client.email }}</div>{% endif %}
+        {% if invoice.client.phone %}<div class="muted">{{ invoice.client.phone }}</div>{% endif %}
+        {% if invoice.client.address %}<div class="muted">{{ invoice.client.address }}</div>{% endif %}
+      </div>
+      <div class="card">
+        <h3>Details</h3>
+        <div><span class="muted">Created By:</span> {{ invoice.created_by.get_full_name|default:invoice.created_by.username }}</div>
+        <div><span class="muted">Created:</span> {{ invoice.created_at|date:'F d, Y' }}</div>
+        <div><span class="muted">Updated:</span> {{ invoice.updated_at|date:'F d, Y' }}</div>
+        <div><span class="muted">Exchange Rate:</span> {{ invoice.exchange_rate }}</div>
+      </div>
+    </div>
+
+    <div class="section card">
+      <table>
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th class="right">Qty</th>
+            <th class="right">Unit Price</th>
+            <th class="right">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+          <tr>
+            <td>{{ item.description }}</td>
+            <td class="right">{{ item.quantity }}</td>
+            <td class="right">{{ currency_symbol }} {{ item.unit_price|floatformat:2 }}</td>
+            <td class="right">{{ currency_symbol }} {{ item.total_price|floatformat:2 }}</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" class="muted">No items</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <div style="display:flex; justify-content:flex-end;">
+        <table class="totals" style="border:1px solid var(--border); background:#f9fafb; padding:8px; border-radius:8px;">
+          <tbody>
+            <tr>
+              <td>Subtotal:</td>
+              <td class="right">{{ currency_symbol }} {{ invoice.subtotal|floatformat:2 }}</td>
+            </tr>
+            {% if invoice.subtotal and invoice.subtotal > 0 and invoice.tax_amount and invoice.tax_amount > 0 %}
+            <tr>
+              <td>Tax:</td>
+              <td class="right">{{ currency_symbol }} {{ invoice.tax_amount|floatformat:2 }}</td>
+            </tr>
+            {% endif %}
+            {% if invoice.subtotal and invoice.subtotal > 0 and invoice.discount_amount and invoice.discount_amount > 0 %}
+            <tr>
+              <td>Discount:</td>
+              <td class="right">-{{ currency_symbol }} {{ invoice.discount_amount|floatformat:2 }}</td>
+            </tr>
+            {% endif %}
+            <tr class="grand">
+              <td>Total:</td>
+              <td class="right">{{ currency_symbol }} {{ invoice.total_amount|floatformat:2 }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {% if invoice.notes or invoice.terms_conditions %}
+    <div class="grid-2 section">
+      {% if invoice.notes %}
+      <div class="card">
+        <h3>Notes</h3>
+        <div class="notes">{{ invoice.notes }}</div>
+      </div>
+      {% endif %}
+      {% if invoice.terms_conditions %}
+      <div class="card">
+        <h3>Terms &amp; Conditions</h3>
+        <div class="notes">{{ invoice.terms_conditions }}</div>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="muted" style="text-align:center; margin-top: 24px; font-size: 12px;">
+      Thank you for your business.
+    </div>
+  </div>
+</body>
+</html>
+
+
+
+
+

@@ -20,7 +20,16 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-me-in-producti
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
+# Configure ALLOWED_HOSTS for different environments
+if DEBUG:
+    ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
+else:
+    # In production, allow specific hosts and Render URLs
+    allowed_hosts = config('ALLOWED_HOSTS', default='', cast=lambda v: [s.strip() for s in v.split(',') if s.strip()])
+    # Add Render URLs if not already specified
+    if not any('.onrender.com' in host for host in allowed_hosts):
+        allowed_hosts.extend(['*.onrender.com', 'unipay-1gus.onrender.com'])
+    ALLOWED_HOSTS = allowed_hosts if allowed_hosts else ['*']
 
 # Application definition
 DJANGO_APPS = [

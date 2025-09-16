@@ -13,7 +13,7 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: ALLOWED_HOSTS
-        value: unipay-backend.onrender.com
+        value: unipay-1gus.onrender.com,*.onrender.com
       - key: DB_HOST
         value: dpg-d347lmje5dus73epqak0-a.singapore-postgres.render.com
       - key: DB_PORT

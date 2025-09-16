@@ -210,6 +210,7 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
+    "https://unipay-frontend-c9ss.onrender.com",
     config('FRONTEND_URL', default='http://localhost:3000'),
 ]
 
@@ -218,6 +219,7 @@ if DEBUG:
     CORS_ALLOW_ALL_ORIGINS = True
 else:
     CORS_ALLOWED_ORIGINS = [
+        "https://unipay-frontend-c9ss.onrender.com",
         config('FRONTEND_URL', default='http://localhost:3000'),
     ]
 

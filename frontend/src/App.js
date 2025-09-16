@@ -53,8 +53,6 @@ const ProtectedRoute = ({ children }) => {
 const PublicRoute = ({ children }) => {
   const { isAuthenticated, loading, user } = useAuth();
   
-  console.log('PublicRoute render - isAuthenticated:', isAuthenticated, 'loading:', loading, 'user:', user);
-  
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -63,19 +61,11 @@ const PublicRoute = ({ children }) => {
     );
   }
   
-  if (isAuthenticated && user) {
-    console.log('User authenticated:', user);
-    console.log('User role:', user?.role);
-    console.log('User role type:', typeof user?.role);
-    console.log('Role comparison:', user?.role === 'platform_admin');
-    
-    // Wait a bit for user data to be fully loaded
-    if (user.role) {
-      const redirectTo = user.role === 'platform_admin' ? '/admin/overview' : '/app/dashboard';
-      console.log('Redirecting to:', redirectTo);
-      return <Navigate to={redirectTo} replace />;
-    }
+  if (isAuthenticated && user && user.role) {
+    const redirectTo = user.role === 'platform_admin' ? '/admin/overview' : '/app/dashboard';
+    return <Navigate to={redirectTo} replace />;
   }
+  
   return children;
 };
 

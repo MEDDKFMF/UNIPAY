@@ -27,7 +27,7 @@ services:
       - key: DB_SSL
         value: True
       - key: FRONTEND_URL
-        value: https://unipay-frontend.onrender.com
+        value: https://unipay-frontend-c9ss.onrender.com
       - key: REDIS_URL
         value: redis://localhost:6379/0
       - key: CELERY_BROKER_URL
@@ -44,11 +44,17 @@ services:
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: frontend/build
     rootDir: ./
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
     envVars:
       - key: REACT_APP_API_URL
         value: https://unipay-1gus.onrender.com/api
       - key: REACT_APP_BASE_URL
-        value: https://unipay-1gus.onrender.com
+        value: https://unipay-frontend-c9ss.onrender.com
+      - key: NODE_ENV
+        value: production
 
   # Celery Worker (Optional)
   - type: worker

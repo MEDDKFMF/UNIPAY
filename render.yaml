@@ -2,11 +2,10 @@ services:
   # Backend Web Service
   - type: web
     name: unipay-backend
-    env: python
+    env: docker
     region: singapore
     plan: free
-    buildCommand: cd backend && pip install -r requirements.txt
-    startCommand: cd backend && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
+    dockerfilePath: ./Dockerfile
     rootDir: ./
     envVars:
       - key: DEBUG
@@ -47,9 +46,9 @@ services:
     rootDir: ./
     envVars:
       - key: REACT_APP_API_URL
-        value: https://unipay-backend.onrender.com/api
+        value: https://unipay-1gus.onrender.com/api
       - key: REACT_APP_BASE_URL
-        value: https://unipay-backend.onrender.com
+        value: https://unipay-1gus.onrender.com
 
   # Celery Worker (Optional)
   - type: worker

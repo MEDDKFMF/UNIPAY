@@ -26,10 +26,10 @@ if DEBUG:
 else:
     # In production, allow specific hosts and Render URLs
     allowed_hosts = config('ALLOWED_HOSTS', default='', cast=lambda v: [s.strip() for s in v.split(',') if s.strip()])
-    # Add Render URLs if not already specified
-    if not any('.onrender.com' in host for host in allowed_hosts):
-        allowed_hosts.extend(['*.onrender.com', 'unipay-1gus.onrender.com'])
-    ALLOWED_HOSTS = allowed_hosts if allowed_hosts else ['*']
+    # Always add Render URLs for production
+    allowed_hosts.extend(['*.onrender.com', 'unipay-1gus.onrender.com'])
+    # Remove duplicates and empty strings
+    ALLOWED_HOSTS = list(set([host for host in allowed_hosts if host.strip()])) or ['*']
 
 # Application definition
 DJANGO_APPS = [

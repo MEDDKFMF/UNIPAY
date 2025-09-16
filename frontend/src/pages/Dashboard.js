@@ -139,7 +139,7 @@ const Dashboard = () => {
 
     window.addEventListener('focus', handleFocus);
     return () => window.removeEventListener('focus', handleFocus);
-  }, [fetchDashboardData]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const getStatusColor = (status) => {
     return STATUS_COLORS[status] || STATUS_COLORS.draft;

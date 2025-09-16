@@ -1,3 +1,4 @@
+# Backend-only Dockerfile for Render deployment
 FROM python:3.11-slim
 
 # Set environment variables
@@ -20,12 +21,14 @@ RUN apt-get update \
         shared-mime-info \
     && rm -rf /var/lib/apt/lists/*
 
+# Copy backend requirements
+COPY backend/requirements.txt ./
+
 # Install Python dependencies
-COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project
-COPY . /app/
+# Copy backend source code
+COPY backend/ ./
 
 # Create static and media directories
 RUN mkdir -p /app/staticfiles /app/media
@@ -33,5 +36,8 @@ RUN mkdir -p /app/staticfiles /app/media
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
-# Run the application
-CMD ["gunicorn", "core.wsgi:application", "--bind", "0.0.0.0:8000"] 
+# Expose port
+EXPOSE 8000
+
+# Start command
+CMD ["gunicorn", "core.wsgi:application", "--bind", "0.0.0.0:8000"]

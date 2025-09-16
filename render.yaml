@@ -1,0 +1,117 @@
+services:
+  # Backend Web Service
+  - type: web
+    name: unipay-backend
+    env: docker
+    region: singapore
+    plan: free
+    dockerfilePath: ./Dockerfile
+    rootDir: ./
+    envVars:
+      - key: DEBUG
+        value: False
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        value: unipay-backend.onrender.com
+      - key: DB_HOST
+        value: dpg-d347lmje5dus73epqak0-a.singapore-postgres.render.com
+      - key: DB_PORT
+        value: 5432
+      - key: DB_NAME
+        value: unipay_klgt
+      - key: DB_USER
+        value: unipay_klgt_user
+      - key: DB_PASSWORD
+        value: bbe0Q52W2qi01QlG246KD1yTKpqZXwSN
+      - key: DB_SSL
+        value: True
+      - key: FRONTEND_URL
+        value: https://unipay-frontend.onrender.com
+      - key: REDIS_URL
+        value: redis://localhost:6379/0
+      - key: CELERY_BROKER_URL
+        value: redis://localhost:6379/0
+      - key: CELERY_RESULT_BACKEND
+        value: redis://localhost:6379/0
+
+  # Frontend Static Site
+  - type: web
+    name: unipay-frontend
+    env: static
+    region: singapore
+    plan: free
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/build
+    rootDir: ./
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://unipay-backend.onrender.com/api
+      - key: REACT_APP_BASE_URL
+        value: https://unipay-backend.onrender.com
+
+  # Celery Worker (Optional)
+  - type: worker
+    name: unipay-worker
+    env: python
+    region: singapore
+    plan: free
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && celery -A core worker -l info
+    rootDir: backend
+    envVars:
+      - key: DEBUG
+        value: False
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DB_HOST
+        value: dpg-d347lmje5dus73epqak0-a.singapore-postgres.render.com
+      - key: DB_PORT
+        value: 5432
+      - key: DB_NAME
+        value: unipay_klgt
+      - key: DB_USER
+        value: unipay_klgt_user
+      - key: DB_PASSWORD
+        value: bbe0Q52W2qi01QlG246KD1yTKpqZXwSN
+      - key: DB_SSL
+        value: True
+      - key: REDIS_URL
+        value: redis://localhost:6379/0
+      - key: CELERY_BROKER_URL
+        value: redis://localhost:6379/0
+      - key: CELERY_RESULT_BACKEND
+        value: redis://localhost:6379/0
+
+  # Celery Beat (Optional)
+  - type: worker
+    name: unipay-beat
+    env: python
+    region: singapore
+    plan: free
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && celery -A core beat -l info
+    rootDir: backend
+    envVars:
+      - key: DEBUG
+        value: False
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DB_HOST
+        value: dpg-d347lmje5dus73epqak0-a.singapore-postgres.render.com
+      - key: DB_PORT
+        value: 5432
+      - key: DB_NAME
+        value: unipay_klgt
+      - key: DB_USER
+        value: unipay_klgt_user
+      - key: DB_PASSWORD
+        value: bbe0Q52W2qi01QlG246KD1yTKpqZXwSN
+      - key: DB_SSL
+        value: True
+      - key: REDIS_URL
+        value: redis://localhost:6379/0
+      - key: CELERY_BROKER_URL
+        value: redis://localhost:6379/0
+      - key: CELERY_RESULT_BACKEND
+        value: redis://localhost:6379/0

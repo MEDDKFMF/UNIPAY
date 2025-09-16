@@ -1,5 +1,5 @@
 services:
-  # Backend Web Service - Updated to force latest commit
+  # Backend Web Service - Updated to force latest commit - v2
   - type: web
     name: unipay-backend
     env: docker
@@ -35,7 +35,7 @@ services:
       - key: CELERY_RESULT_BACKEND
         value: redis://localhost:6379/0
 
-  # Frontend Static Site - Updated for Render deployment
+  # Frontend Static Site - Updated for Render deployment - v2
   - type: web
     name: unipay-frontend
     env: static

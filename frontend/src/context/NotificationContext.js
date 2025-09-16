@@ -22,7 +22,7 @@ export const NotificationProvider = ({ children }) => {
   const fetchNotifications = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await api.get('/api/messaging/notifications/');
+      const response = await api.get('/messaging/notifications/');
       const notificationData = response.data.results || response.data;
       
       setNotifications(notificationData);
@@ -37,7 +37,7 @@ export const NotificationProvider = ({ children }) => {
   // Mark notification as read
   const markAsRead = useCallback(async (notificationId) => {
     try {
-      await api.patch(`/api/messaging/notifications/${notificationId}/`, {
+      await api.patch(`/messaging/notifications/${notificationId}/`, {
         is_read: true
       });
       
@@ -58,7 +58,7 @@ export const NotificationProvider = ({ children }) => {
   // Mark all notifications as read
   const markAllAsRead = useCallback(async () => {
     try {
-      await api.post('/api/messaging/notifications/mark-all-read/');
+      await api.post('/messaging/notifications/mark-all-read/');
       
       setNotifications(prev => 
         prev.map(notification => ({ ...notification, is_read: true }))
@@ -74,7 +74,7 @@ export const NotificationProvider = ({ children }) => {
   // Delete notification
   const deleteNotification = useCallback(async (notificationId) => {
     try {
-      await api.delete(`/api/messaging/notifications/${notificationId}/`);
+      await api.delete(`/messaging/notifications/${notificationId}/`);
       
       setNotifications(prev => prev.filter(n => n.id !== notificationId));
       setUnreadCount(prev => {

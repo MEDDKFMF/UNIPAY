@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       // Get user profile using the centralized API instance
-      const response = await api.get('/api/auth/profile/');
+      const response = await api.get('/auth/profile/');
       console.log('Profile response:', response.data);
       console.log('Profile role:', response.data.role);
       setUser(response.data);
@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      const response = await api.post('/api/auth/login/', credentials);
+      const response = await api.post('/auth/login/', credentials);
       const { access, refresh, user_id, username, email, role, first_name, last_name, company_name } = response.data;
       
       // Store tokens
@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
-      await api.post('/api/auth/register/', userData);
+      await api.post('/auth/register/', userData);
       toast.success('Registration successful! Please login.');
       return { success: true };
     } catch (error) {
@@ -111,7 +111,7 @@ export const AuthProvider = ({ children }) => {
 
   const updateProfile = async (profileData) => {
     try {
-      const response = await api.put('/api/auth/profile/update/', profileData);
+      const response = await api.put('/auth/profile/update/', profileData);
       setUser(response.data);
       toast.success('Profile updated successfully!');
       return { success: true };
@@ -130,7 +130,7 @@ export const AuthProvider = ({ children }) => {
         throw new Error('No refresh token');
       }
 
-      const response = await api.post('/api/auth/refresh/', { refresh });
+      const response = await api.post('/auth/refresh/', { refresh });
       const { access } = response.data;
       
       localStorage.setItem('access_token', access);

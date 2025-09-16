@@ -32,7 +32,7 @@ api.interceptors.response.use(
       try {
         const refreshToken = localStorage.getItem('refresh_token');
         if (refreshToken) {
-          const response = await api.post('/api/auth/refresh/', {
+          const response = await api.post('/auth/refresh/', {
             refresh: refreshToken
           });
           

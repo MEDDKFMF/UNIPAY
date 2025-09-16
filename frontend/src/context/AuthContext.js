@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       // Get user profile using the centralized API instance
-      const response = await api.get('/auth/profile/');
+      const response = await api.get('/api/auth/profile/');
       console.log('Profile response:', response.data);
       console.log('Profile role:', response.data.role);
       setUser(response.data);
@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      const response = await api.post('/auth/login/', credentials);
+      const response = await api.post('/api/auth/login/', credentials);
       const { access, refresh, user_id, username, email, role, first_name, last_name, company_name } = response.data;
       
       // Store tokens
@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
-      await api.post('/auth/register/', userData);
+      await api.post('/api/auth/register/', userData);
       toast.success('Registration successful! Please login.');
       return { success: true };
     } catch (error) {

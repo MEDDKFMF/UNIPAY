@@ -22,7 +22,7 @@ export const NotificationProvider = ({ children }) => {
   const fetchNotifications = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await api.get('/messaging/notifications/');
+      const response = await api.get('/api/messaging/notifications/');
       const notificationData = response.data.results || response.data;
       
       setNotifications(notificationData);
@@ -37,7 +37,7 @@ export const NotificationProvider = ({ children }) => {
   // Mark notification as read
   const markAsRead = useCallback(async (notificationId) => {
     try {
-      await api.patch(`/messaging/notifications/${notificationId}/`, {
+      await api.patch(`/api/messaging/notifications/${notificationId}/`, {
         is_read: true
       });
       

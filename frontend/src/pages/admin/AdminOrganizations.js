@@ -23,9 +23,17 @@ const AdminOrganizations = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [editingOrg, setEditingOrg] = useState(null);
   const [viewingOrg, setViewingOrg] = useState(null);
   const [orgStats, setOrgStats] = useState(null);
   const [selectedOrgs, setSelectedOrgs] = useState([]);
+  const [form, setForm] = useState({ 
+    name: '', 
+    slug: '', 
+    owner_email: '', 
+    is_active: true
+  });
 
   const load = async () => {
     try {

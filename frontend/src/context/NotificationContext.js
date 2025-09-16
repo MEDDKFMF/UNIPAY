@@ -159,7 +159,7 @@ export const NotificationProvider = ({ children }) => {
   // Initialize notifications on mount
   useEffect(() => {
     fetchNotifications();
-  }, [fetchNotifications]);
+  }, []); // Remove fetchNotifications dependency
 
   // Set up polling for new notifications (every 30 seconds)
   useEffect(() => {
@@ -168,7 +168,7 @@ export const NotificationProvider = ({ children }) => {
     }, 30000);
 
     return () => clearInterval(interval);
-  }, [fetchNotifications]);
+  }, []); // Remove fetchNotifications dependency
 
   const value = {
     notifications,

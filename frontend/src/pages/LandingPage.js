@@ -7,11 +7,9 @@ import {
   Globe, 
   Shield, 
   Zap, 
-  Users, 
   BarChart3,
   Check,
   ArrowRight,
-  Star,
   Play
 } from 'lucide-react';
 

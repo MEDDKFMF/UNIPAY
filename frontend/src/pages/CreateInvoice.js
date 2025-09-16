@@ -35,7 +35,7 @@ const schema = yup.object({
 });
 
 // Use the comprehensive currency list from config
-const currencies = CURRENCIES;
+// const currencies = CURRENCIES; // Commented out as it's not used
 
 const CreateInvoice = () => {
   const navigate = useNavigate();

@@ -39,6 +39,7 @@ const LandingPage = () => {
 
   // Fetch plans from admin API
   useEffect(() => {
+    console.log('LandingPage useEffect triggered - fetching plans');
     const fetchPlans = async () => {
       try {
         console.log('Fetching plans from API...');

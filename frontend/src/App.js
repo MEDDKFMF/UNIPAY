@@ -53,6 +53,8 @@ const ProtectedRoute = ({ children }) => {
 const PublicRoute = ({ children }) => {
   const { isAuthenticated, loading, user } = useAuth();
   
+  console.log('PublicRoute render - isAuthenticated:', isAuthenticated, 'loading:', loading, 'user:', user);
+  
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">

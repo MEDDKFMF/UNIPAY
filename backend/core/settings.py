@@ -24,12 +24,23 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 if DEBUG:
     ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1', cast=lambda v: [s.strip() for s in v.split(',')])
 else:
-    # In production, allow specific hosts and Render URLs
-    allowed_hosts = config('ALLOWED_HOSTS', default='', cast=lambda v: [s.strip() for s in v.split(',') if s.strip()])
-    # Always add Render URLs for production
-    allowed_hosts.extend(['*.onrender.com', 'unipay-1gus.onrender.com'])
-    # Remove duplicates and empty strings
-    ALLOWED_HOSTS = list(set([host for host in allowed_hosts if host.strip()])) or ['*']
+    # In production, explicitly allow Render URLs and any configured hosts
+    ALLOWED_HOSTS = [
+        'unipay-1gus.onrender.com',
+        '*.onrender.com',
+        'localhost',
+        '127.0.0.1'
+    ]
+    # Add any additional hosts from environment variable
+    env_hosts = config('ALLOWED_HOSTS', default='', cast=lambda v: [s.strip() for s in v.split(',') if s.strip()])
+    ALLOWED_HOSTS.extend(env_hosts)
+    # Remove duplicates
+    ALLOWED_HOSTS = list(set(ALLOWED_HOSTS))
+    
+    # Debug logging for production
+    print(f"DEBUG: DEBUG={DEBUG}")
+    print(f"DEBUG: ALLOWED_HOSTS={ALLOWED_HOSTS}")
+    print(f"DEBUG: Environment ALLOWED_HOSTS={config('ALLOWED_HOSTS', default='NOT_SET')}")
 
 # Application definition
 DJANGO_APPS = [

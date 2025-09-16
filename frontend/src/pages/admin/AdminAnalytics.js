@@ -5,7 +5,6 @@ import {
   ArrowTrendingUpIcon, 
   CurrencyDollarIcon, 
   UsersIcon,
-  DocumentTextIcon,
   CalendarIcon,
   GlobeAltIcon
 } from '@heroicons/react/24/outline';
@@ -14,7 +13,6 @@ const AdminAnalytics = () => {
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState('30d');
-  const [selectedMetric, setSelectedMetric] = useState('revenue');
 
   useEffect(() => {
     const loadAnalytics = async () => {

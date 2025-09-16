@@ -4,8 +4,6 @@ import {
   Plus, 
   Edit, 
   Trash2, 
-  Calendar, 
-  DollarSign,
   AlertCircle,
   CheckCircle,
   XCircle,

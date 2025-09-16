@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { CreditCard, Shield, Settings, CheckCircle, XCircle, AlertCircle, Save, Plus, Trash2, Building2, Smartphone, Landmark } from 'lucide-react';
+import { CreditCard, Settings, XCircle, Plus, Trash2, Building2, Smartphone, Landmark } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { getUserPaymentMethods, createUserPaymentMethod, updateUserPaymentMethod, deleteUserPaymentMethod, getAvailablePaymentMethods } from '../services/paymentService';
 
 const PaymentSettings = () => {
   const [paymentMethods, setPaymentMethods] = useState([]);
-  const [availableMethods, setAvailableMethods] = useState([]);
+  const [, setAvailableMethods] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -149,18 +149,6 @@ const PaymentSettings = () => {
     }
   };
 
-  const getMethodDisplayName = (methodType) => {
-    switch (methodType) {
-      case 'bank_account':
-        return 'Bank Account';
-      case 'unipay':
-        return 'Unipay (M-Pesa)';
-      case 'flutterwave':
-        return 'Flutterwave';
-      default:
-        return methodType;
-    }
-  };
 
   if (loading) {
     return (

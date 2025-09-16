@@ -273,7 +273,6 @@ const Analytics = () => {
 
       const onTimePayments = invoices.filter(inv => {
         if (inv.status !== 'PAID' || !inv.paid_date) return false;
-        const issueDate = new Date(inv.issue_date);
         const dueDate = new Date(inv.due_date);
         const paidDate = new Date(inv.paid_date);
         return paidDate <= dueDate;

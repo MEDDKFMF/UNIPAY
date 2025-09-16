@@ -13,7 +13,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
-import { getPayments, getPaymentStats } from '../services/paymentService';
+import { getPayments } from '../services/paymentService';
 import { getExchangeRates } from '../services/exchangeRateService';
 import { CURRENCIES, getPopularCurrencies } from '../config/currencies';
 import CreatePaymentModal from '../components/CreatePaymentModal';

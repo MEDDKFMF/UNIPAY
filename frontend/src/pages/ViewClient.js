@@ -21,7 +21,7 @@ const ViewClient = () => {
   const navigate = useNavigate();
   const [client, setClient] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [invoices, setInvoices] = useState([]);
+  const [invoices] = useState([]);
 
   useEffect(() => {
     fetchClient();

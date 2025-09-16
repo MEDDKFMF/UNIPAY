@@ -111,7 +111,7 @@ export const AuthProvider = ({ children }) => {
 
   const updateProfile = async (profileData) => {
     try {
-      const response = await api.put('/auth/profile/update/', profileData);
+      const response = await api.put('/api/auth/profile/update/', profileData);
       setUser(response.data);
       toast.success('Profile updated successfully!');
       return { success: true };
@@ -130,7 +130,7 @@ export const AuthProvider = ({ children }) => {
         throw new Error('No refresh token');
       }
 
-      const response = await api.post('/auth/refresh/', { refresh });
+      const response = await api.post('/api/auth/refresh/', { refresh });
       const { access } = response.data;
       
       localStorage.setItem('access_token', access);

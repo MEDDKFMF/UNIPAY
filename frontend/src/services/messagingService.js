@@ -1,11 +1,9 @@
 import api from './api';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
-
 // Send invoice notification
 export const sendInvoiceNotification = async (data) => {
   try {
-    const response = await api.post(`${API_BASE_URL}/api/messaging/send-invoice/`, data);
+    const response = await api.post('/api/messaging/send-invoice/', data);
     return response.data;
   } catch (error) {
     console.error('Error sending invoice notification:', error);
@@ -16,7 +14,7 @@ export const sendInvoiceNotification = async (data) => {
 // Send payment confirmation
 export const sendPaymentConfirmation = async (data) => {
   try {
-    const response = await api.post(`${API_BASE_URL}/api/messaging/send-payment-confirmation/`, data);
+    const response = await api.post('/api/messaging/send-payment-confirmation/', data);
     return response.data;
   } catch (error) {
     console.error('Error sending payment confirmation:', error);
@@ -27,7 +25,7 @@ export const sendPaymentConfirmation = async (data) => {
 // Send payment reminder
 export const sendPaymentReminder = async (data) => {
   try {
-    const response = await api.post(`${API_BASE_URL}/api/messaging/send-reminder/`, data);
+    const response = await api.post('/api/messaging/send-reminder/', data);
     return response.data;
   } catch (error) {
     console.error('Error sending payment reminder:', error);
@@ -38,7 +36,7 @@ export const sendPaymentReminder = async (data) => {
 // Get notification templates
 export const getTemplates = async () => {
   try {
-    const response = await api.get(`${API_BASE_URL}/api/messaging/templates/`);
+    const response = await api.get('/api/messaging/templates/');
     return response.data;
   } catch (error) {
     console.error('Error fetching templates:', error);
@@ -49,7 +47,7 @@ export const getTemplates = async () => {
 // Get specific template
 export const getTemplate = async (id) => {
   try {
-    const response = await api.get(`${API_BASE_URL}/api/messaging/templates/${id}/`);
+    const response = await api.get(`/api/messaging/templates/${id}/`);
     return response.data;
   } catch (error) {
     console.error('Error fetching template:', error);
@@ -60,7 +58,7 @@ export const getTemplate = async (id) => {
 // Create template
 export const createTemplate = async (templateData) => {
   try {
-    const response = await api.post(`${API_BASE_URL}/api/messaging/templates/`, templateData);
+    const response = await api.post('/api/messaging/templates/', templateData);
     return response.data;
   } catch (error) {
     console.error('Error creating template:', error);
@@ -71,7 +69,7 @@ export const createTemplate = async (templateData) => {
 // Update template
 export const updateTemplate = async (id, templateData) => {
   try {
-    const response = await api.put(`${API_BASE_URL}/api/messaging/templates/${id}/`, templateData);
+    const response = await api.put(`/api/messaging/templates/${id}/`, templateData);
     return response.data;
   } catch (error) {
     console.error('Error updating template:', error);
@@ -82,7 +80,7 @@ export const updateTemplate = async (id, templateData) => {
 // Delete template
 export const deleteTemplate = async (id) => {
   try {
-    const response = await api.delete(`${API_BASE_URL}/api/messaging/templates/${id}/`);
+    const response = await api.delete(`/api/messaging/templates/${id}/`);
     return response.data;
   } catch (error) {
     console.error('Error deleting template:', error);

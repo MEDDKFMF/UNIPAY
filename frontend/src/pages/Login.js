@@ -178,9 +178,9 @@ const Login = () => {
         <div className="text-center mt-8">
           <p className="text-xs text-gray-500">
             By signing in, you agree to our{' '}
-            <a href="#" className="text-blue-600 hover:text-blue-700">Terms of Service</a>
+            <button className="text-blue-600 hover:text-blue-700">Terms of Service</button>
             {' '}and{' '}
-            <a href="#" className="text-blue-600 hover:text-blue-700">Privacy Policy</a>
+            <button className="text-blue-600 hover:text-blue-700">Privacy Policy</button>
           </p>
         </div>
       </div>

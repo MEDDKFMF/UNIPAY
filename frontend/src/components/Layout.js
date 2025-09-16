@@ -14,13 +14,7 @@ import {
   ChevronRight,
   BarChart3,
   CreditCard,
-  Cog,
-  DollarSign,
-  Clock,
-  Send,
-  Download,
-  Eye,
-  RefreshCw
+  Cog
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import NotificationBell from './NotificationBell';

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Copy, Share2, ExternalLink, QrCode, Check, AlertCircle } from 'lucide-react';
+import { X, Copy, Share2, ExternalLink, Check, AlertCircle } from 'lucide-react';
 import { createPaymentLink, copyPaymentLink, sharePaymentLink, generateQRCode } from '../services/paymentLinkService';
 import toast from 'react-hot-toast';
 

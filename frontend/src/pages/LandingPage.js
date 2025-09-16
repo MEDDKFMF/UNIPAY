@@ -13,27 +13,27 @@ import {
   Play
 } from 'lucide-react';
 
+// Currency mapping by country - moved outside component to prevent re-creation
+const currencyMap = {
+  'KE': { symbol: 'KSh', code: 'KES', name: 'Kenyan Shilling' },
+  'US': { symbol: '$', code: 'USD', name: 'US Dollar' },
+  'GB': { symbol: '£', code: 'GBP', name: 'British Pound' },
+  'EU': { symbol: '€', code: 'EUR', name: 'Euro' },
+  'CA': { symbol: 'C$', code: 'CAD', name: 'Canadian Dollar' },
+  'AU': { symbol: 'A$', code: 'AUD', name: 'Australian Dollar' },
+  'IN': { symbol: '₹', code: 'INR', name: 'Indian Rupee' },
+  'NG': { symbol: '₦', code: 'NGN', name: 'Nigerian Naira' },
+  'GH': { symbol: 'GH₵', code: 'GHS', name: 'Ghanaian Cedi' },
+  'ZA': { symbol: 'R', code: 'ZAR', name: 'South African Rand' },
+  'UG': { symbol: 'USh', code: 'UGX', name: 'Ugandan Shilling' },
+  'TZ': { symbol: 'TSh', code: 'TZS', name: 'Tanzanian Shilling' },
+};
+
 const LandingPage = () => {
   const [userCurrency, setUserCurrency] = useState({ symbol: '$', code: 'USD', name: 'US Dollar' });
   const [locationDetected, setLocationDetected] = useState(false);
   const [plans, setPlans] = useState([]);
   const [plansLoading, setPlansLoading] = useState(true);
-
-  // Currency mapping by country
-  const currencyMap = {
-    'KE': { symbol: 'KSh', code: 'KES', name: 'Kenyan Shilling' },
-    'US': { symbol: '$', code: 'USD', name: 'US Dollar' },
-    'GB': { symbol: '£', code: 'GBP', name: 'British Pound' },
-    'EU': { symbol: '€', code: 'EUR', name: 'Euro' },
-    'CA': { symbol: 'C$', code: 'CAD', name: 'Canadian Dollar' },
-    'AU': { symbol: 'A$', code: 'AUD', name: 'Australian Dollar' },
-    'IN': { symbol: '₹', code: 'INR', name: 'Indian Rupee' },
-    'NG': { symbol: '₦', code: 'NGN', name: 'Nigerian Naira' },
-    'GH': { symbol: 'GH₵', code: 'GHS', name: 'Ghanaian Cedi' },
-    'ZA': { symbol: 'R', code: 'ZAR', name: 'South African Rand' },
-    'UG': { symbol: 'USh', code: 'UGX', name: 'Ugandan Shilling' },
-    'TZ': { symbol: 'TSh', code: 'TZS', name: 'Tanzanian Shilling' },
-  };
 
   // Fetch plans from admin API
   useEffect(() => {
@@ -104,7 +104,7 @@ const LandingPage = () => {
     };
 
     detectUserLocation();
-  }, []);
+  }, []); // currencyMap is now a constant, no need to include it
 
   // Format price based on detected currency
   const formatPrice = (amount, planCurrency = 'USD') => {
@@ -414,28 +414,28 @@ const LandingPage = () => {
             <div>
               <h3 className="font-semibold mb-4">Product</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white">Features</a></li>
-                <li><a href="#" className="hover:text-white">Pricing</a></li>
-                <li><a href="#" className="hover:text-white">API</a></li>
-                <li><a href="#" className="hover:text-white">Integrations</a></li>
+                <li><button className="hover:text-white text-left">Features</button></li>
+                <li><button className="hover:text-white text-left">Pricing</button></li>
+                <li><button className="hover:text-white text-left">API</button></li>
+                <li><button className="hover:text-white text-left">Integrations</button></li>
               </ul>
             </div>
             <div>
               <h3 className="font-semibold mb-4">Company</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white">About</a></li>
-                <li><a href="#" className="hover:text-white">Blog</a></li>
-                <li><a href="#" className="hover:text-white">Careers</a></li>
-                <li><a href="#" className="hover:text-white">Contact</a></li>
+                <li><button className="hover:text-white text-left">About</button></li>
+                <li><button className="hover:text-white text-left">Blog</button></li>
+                <li><button className="hover:text-white text-left">Careers</button></li>
+                <li><button className="hover:text-white text-left">Contact</button></li>
               </ul>
             </div>
             <div>
               <h3 className="font-semibold mb-4">Support</h3>
               <ul className="space-y-2 text-gray-400">
-                <li><a href="#" className="hover:text-white">Help Center</a></li>
-                <li><a href="#" className="hover:text-white">Documentation</a></li>
-                <li><a href="#" className="hover:text-white">Status</a></li>
-                <li><a href="#" className="hover:text-white">Security</a></li>
+                <li><button className="hover:text-white text-left">Help Center</button></li>
+                <li><button className="hover:text-white text-left">Documentation</button></li>
+                <li><button className="hover:text-white text-left">Status</button></li>
+                <li><button className="hover:text-white text-left">Security</button></li>
               </ul>
             </div>
           </div>

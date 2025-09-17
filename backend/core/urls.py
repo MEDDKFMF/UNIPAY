@@ -6,6 +6,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from . import views
+from .seed_endpoint import seed_database
 
 urlpatterns = [
     path('', views.api_info, name='api_info'),
@@ -20,6 +21,7 @@ urlpatterns = [
     path('api/exchange-rates/rates/', views.exchange_rates_view, name='exchange_rates'),
     path('api/exchange-rates/currencies/', views.available_currencies_view, name='available_currencies'),
     path('api/exchange-rates/refresh/', views.refresh_rates_view, name='refresh_rates'),
+    path('api/seed-database/', seed_database, name='seed_database'),
 ]
 
 # Serve static and media files in development

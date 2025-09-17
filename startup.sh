@@ -1,27 +1,13 @@
 #!/bin/bash
 
 # Startup script for Render deployment
-# This script runs migrations and seeds the database
+# This script runs migrations and starts the server
 
 echo "Starting Unipay Backend..."
 
-# Wait for database to be ready
-echo "Waiting for database connection..."
+# Run migrations first
+echo "Running database migrations..."
 python manage.py migrate --noinput
-
-# Check if we need to seed the database
-echo "Checking if database needs seeding..."
-
-# Count existing users
-USER_COUNT=$(python manage.py shell -c "from accounts.models import User; print(User.objects.count())" 2>/dev/null || echo "0")
-
-if [ "$USER_COUNT" -lt 5 ]; then
-    echo "Database appears to be empty or incomplete. Seeding database..."
-    python manage.py seed_database
-    echo "Database seeding completed!"
-else
-    echo "Database already has data. Skipping seeding."
-fi
 
 # Collect static files
 echo "Collecting static files..."

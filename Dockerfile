@@ -57,4 +57,4 @@ EXPOSE 8000
 # Health check removed for free tier compatibility
 
 # Start command - start server only
-CMD ["gunicorn", "core.wsgi_optimized:application", "--bind", "0.0.0.0:8000", "--workers", "1", "--timeout", "30", "--keep-alive", "2", "--max-requests", "1000", "--max-requests-jitter", "100", "--preload"]
+CMD ["gunicorn", "core.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "1", "--timeout", "60"]

@@ -164,7 +164,7 @@ export const NotificationProvider = ({ children }) => {
   // Initialize notifications on mount
   useEffect(() => {
     fetchNotifications();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [fetchNotifications]);
 
   // Set up polling for new notifications (every 30 seconds)
   useEffect(() => {
@@ -173,7 +173,7 @@ export const NotificationProvider = ({ children }) => {
     }, 30000);
 
     return () => clearInterval(interval);
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [fetchNotifications]);
 
   const value = {
     notifications,

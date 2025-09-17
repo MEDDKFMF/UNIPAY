@@ -38,16 +38,22 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
     } catch (error) {
       console.error('Auth check failed:', error);
-      logout();
+      // Only logout if it's an authentication error, not a network error
+      if (error.response?.status === 401) {
+        logout();
+      } else {
+        // For network errors, just set loading to false
+        setLoading(false);
+      }
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [logout]);
 
   // Check authentication status on mount
   useEffect(() => {
     checkAuthStatus();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [checkAuthStatus]);
 
   const login = async (credentials) => {
     try {

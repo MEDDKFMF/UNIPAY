@@ -42,7 +42,8 @@ ENV SECRET_KEY=django-insecure-temp-key-for-build
 ENV ALLOWED_HOSTS=unipay-1gus.onrender.com,*.onrender.com
 ENV DATABASE_URL=sqlite:///db.sqlite3
 
-# Try to collect static files, but don't fail if it doesn't work
+# Run migrations and collect static files during build
+RUN python manage.py migrate --noinput || echo "Migrations skipped"
 RUN python manage.py collectstatic --noinput || echo "Static files collection skipped"
 
 # Create a non-root user
@@ -55,5 +56,5 @@ EXPOSE 8000
 
 # Health check removed for free tier compatibility
 
-# Start command - run migrations and start server
-CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn core.wsgi_optimized:application --bind 0.0.0.0:8000 --workers 1 --timeout 30 --keep-alive 2 --max-requests 1000 --max-requests-jitter 100 --preload"]
+# Start command - start server only
+CMD ["gunicorn", "core.wsgi_optimized:application", "--bind", "0.0.0.0:8000", "--workers", "1", "--timeout", "30", "--keep-alive", "2", "--max-requests", "1000", "--max-requests-jitter", "100", "--preload"]

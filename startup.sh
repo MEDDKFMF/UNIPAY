@@ -5,7 +5,7 @@
 
 echo "Starting Unipay Backend..."
 
-# Run migrations first
+# Run migrations
 echo "Running database migrations..."
 python manage.py migrate --noinput
 

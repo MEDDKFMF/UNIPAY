@@ -34,13 +34,16 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const checkAuthStatus = useCallback(async () => {
+    console.log('checkAuthStatus called');
     try {
       const token = localStorage.getItem('access_token');
       if (!token) {
+        console.log('No token found, setting loading to false');
         setLoading(false);
         return;
       }
 
+      console.log('Token found, fetching profile...');
       // Get user profile using the centralized API instance
       const response = await api.get('/api/auth/profile/');
       console.log('Profile response:', response.data);
@@ -51,9 +54,11 @@ export const AuthProvider = ({ children }) => {
       console.error('Auth check failed:', error);
       // Only logout if it's an authentication error, not a network error
       if (error.response?.status === 401) {
+        console.log('401 error, calling logout');
         logout();
       } else {
         // For network errors, just set loading to false
+        console.log('Network error, setting loading to false');
         setLoading(false);
       }
     } finally {

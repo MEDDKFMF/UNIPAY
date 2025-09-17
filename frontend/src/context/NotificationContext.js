@@ -173,7 +173,7 @@ export const NotificationProvider = ({ children }) => {
     }, 30000);
 
     return () => clearInterval(interval);
-  }, [fetchNotifications]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const value = {
     notifications,

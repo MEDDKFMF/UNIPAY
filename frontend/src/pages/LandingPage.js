@@ -14,20 +14,20 @@ import {
 } from 'lucide-react';
 
 // Currency mapping by country - moved outside component to prevent re-creation
-const currencyMap = {
-  'KE': { symbol: 'KSh', code: 'KES', name: 'Kenyan Shilling' },
-  'US': { symbol: '$', code: 'USD', name: 'US Dollar' },
-  'GB': { symbol: '£', code: 'GBP', name: 'British Pound' },
-  'EU': { symbol: '€', code: 'EUR', name: 'Euro' },
-  'CA': { symbol: 'C$', code: 'CAD', name: 'Canadian Dollar' },
-  'AU': { symbol: 'A$', code: 'AUD', name: 'Australian Dollar' },
-  'IN': { symbol: '₹', code: 'INR', name: 'Indian Rupee' },
-  'NG': { symbol: '₦', code: 'NGN', name: 'Nigerian Naira' },
-  'GH': { symbol: 'GH₵', code: 'GHS', name: 'Ghanaian Cedi' },
-  'ZA': { symbol: 'R', code: 'ZAR', name: 'South African Rand' },
-  'UG': { symbol: 'USh', code: 'UGX', name: 'Ugandan Shilling' },
-  'TZ': { symbol: 'TSh', code: 'TZS', name: 'Tanzanian Shilling' },
-};
+  const currencyMap = {
+    'KE': { symbol: 'KSh', code: 'KES', name: 'Kenyan Shilling' },
+    'US': { symbol: '$', code: 'USD', name: 'US Dollar' },
+    'GB': { symbol: '£', code: 'GBP', name: 'British Pound' },
+    'EU': { symbol: '€', code: 'EUR', name: 'Euro' },
+    'CA': { symbol: 'C$', code: 'CAD', name: 'Canadian Dollar' },
+    'AU': { symbol: 'A$', code: 'AUD', name: 'Australian Dollar' },
+    'IN': { symbol: '₹', code: 'INR', name: 'Indian Rupee' },
+    'NG': { symbol: '₦', code: 'NGN', name: 'Nigerian Naira' },
+    'GH': { symbol: 'GH₵', code: 'GHS', name: 'Ghanaian Cedi' },
+    'ZA': { symbol: 'R', code: 'ZAR', name: 'South African Rand' },
+    'UG': { symbol: 'USh', code: 'UGX', name: 'Ugandan Shilling' },
+    'TZ': { symbol: 'TSh', code: 'TZS', name: 'Tanzanian Shilling' },
+  };
 
 const LandingPage = () => {
   const [userCurrency, setUserCurrency] = useState({ symbol: '$', code: 'USD', name: 'US Dollar' });
@@ -37,7 +37,7 @@ const LandingPage = () => {
 
   // Fetch plans from admin API
   useEffect(() => {
-    console.log('LandingPage useEffect triggered - fetching plans');
+    console.log('LandingPage useEffect triggered - fetching plans - v2');
     const fetchPlans = async () => {
       try {
         console.log('Fetching plans from API...');

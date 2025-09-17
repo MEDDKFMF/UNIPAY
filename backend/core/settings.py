@@ -126,12 +126,12 @@ DATABASES = {
 
 # Fallback to SQLite for local development if no DB credentials provided
 if not config('DB_HOST', default=None):
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
+}
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -221,7 +221,7 @@ else:
     CORS_ALLOWED_ORIGINS = [
         "https://unipay-frontend-c9ss.onrender.com",
         config('FRONTEND_URL', default='http://localhost:3000'),
-    ]
+]
 
 CORS_ALLOW_CREDENTIALS = True
 

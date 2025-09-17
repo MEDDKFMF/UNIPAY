@@ -248,11 +248,11 @@ def create_checkout_session(request):
                     payment.save()
                     return Response({'error': error}, status=status.HTTP_400_BAD_REQUEST)
                 
-                return Response({
+            return Response({
                     'payment_id': payment.id,
                     'checkout_url': checkout_url,
                     'message': 'Redirecting to Flutterwave payment page...'
-                })
+            })
             
         except Invoice.DoesNotExist:
             return Response(
@@ -265,7 +265,7 @@ def create_checkout_session(request):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
     else:
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @csrf_exempt
@@ -550,7 +550,7 @@ def payment_status(request, payment_id):
         return Response(
             {'error': 'Payment not found'}, 
             status=status.HTTP_404_NOT_FOUND
-        )
+        ) 
 
 
 @api_view(['POST'])

@@ -82,8 +82,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'accounts.middleware.SessionTrackingMiddleware',
-    'accounts.middleware.SessionCleanupMiddleware',
+    # Temporarily disable custom middleware that might cause issues
+    # 'accounts.middleware.SessionTrackingMiddleware',
+    # 'accounts.middleware.SessionCleanupMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -120,9 +121,10 @@ DATABASES = {
         'PORT': config('DB_PORT', default='5432'),
         'OPTIONS': {
             'sslmode': 'require' if config('DB_SSL', default=False, cast=bool) else 'prefer',
-            'connect_timeout': 10,
+            'connect_timeout': 5,  # Reduced timeout
         },
         'CONN_MAX_AGE': 0,  # Disable persistent connections for free tier
+        'ATOMIC_REQUESTS': False,  # Disable for better performance
     }
 }
 

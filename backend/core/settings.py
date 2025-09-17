@@ -163,7 +163,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [BASE_DIR / 'static']
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+    BASE_DIR / 'frontend' / 'build' / 'static',  # React build static files
+]
+
+# Frontend build directory
+FRONTEND_BUILD_DIR = BASE_DIR / 'frontend' / 'build'
 
 # Media files
 MEDIA_URL = '/media/'

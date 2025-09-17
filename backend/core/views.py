@@ -118,4 +118,19 @@ def refresh_rates_view(request):
         return Response(
             {'error': 'Failed to refresh exchange rates'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
-        ) 
+        )
+
+
+from django.http import HttpResponse
+from django.conf import settings
+import os
+
+def serve_frontend(request):
+    """
+    Serve the React frontend for all non-API routes.
+    """
+    try:
+        with open(os.path.join(settings.FRONTEND_BUILD_DIR, 'index.html'), 'r') as f:
+            return HttpResponse(f.read())
+    except FileNotFoundError:
+        return HttpResponse("Frontend not built yet. Please build the React app first.", status=404) 

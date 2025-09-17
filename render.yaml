@@ -53,7 +53,7 @@ services:
 
   # Frontend Static Site - Fixed configuration
   - type: web
-    name: unipay-frontend
+    name: unipay-1
     env: static
     region: singapore
     plan: free
@@ -68,7 +68,7 @@ services:
       - key: REACT_APP_API_URL
         value: https://unipay-1gus.onrender.com
       - key: REACT_APP_BASE_URL
-        value: https://unipay-frontend-c9ss.onrender.com
+        value: https://unipay-1.onrender.com
       - key: NODE_ENV
         value: production
 

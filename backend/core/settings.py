@@ -125,6 +125,7 @@ DATABASES = {
 }
 
 # Fallback to SQLite for local development if no DB credentials provided
+# Force fresh deployment - v3
 if not config('DB_HOST', default=None):
     DATABASES = {
         'default': {

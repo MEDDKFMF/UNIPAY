@@ -230,19 +230,33 @@ class Command(BaseCommand):
         # Get organizations
         organizations = list(Organization.objects.all())
         
-        users_data = [
-            {
-                'username': 'john_doe',
-                'email': 'john@techsolutions.com',
-                'first_name': 'John',
-                'last_name': 'Doe',
-                'role': 'admin',
-                'organization': organizations[0] if organizations else None,
-                'company_name': 'Tech Solutions Ltd',
-                'phone': '+254712345678',
-                'address': 'Nairobi, Kenya',
-                'is_verified': True
-            },
+    users_data = [
+        {
+            'username': 'platform_admin',
+            'email': 'platform@unipay.com',
+            'first_name': 'Platform',
+            'last_name': 'Admin',
+            'role': 'platform_admin',
+            'organization': None,
+            'company_name': 'UniPay Platform',
+            'phone': '+254700000000',
+            'address': 'Nairobi, Kenya',
+            'is_verified': True,
+            'is_staff': True,
+            'is_superuser': True
+        },
+        {
+            'username': 'john_doe',
+            'email': 'john@techsolutions.com',
+            'first_name': 'John',
+            'last_name': 'Doe',
+            'role': 'admin',
+            'organization': organizations[0] if organizations else None,
+            'company_name': 'Tech Solutions Ltd',
+            'phone': '+254712345678',
+            'address': 'Nairobi, Kenya',
+            'is_verified': True
+        },
             {
                 'username': 'jane_smith',
                 'email': 'jane@creativeagency.com',

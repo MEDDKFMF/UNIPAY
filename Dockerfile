@@ -33,6 +33,12 @@ RUN pip install --no-cache-dir --upgrade pip \
 # Copy backend source code
 COPY backend/ ./
 
+# Copy startup script
+COPY startup.sh ./
+
+# Make startup script executable
+RUN chmod +x startup.sh
+
 # Create necessary directories
 RUN mkdir -p /app/staticfiles /app/media /app/logs
 
@@ -55,5 +61,5 @@ EXPOSE 8000
 
 # Health check removed for free tier compatibility
 
-# Start command optimized for Render free tier
-CMD ["gunicorn", "core.wsgi_optimized:application", "--bind", "0.0.0.0:8000", "--workers", "1", "--timeout", "30", "--keep-alive", "2", "--max-requests", "1000", "--max-requests-jitter", "100", "--preload"]
+# Start command using startup script
+CMD ["./startup.sh"]

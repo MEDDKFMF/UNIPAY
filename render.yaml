@@ -41,7 +41,7 @@ services:
     env: static
     region: singapore
     plan: free
-    buildCommand: cd frontend && npm install && npm run build
+    buildCommand: cd frontend && rm -rf node_modules build && npm install && npm run build
     staticPublishPath: frontend/build
     rootDir: ./
     routes:

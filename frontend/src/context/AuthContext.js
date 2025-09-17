@@ -22,6 +22,17 @@ export const AuthProvider = ({ children }) => {
     // The API instance handles token management automatically
   }, []);
 
+  const logout = useCallback(() => {
+    // Clear tokens using centralized function
+    clearAuthTokens();
+    
+    // Clear user state
+    setUser(null);
+    setIsAuthenticated(false);
+    
+    toast.success('Logged out successfully');
+  }, []);
+
   const checkAuthStatus = useCallback(async () => {
     try {
       const token = localStorage.getItem('access_token');
@@ -104,16 +115,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    // Clear tokens using centralized function
-    clearAuthTokens();
-    
-    // Clear user state
-    setUser(null);
-    setIsAuthenticated(false);
-    
-    toast.success('Logged out successfully');
-  };
 
   const updateProfile = async (profileData) => {
     try {

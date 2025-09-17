@@ -39,7 +39,7 @@ RUN mkdir -p /app/staticfiles /app/media /app/logs
 # Set minimal environment variables for build
 ENV DEBUG=False
 ENV SECRET_KEY=django-insecure-temp-key-for-build
-ENV ALLOWED_HOSTS=unipay-1gus.onrender.com,*.onrender.com
+ENV ALLOWED_HOSTS=localhost,127.0.0.1
 ENV DATABASE_URL=sqlite:///db.sqlite3
 
 # Run migrations and collect static files during build

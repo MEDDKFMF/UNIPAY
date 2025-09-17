@@ -30,7 +30,7 @@ def api_info(request):
             'admin': '/admin/'
         },
         'documentation': 'https://github.com/MEDDKFMF/unipay',
-        'frontend_url': 'https://unipay-frontend.onrender.com'
+        'frontend_url': 'http://localhost:3000'
     })
 
 

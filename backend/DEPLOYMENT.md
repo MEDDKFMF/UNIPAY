@@ -50,14 +50,14 @@ In your Render service settings, add these environment variables:
 ```
 DEBUG=False
 SECRET_KEY=your-secret-key-here
-ALLOWED_HOSTS=your-backend-url.onrender.com
+ALLOWED_HOSTS=your-backend-url.com
 DB_HOST=your-db-host
 DB_PORT=your-db-port
 DB_NAME=your-db-name
 DB_USER=your-db-user
 DB_PASSWORD=your-db-password
 DB_SSL=True
-FRONTEND_URL=https://your-frontend-url.onrender.com
+FRONTEND_URL=https://your-frontend-url.com
 REDIS_URL=your-redis-url
 ```
 
@@ -90,7 +90,7 @@ Update your frontend to use the new backend URL:
 
 ```javascript
 // In your frontend services, update the base URL
-const API_BASE_URL = 'https://your-backend-url.onrender.com/api';
+const API_BASE_URL = 'https://your-backend-url.com/api';
 ```
 
 ## Database Migrations

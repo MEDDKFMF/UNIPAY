@@ -21,21 +21,20 @@ SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-me-in-producti
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 # Configure ALLOWED_HOSTS for different environments
-# Always include Render URLs regardless of DEBUG setting
+# Allowed hosts for local development
 ALLOWED_HOSTS = [
-    'unipay-1gus.onrender.com',
-    '*.onrender.com',
     'localhost',
     '127.0.0.1'
 ]
 
-# Add hosts from environment variable if provided
+# Add hosts from environment variable if provided (for production)
 env_hosts = config('ALLOWED_HOSTS', default='', cast=lambda v: [s.strip() for s in v.split(',') if s.strip()])
-ALLOWED_HOSTS.extend(env_hosts)
+if env_hosts:
+    ALLOWED_HOSTS.extend(env_hosts)
 
 # Add development hosts if DEBUG is True
 if DEBUG:
-    ALLOWED_HOSTS.extend(['localhost', '127.0.0.1'])
+    ALLOWED_HOSTS.extend(['localhost', '127.0.0.1', '0.0.0.0'])
 
 # Remove duplicates
 ALLOWED_HOSTS = list(set(ALLOWED_HOSTS))
@@ -128,9 +127,8 @@ DATABASES = {
     }
 }
 
-# Fallback to SQLite for local development if no DB credentials provided
-# Force fresh deployment - v3
-if not config('DB_HOST', default=None):
+# Use SQLite for local development
+if DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -165,7 +163,8 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
-    BASE_DIR / 'frontend' / 'build' / 'static',  # React build static files
+    # Only include frontend build directory if it exists
+    # BASE_DIR / 'frontend' / 'build' / 'static',  # React build static files
 ]
 
 # Frontend build directory

@@ -120,7 +120,9 @@ DATABASES = {
         'PORT': config('DB_PORT', default='5432'),
         'OPTIONS': {
             'sslmode': 'require' if config('DB_SSL', default=False, cast=bool) else 'prefer',
+            'connect_timeout': 10,
         },
+        'CONN_MAX_AGE': 0,  # Disable persistent connections for free tier
     }
 }
 

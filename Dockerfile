@@ -42,9 +42,8 @@ ENV SECRET_KEY=django-insecure-temp-key-for-build
 ENV ALLOWED_HOSTS=unipay-1gus.onrender.com,*.onrender.com
 ENV DATABASE_URL=sqlite:///db.sqlite3
 
-# Run migrations and collect static files
-RUN python manage.py migrate --run-syncdb || echo "Migrations skipped" \
-    && python manage.py collectstatic --noinput || echo "Static files collection skipped"
+# Try to collect static files, but don't fail if it doesn't work
+RUN python manage.py collectstatic --noinput || echo "Static files collection skipped"
 
 # Create a non-root user
 RUN adduser --disabled-password --gecos '' appuser \

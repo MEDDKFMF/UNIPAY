@@ -265,7 +265,7 @@ def create_checkout_session(request):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
     else:
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @csrf_exempt

@@ -181,7 +181,7 @@ const Payments = () => {
     if (exchangeRates) {
       fetchPayments();
     }
-  }, [exchangeRates]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [exchangeRates, fetchPayments]);
 
   const getStatusColor = (status) => {
     switch (status) {

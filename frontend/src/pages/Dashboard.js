@@ -129,7 +129,7 @@ const Dashboard = () => {
     if (exchangeRates) {
       fetchDashboardData();
     }
-  }, [exchangeRates]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [exchangeRates, fetchDashboardData]);
 
   // Refresh data when user returns to the dashboard
   useEffect(() => {

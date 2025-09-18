@@ -59,7 +59,7 @@ export const sessionMonitoringService = {
   // Get real-time session data
   getRealTimeSessions: async () => {
     try {
-      const response = await sessionAPI.get('/api/auth/admin/api/auth/admin/sessions/realtime/');
+      const response = await sessionAPI.get('/api/auth/admin/sessions/realtime/');
       return response.data;
     } catch (error) {
       console.error('Error fetching real-time sessions:', error);

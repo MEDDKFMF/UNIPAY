@@ -81,9 +81,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # Temporarily disable custom middleware that might cause issues
-    # 'accounts.middleware.SessionTrackingMiddleware',
-    # 'accounts.middleware.SessionCleanupMiddleware',
+    # Session monitoring middleware
+    'accounts.middleware.SessionMonitoringMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'

@@ -34,6 +34,11 @@ const RealTimeSessionMonitor = () => {
   const fetchSessionData = useCallback(async () => {
     try {
       const data = await sessionMonitoringService.getRealTimeSessions();
+      console.log('RealTimeSessionMonitor - Raw API response:', data);
+      console.log('Active sessions:', data.active_sessions);
+      console.log('Suspicious sessions:', data.suspicious_sessions);
+      console.log('Statistics:', data.statistics);
+      
       setSessions({
         active: data.active_sessions || [],
         suspicious: data.suspicious_sessions || [],

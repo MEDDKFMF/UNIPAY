@@ -5,6 +5,7 @@ Django settings for invoice platform.
 import os
 from pathlib import Path
 from decouple import config
+import dj_database_url
 
 # Load environment variables from local.env if it exists
 if os.path.exists(os.path.join(os.path.dirname(__file__), '..', 'local.env')):
@@ -126,6 +127,15 @@ DATABASES = {
     }
 }
 
+# Prefer DATABASE_URL when provided (Render external Postgres)
+DATABASE_URL = config('DATABASE_URL', default='')
+if DATABASE_URL:
+    DATABASES['default'] = dj_database_url.parse(
+        DATABASE_URL,
+        conn_max_age=600,
+        ssl_require=True
+    )
+
 # Use SQLite for local development
 if DEBUG:
     DATABASES = {
@@ -165,6 +175,10 @@ STATICFILES_DIRS = [
     # Only include frontend build directory if it exists
     # BASE_DIR / 'frontend' / 'build' / 'static',  # React build static files
 ]
+
+# Use WhiteNoise storage in production
+if not DEBUG:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Frontend build directory
 FRONTEND_BUILD_DIR = BASE_DIR / 'frontend' / 'build'

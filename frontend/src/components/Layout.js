@@ -150,29 +150,29 @@ const Layout = () => {
                 </h3>
                 <div className="space-y-1">
                   {items.map((item) => {
-                    const Icon = item.icon;
+              const Icon = item.icon;
                     const active = isActive(item.href);
-                    return (
-                      <Link
-                        key={item.name}
-                        to={item.href}
+              return (
+                <Link
+                  key={item.name}
+                  to={item.href}
                         className={`group flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
                           active
                             ? 'bg-blue-50 text-blue-700 border border-blue-200'
                             : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                        }`}
-                        onClick={() => setSidebarOpen(false)}
-                      >
+                  }`}
+                  onClick={() => setSidebarOpen(false)}
+                >
                         <div className="flex items-center">
                           <Icon className={`w-5 h-5 mr-3 ${
                             active ? 'text-blue-600' : 'text-gray-400 group-hover:text-gray-600'
-                          }`} />
-                          {item.name}
+                  }`} />
+                  {item.name}
                         </div>
                         {active && <ChevronRight className="w-4 h-4 text-blue-600" />}
-                      </Link>
-                    );
-                  })}
+                </Link>
+              );
+            })}
                 </div>
               </div>
             ))}
@@ -232,7 +232,7 @@ const Layout = () => {
                   <Plus className="w-4 h-4" />
                   <span className="text-sm font-medium">Quick Actions</span>
                   <ChevronRight className="w-4 h-4 group-hover:rotate-90 transition-transform" />
-                </button>
+              </button>
                 
                 {/* Dropdown Menu */}
                 <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
@@ -240,7 +240,7 @@ const Layout = () => {
                     {quickActions.map((action, index) => {
                       const Icon = action.icon;
                       return (
-                        <Link
+              <Link
                           key={index}
                           to={action.href}
                           className={`flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group`}
@@ -253,7 +253,7 @@ const Layout = () => {
                             <p className="text-sm font-medium text-gray-900">{action.name}</p>
                             <p className="text-xs text-gray-500">{action.description}</p>
                           </div>
-                        </Link>
+              </Link>
                       );
                     })}
                   </div>

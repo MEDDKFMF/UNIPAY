@@ -893,17 +893,14 @@ class RealTimeSessionView(APIView):
             
             now = timezone.now()
             
-            # Get active sessions with recent activity (last 5 minutes)
-            recent_threshold = now - timezone.timedelta(minutes=5)
+            # Get active sessions (not just recent ones)
             active_sessions = UserSession.objects.filter(
-                status='active',
-                last_activity__gte=recent_threshold
+                status='active'
             ).select_related('user').order_by('-last_activity')
             
-            # Get suspicious sessions
+            # Get suspicious sessions (not just recent ones)
             suspicious_sessions = UserSession.objects.filter(
-                status='suspicious',
-                last_activity__gte=recent_threshold
+                status='suspicious'
             ).select_related('user').order_by('-last_activity')
             
             # Get recent security alerts

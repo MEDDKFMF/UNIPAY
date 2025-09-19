@@ -259,7 +259,7 @@ const AdminAnalytics = () => {
           <GlobeAltIcon className="h-5 w-5 text-blue-500 mr-2" />
           Geographic Distribution
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="text-center p-4 bg-blue-50 rounded-lg">
             <div className="text-2xl font-bold text-blue-600">
               {analytics.metrics?.geographic_distribution?.north_america || 0}
@@ -272,11 +272,41 @@ const AdminAnalytics = () => {
             </div>
             <div className="text-sm text-green-800">Europe</div>
           </div>
+          <div className="text-center p-4 bg-orange-50 rounded-lg">
+            <div className="text-2xl font-bold text-orange-600">
+              {analytics.metrics?.geographic_distribution?.asia || 0}
+            </div>
+            <div className="text-sm text-orange-800">Asia</div>
+          </div>
+          <div className="text-center p-4 bg-yellow-50 rounded-lg">
+            <div className="text-2xl font-bold text-yellow-600">
+              {analytics.metrics?.geographic_distribution?.africa || 0}
+            </div>
+            <div className="text-sm text-yellow-800">Africa</div>
+          </div>
+          <div className="text-center p-4 bg-red-50 rounded-lg">
+            <div className="text-2xl font-bold text-red-600">
+              {analytics.metrics?.geographic_distribution?.south_america || 0}
+            </div>
+            <div className="text-sm text-red-800">South America</div>
+          </div>
+          <div className="text-center p-4 bg-cyan-50 rounded-lg">
+            <div className="text-2xl font-bold text-cyan-600">
+              {analytics.metrics?.geographic_distribution?.oceania || 0}
+            </div>
+            <div className="text-sm text-cyan-800">Oceania</div>
+          </div>
           <div className="text-center p-4 bg-purple-50 rounded-lg">
             <div className="text-2xl font-bold text-purple-600">
-              {analytics.metrics?.geographic_distribution?.other || 0}
+              {analytics.metrics?.geographic_distribution?.middle_east || 0}
             </div>
-            <div className="text-sm text-purple-800">Other Regions</div>
+            <div className="text-sm text-purple-800">Middle East</div>
+          </div>
+          <div className="text-center p-4 bg-pink-50 rounded-lg">
+            <div className="text-2xl font-bold text-pink-600">
+              {analytics.metrics?.geographic_distribution?.central_america || 0}
+            </div>
+            <div className="text-sm text-pink-800">Central America</div>
           </div>
         </div>
       </div>

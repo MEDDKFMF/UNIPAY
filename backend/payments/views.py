@@ -4,13 +4,16 @@ Views for payment processing with platform-managed gateways.
 
 import stripe
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
 from rest_framework import status, generics, permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
+from django.db.models import Q
+import json
+import logging
 from .models import Payment, Plan, Subscription, UserPaymentMethod, ClientPaymentMethod, PlatformPaymentGateway
 from .serializers import (
     PaymentSerializer,
@@ -28,6 +31,8 @@ from invoices.models import Invoice
 
 # Configure Stripe
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
+logger = logging.getLogger(__name__)
 
 
 class PaymentListView(generics.ListAPIView):
@@ -248,11 +253,11 @@ def create_checkout_session(request):
                     payment.save()
                     return Response({'error': error}, status=status.HTTP_400_BAD_REQUEST)
                 
-            return Response({
+                return Response({
                     'payment_id': payment.id,
                     'checkout_url': checkout_url,
                     'message': 'Redirecting to Flutterwave payment page...'
-            })
+                })
             
         except Invoice.DoesNotExist:
             return Response(
@@ -818,9 +823,14 @@ def admin_metrics(request):
     
     # Geographic distribution (placeholder - would need IP geolocation)
     geographic_data = {
-        'north_america': int(total_users * 0.45),
-        'europe': int(total_users * 0.32),
-        'other': int(total_users * 0.23)
+        'north_america': int(total_users * 0.25),
+        'europe': int(total_users * 0.20),
+        'asia': int(total_users * 0.18),
+        'africa': int(total_users * 0.12),
+        'south_america': int(total_users * 0.10),
+        'oceania': int(total_users * 0.08),
+        'middle_east': int(total_users * 0.05),
+        'central_america': int(total_users * 0.02)
     }
     
     # Growth rates

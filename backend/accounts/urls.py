@@ -47,7 +47,7 @@ urlpatterns = [
     # Session Management
     path('admin/sessions/', SessionListView.as_view(), name='admin_sessions'),
     path('admin/sessions/<int:session_id>/', SessionDetailView.as_view(), name='admin_session_detail'),
-    path('admin/sessions/terminate/', SessionTerminationView.as_view(), name='admin_terminate_sessions'),
+    path('admin/sessions/terminate/<int:session_id>/', SessionTerminationView.as_view(), name='admin_terminate_sessions'),
     path('admin/sessions/bulk-action/', SessionBulkActionView.as_view(), name='admin_bulk_action_sessions'),
     path('admin/sessions/metrics/', SessionMetricsView.as_view(), name='admin_session_metrics'),
     path('admin/sessions/realtime/', RealTimeSessionView.as_view(), name='admin_realtime_sessions'),

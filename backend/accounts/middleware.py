@@ -87,7 +87,17 @@ class SessionTrackingMiddleware:
             if not created:
                 # Update existing session
                 session_record.last_activity = timezone.now()
-                
+
+                # If the existing session was terminated/expired/suspicious, reactivate on valid authenticated activity
+                if session_record.status in ['terminated', 'expired']:
+                    session_record.status = 'active'
+                    session_record.termination_reason = None
+                    try:
+                        # Clear terminated_at if present
+                        session_record.terminated_at = None
+                    except Exception:
+                        pass
+
                 # Check for suspicious activity
                 suspicious = self.check_suspicious_activity(session_record, ip_address, user_agent_string)
                 if suspicious:
@@ -99,6 +109,7 @@ class SessionTrackingMiddleware:
                 
                 session_record.ip_address = ip_address
                 session_record.user_agent = user_agent_string
+                # Persist updates
                 session_record.save(update_fields=['last_activity', 'ip_address', 'user_agent', 'status', 'termination_reason'])
                 
         except Exception as e:

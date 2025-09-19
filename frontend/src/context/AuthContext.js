@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }) => {
       // Only logout if it's an authentication error, not a network error
       if (error.response?.status === 401) {
         console.log('401 error, calling logout');
-        logout();
+      logout();
       } else {
         // For network errors, just set loading to false
         console.log('Network error, setting loading to false');

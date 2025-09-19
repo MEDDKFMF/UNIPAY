@@ -165,6 +165,20 @@ const AdminUsers = () => {
     }
   };
 
+  const toggleUserActiveDirect = async (user) => {
+    try {
+      const token = localStorage.getItem('access_token');
+      await axios.patch(
+        `http://localhost:8000/api/auth/admin/users/${user.id}/`,
+        { is_active: !user.is_active },
+        { headers: { 'Authorization': `Bearer ${token}` } }
+      );
+      window.location.reload();
+    } catch (error) {
+      console.error('Error toggling user active state:', error);
+    }
+  };
+
   const deleteUser = async (userId) => {
     if (window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
       try {
@@ -562,10 +576,7 @@ const AdminUsers = () => {
                       <PencilIcon className="h-4 w-4" />
                     </button>
                     <button
-                      onClick={() => {
-                        const action = user.is_active ? 'deactivate' : 'activate';
-                        handleBulkAction(action);
-                      }}
+                      onClick={() => toggleUserActiveDirect(user)}
                       className={`p-1 rounded ${
                         user.is_active 
                           ? 'text-yellow-600 hover:bg-yellow-100' 
@@ -649,7 +660,12 @@ const AdminUsers = () => {
                 </button>
                 <button
                   onClick={() => {
-                    // Handle user update
+                    if (editingUser) {
+                      updateUser(editingUser.id, {
+                        role: editingUser.role,
+                        is_active: editingUser.is_active
+                      });
+                    }
                     setEditingUser(null);
                   }}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"

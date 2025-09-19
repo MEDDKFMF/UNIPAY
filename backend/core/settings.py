@@ -82,7 +82,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # Session monitoring middleware
-    'accounts.middleware.SessionMonitoringMiddleware',
+    'accounts.middleware.SessionTrackingMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'

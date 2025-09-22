@@ -17,4 +17,4 @@ services:
     name: unipay-frontend
     rootDir: frontend
     buildCommand: npm ci && npm run build
-    publishPath: frontend/build
+    publishPath: build

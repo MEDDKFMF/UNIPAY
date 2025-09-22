@@ -109,41 +109,44 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# PostgreSQL configuration for production (Render)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME', default='invoice_platform'),
-        'USER': config('DB_USER', default='postgres'),
-        'PASSWORD': config('DB_PASSWORD', default='postgres'),
-        'HOST': config('DB_HOST', default='localhost'),
-        'PORT': config('DB_PORT', default='5432'),
-        'OPTIONS': {
-            'sslmode': 'require' if config('DB_SSL', default=False, cast=bool) else 'prefer',
-            'connect_timeout': 5,  # Reduced timeout
-        },
-        'CONN_MAX_AGE': 0,  # Disable persistent connections for free tier
-        'ATOMIC_REQUESTS': False,  # Disable for better performance
-    }
-}
-
-# Prefer DATABASE_URL when provided (Render external Postgres)
+# Always prefer DATABASE_URL if provided (works in both dev and prod)
 DATABASE_URL = config('DATABASE_URL', default='')
-if DATABASE_URL:
-    DATABASES['default'] = dj_database_url.parse(
-        DATABASE_URL,
-        conn_max_age=600,
-        ssl_require=True
-    )
 
-# Use SQLite for local development
-if DEBUG:
+if DATABASE_URL:
+    # Allow overriding SSL requirement via env; default True for managed providers
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+        'default': dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=config('DB_SSL_REQUIRE', default=True, cast=bool)
+        )
     }
+else:
+    # If no DATABASE_URL, use explicit Postgres env config in prod, SQLite in dev
+    if DEBUG:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / 'db.sqlite3',
+            }
+        }
+    else:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': config('DB_NAME', default='invoice_platform'),
+                'USER': config('DB_USER', default='postgres'),
+                'PASSWORD': config('DB_PASSWORD', default='postgres'),
+                'HOST': config('DB_HOST', default='localhost'),
+                'PORT': config('DB_PORT', default='5432'),
+                'OPTIONS': {
+                    'sslmode': 'require' if config('DB_SSL', default=False, cast=bool) else 'prefer',
+                    'connect_timeout': 5,
+                },
+                'CONN_MAX_AGE': 0,
+                'ATOMIC_REQUESTS': False,
+            }
+        }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [

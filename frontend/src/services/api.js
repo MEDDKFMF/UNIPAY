@@ -1,8 +1,19 @@
 import axios from 'axios';
 
+// Resolve API base URL: prefer REACT_APP_API_URL; else use current origin; fallback localhost
+const resolveBaseURL = () => {
+  if (process.env.REACT_APP_API_URL) {
+    return process.env.REACT_APP_API_URL.replace(/\/$/, '');
+  }
+  if (typeof window !== 'undefined' && window.location && window.location.origin) {
+    return window.location.origin.replace(/\/$/, '');
+  }
+  return 'http://localhost:8000';
+};
+
 // Create axios instance with base configuration
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:8000',
+  baseURL: resolveBaseURL(),
   headers: {
     'Content-Type': 'application/json',
   },

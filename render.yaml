@@ -8,11 +8,12 @@ services:
     autoDeploy: true
     buildCommand: |
       pip install -r backend/requirements.txt
-      python backend/manage.py migrate
       python backend/manage.py collectstatic --noinput
-      python backend/manage.py seed_users
     startCommand: |
+      python backend/manage.py migrate && \
+      python backend/manage.py seed_users && \
       gunicorn core.wsgi:application --chdir backend --bind 0.0.0.0:10000
+    
 
   - type: static
     name: unipay-frontend

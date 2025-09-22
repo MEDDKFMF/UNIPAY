@@ -33,5 +33,5 @@ RUN mkdir -p /app/staticfiles /app/media
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
-# Run the application
-CMD ["gunicorn", "core.wsgi:application", "--bind", "0.0.0.0:8000"] 
+# Run migrations, seed users, then start gunicorn
+CMD ["sh", "-c", "python manage.py migrate --noinput && python manage.py seed_users && gunicorn core.wsgi:application --bind 0.0.0.0:8000"]

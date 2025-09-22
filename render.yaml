@@ -10,7 +10,7 @@ services:
       pip install -r backend/requirements.txt
       python backend/manage.py collectstatic --noinput
     startCommand: |
-      python backend/manage.py migrate && \
+      python backend/manage.py migrate --noinput && \
       python backend/manage.py seed_users && \
       gunicorn core.wsgi:application --chdir backend --bind 0.0.0.0:10000
     

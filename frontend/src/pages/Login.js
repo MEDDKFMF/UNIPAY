@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -14,6 +14,7 @@ const schema = yup.object().shape({
 
 const Login = () => {
   const { login } = useAuth();
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -31,8 +32,18 @@ const Login = () => {
       const result = await login(data);
       if (result.success) {
         toast.success('Login successful!');
-        // Don't navigate here - let the PublicRoute handle redirection based on role
-        // The PublicRoute will automatically redirect based on user role
+        // Proactively navigate to the correct destination to avoid race conditions
+        try {
+          const stored = localStorage.getItem('access_token');
+          // If token exists, send user to app dashboard; admin will be redirected by AdminGuard
+          if (stored) {
+            navigate('/app/dashboard', { replace: true });
+          } else {
+            navigate('/', { replace: true });
+          }
+        } catch (_) {
+          navigate('/app/dashboard', { replace: true });
+        }
       } else {
         toast.error(result.error || 'Login failed');
       }

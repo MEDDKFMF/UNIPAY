@@ -1,7 +1,7 @@
 // Exchange rate service for real-time currency conversion
 import api from './api';
 
-const API_BASE_URL = (process.env.REACT_APP_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+const API_BASE_URL = 'https://unipay-oyn6.onrender.com';
 
 // Cache for exchange rates to avoid excessive API calls
 let exchangeRatesCache = null;

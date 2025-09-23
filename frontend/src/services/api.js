@@ -1,14 +1,7 @@
 import axios from 'axios';
 
-// Resolve API base URL: prefer REACT_APP_API_URL (required in multi-service deploys like Render).
-// Fallback to localhost for local dev.
-const resolveBaseURL = () => {
-  const envUrl = process.env.REACT_APP_API_URL;
-  if (envUrl && envUrl.trim().length > 0) {
-    return envUrl.replace(/\/$/, '');
-  }
-  return 'http://localhost:8000';
-};
+// Fixed API base URL (avoid env to prevent redeploys changing URLs)
+const resolveBaseURL = () => 'https://unipay-oyn6.onrender.com';
 
 // Create axios instance with base configuration
 const api = axios.create({

@@ -1,12 +1,11 @@
 import axios from 'axios';
 
-// Resolve API base URL: prefer REACT_APP_API_URL; else use current origin; fallback localhost
+// Resolve API base URL: prefer REACT_APP_API_URL (required in multi-service deploys like Render).
+// Fallback to localhost for local dev.
 const resolveBaseURL = () => {
-  if (process.env.REACT_APP_API_URL) {
-    return process.env.REACT_APP_API_URL.replace(/\/$/, '');
-  }
-  if (typeof window !== 'undefined' && window.location && window.location.origin) {
-    return window.location.origin.replace(/\/$/, '');
+  const envUrl = process.env.REACT_APP_API_URL;
+  if (envUrl && envUrl.trim().length > 0) {
+    return envUrl.replace(/\/$/, '');
   }
   return 'http://localhost:8000';
 };

@@ -1,7 +1,7 @@
 // Exchange rate service for real-time currency conversion
 import api from './api';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_BASE_URL = (process.env.REACT_APP_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 
 // Cache for exchange rates to avoid excessive API calls
 let exchangeRatesCache = null;

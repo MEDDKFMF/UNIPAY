@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
+import React, { useEffect } from 'react';
 import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -143,6 +144,17 @@ function AppRoutes() {
 }
 
 function App() {
+  useEffect(() => {
+    const ping = async () => {
+      try {
+        await fetch('https://unipay-oyn6.onrender.com/api/auth/login/', { method: 'OPTIONS' });
+      } catch (_) {}
+    };
+    ping();
+    const id = setInterval(ping, 10 * 60 * 1000);
+    return () => clearInterval(id);
+  }, []);
+
   return (
     <AuthProvider>
       <NotificationProvider>

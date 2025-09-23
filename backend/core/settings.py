@@ -275,6 +275,9 @@ CELERY_TIMEZONE = TIME_ZONE
 # WeasyPrint Configuration
 WEASYPRINT_BASE_URL = config('WEASYPRINT_BASE_URL', default='http://localhost:8000')
 
+# Notifications
+USE_ASYNC_NOTIFICATIONS = config('USE_ASYNC_NOTIFICATIONS', default=False, cast=bool)
+
 # Logging Configuration
 LOGGING = {
     'version': 1,

@@ -11,6 +11,8 @@ from .serializers import (
 )
 from .services import MessagingService
 from .tasks import send_invoice_notification, send_payment_confirmation, send_payment_reminder
+from django.conf import settings
+from .services import MessagingService
 from invoices.models import Invoice
 
 
@@ -33,13 +35,19 @@ def send_invoice_notification_view(request):
         if not (request.user.is_admin or request.user.is_accountant or invoice.created_by == request.user):
             return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
         
-        # Trigger async task
-        task = send_invoice_notification.delay(invoice_id, notification_type)
-        
-        return Response({
-            'message': 'Notification sent successfully',
-            'task_id': task.id
-        }, status=status.HTTP_200_OK)
+        # Use async task if enabled, otherwise send synchronously
+        if getattr(settings, 'USE_ASYNC_NOTIFICATIONS', False):
+            task = send_invoice_notification.delay(invoice_id, notification_type)
+            return Response({
+                'message': 'Notification queued',
+                'task_id': task.id
+            }, status=status.HTTP_200_OK)
+        else:
+            results = MessagingService().send_invoice_notifications(invoice, channels=['email'])
+            return Response({
+                'message': 'Notification processed',
+                'results': results
+            }, status=status.HTTP_200_OK)
         
     except Invoice.DoesNotExist:
         return Response({'error': 'Invoice not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -65,13 +73,18 @@ def send_payment_confirmation_view(request):
         if not (request.user.is_admin or request.user.is_accountant or invoice.created_by == request.user):
             return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
         
-        # Trigger async task
-        task = send_payment_confirmation.delay(invoice_id)
-        
-        return Response({
-            'message': 'Payment confirmation sent successfully',
-            'task_id': task.id
-        }, status=status.HTTP_200_OK)
+        if getattr(settings, 'USE_ASYNC_NOTIFICATIONS', False):
+            task = send_payment_confirmation.delay(invoice_id)
+            return Response({
+                'message': 'Payment confirmation queued',
+                'task_id': task.id
+            }, status=status.HTTP_200_OK)
+        else:
+            results = MessagingService().send_payment_confirmation(invoice)
+            return Response({
+                'message': 'Payment confirmation processed',
+                'results': results
+            }, status=status.HTTP_200_OK)
         
     except Invoice.DoesNotExist:
         return Response({'error': 'Invoice not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -97,13 +110,18 @@ def send_payment_reminder_view(request):
         if not (request.user.is_admin or request.user.is_accountant or invoice.created_by == request.user):
             return Response({'error': 'Permission denied'}, status=status.HTTP_403_FORBIDDEN)
         
-        # Trigger async task
-        task = send_payment_reminder.delay(invoice_id)
-        
-        return Response({
-            'message': 'Payment reminder sent successfully',
-            'task_id': task.id
-        }, status=status.HTTP_200_OK)
+        if getattr(settings, 'USE_ASYNC_NOTIFICATIONS', False):
+            task = send_payment_reminder.delay(invoice_id)
+            return Response({
+                'message': 'Payment reminder queued',
+                'task_id': task.id
+            }, status=status.HTTP_200_OK)
+        else:
+            results = MessagingService().send_invoice_notifications(invoice, channels=['email'])
+            return Response({
+                'message': 'Payment reminder processed',
+                'results': results
+            }, status=status.HTTP_200_OK)
         
     except Invoice.DoesNotExist:
         return Response({'error': 'Invoice not found'}, status=status.HTTP_404_NOT_FOUND)

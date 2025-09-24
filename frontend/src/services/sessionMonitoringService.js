@@ -36,10 +36,8 @@ sessionAPI.interceptors.response.use(
           const response = await axios.post(`${API_BASE_URL}/api/auth/refresh/`, {
             refresh: refreshToken
           });
-          
           const { access } = response.data;
           localStorage.setItem('access_token', access);
-          
           // Retry the original request
           error.config.headers.Authorization = `Bearer ${access}`;
           return sessionAPI.request(error.config);
@@ -150,5 +148,3 @@ export const sessionMonitoringService = {
     }
   }
 };
-
-export default sessionMonitoringService;

@@ -1,8 +1,14 @@
 // Notification service for API calls
 import api from './api';
 
+
 // Get all notifications with optional filters
 export const getNotifications = async (params = {}) => {
+  // Skip fetching when not authenticated to avoid 401s in unauthenticated views
+  const token = localStorage.getItem('access_token');
+  if (!token) {
+    return [];
+  }
   try {
     const response = await api.get('/api/messaging/notifications/', { params });
     return response.data;

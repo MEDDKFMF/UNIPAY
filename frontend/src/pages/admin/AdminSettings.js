@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../services/api';
 import { 
   ShieldCheckIcon, 
   GlobeAltIcon, 
@@ -102,9 +102,7 @@ const AdminSettings = () => {
       const token = localStorage.getItem('access_token');
       
       // Load platform settings
-      const response = await axios.get('http://localhost:8000/api/settings/platform/', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const response = await api.get('/api/settings/platform/');
       
       if (response.data) {
         // Map backend data to frontend structure
@@ -255,10 +253,7 @@ const AdminSettings = () => {
       };
       
       // Save platform settings
-      await axios.put('http://localhost:8000/api/settings/platform/update/', 
-        backendData,
-        { headers: { 'Authorization': `Bearer ${token}` } }
-      );
+      await api.put('/api/settings/platform/update/', backendData);
       
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
@@ -273,10 +268,7 @@ const AdminSettings = () => {
   const testEmailSettings = async () => {
     try {
       const token = localStorage.getItem('access_token');
-      await axios.post('http://localhost:8000/api/settings/test-email/', 
-        { email: settings.email.fromEmail },
-        { headers: { 'Authorization': `Bearer ${token}` } }
-      );
+      await api.post('/api/settings/test-email/', { email: settings.email.fromEmail });
       alert('Test email sent successfully!');
     } catch (error) {
       console.error('Error sending test email:', error);

@@ -51,7 +51,7 @@ const ViewInvoice = () => {
   const handlePrintPDF = async () => {
     try {
       setDownloading(true);
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8000/api'}/invoices/${id}/pdf/`, {
+      const response = await fetch(`https://unipay-oyn6.onrender.com/api/invoices/${id}/pdf/`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`,

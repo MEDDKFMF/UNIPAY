@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../services/api';
 import { 
   MagnifyingGlassIcon, 
   FunnelIcon, 
@@ -49,12 +49,8 @@ const AdminUsers = () => {
         
         // Load both users and statistics
         const [usersResponse, statsResponse] = await Promise.all([
-          axios.get('http://localhost:8000/api/auth/admin/users/', {
-            headers: { 'Authorization': `Bearer ${token}` }
-          }),
-          axios.get('http://localhost:8000/api/payments/admin/metrics/', {
-            headers: { 'Authorization': `Bearer ${token}` }
-          })
+          api.get('/api/auth/admin/users/'),
+          api.get('/api/payments/admin/metrics/')
         ]);
         
         setUsers(Array.isArray(usersResponse.data) ? usersResponse.data : []);
@@ -155,9 +151,7 @@ const AdminUsers = () => {
   const updateUser = async (userId, userData) => {
     try {
       const token = localStorage.getItem('access_token');
-      await axios.patch(`http://localhost:8000/api/auth/admin/users/${userId}/`, userData, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      await api.patch(`/api/auth/admin/users/${userId}/`, userData);
       // Reload users
       window.location.reload();
     } catch (error) {
@@ -168,10 +162,9 @@ const AdminUsers = () => {
   const toggleUserActiveDirect = async (user) => {
     try {
       const token = localStorage.getItem('access_token');
-      await axios.patch(
-        `http://localhost:8000/api/auth/admin/users/${user.id}/`,
-        { is_active: !user.is_active },
-        { headers: { 'Authorization': `Bearer ${token}` } }
+      await api.patch(
+        `/api/auth/admin/users/${user.id}/`,
+        { is_active: !user.is_active }
       );
       window.location.reload();
     } catch (error) {
@@ -183,9 +176,7 @@ const AdminUsers = () => {
     if (window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
       try {
         const token = localStorage.getItem('access_token');
-        await axios.delete(`http://localhost:8000/api/auth/admin/users/${userId}/`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        await api.delete(`/api/auth/admin/users/${userId}/`);
         // Reload users
         window.location.reload();
       } catch (error) {

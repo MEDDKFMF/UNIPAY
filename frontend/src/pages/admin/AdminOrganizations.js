@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../services/api';
 import { 
   PlusIcon, 
   PencilIcon, 
@@ -51,9 +51,7 @@ const AdminOrganizations = () => {
       
       // Load organization statistics from admin metrics
       try {
-        const metricsResponse = await axios.get('http://localhost:8000/api/payments/admin/metrics/', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const metricsResponse = await api.get('/api/payments/admin/metrics/');
         setOrgStats(metricsResponse.data);
       } catch (metricsError) {
         console.warn('Could not load organization statistics:', metricsError);
@@ -116,19 +114,11 @@ const AdminOrganizations = () => {
         if (!org) return Promise.resolve();
         
         if (action === 'activate') {
-          return axios.patch(`http://localhost:8000/api/auth/admin/organizations/${orgId}/`, 
-            { is_active: true }, 
-            { headers: { 'Authorization': `Bearer ${token}` } }
-          );
+          return api.patch(`/api/auth/admin/organizations/${orgId}/`, { is_active: true });
         } else if (action === 'deactivate') {
-          return axios.patch(`http://localhost:8000/api/auth/admin/organizations/${orgId}/`, 
-            { is_active: false }, 
-            { headers: { 'Authorization': `Bearer ${token}` } }
-          );
+          return api.patch(`/api/auth/admin/organizations/${orgId}/`, { is_active: false });
         } else if (action === 'delete') {
-          return axios.delete(`http://localhost:8000/api/auth/admin/organizations/${orgId}/`, 
-            { headers: { 'Authorization': `Bearer ${token}` } }
-          );
+          return api.delete(`/api/auth/admin/organizations/${orgId}/`);
         }
         return Promise.resolve();
       });
@@ -144,9 +134,7 @@ const AdminOrganizations = () => {
   const getOrgDetails = async (orgId) => {
     try {
       const token = localStorage.getItem('access_token');
-      const { data } = await axios.get(`http://localhost:8000/api/auth/admin/organizations/${orgId}/`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const { data } = await api.get(`/api/auth/admin/organizations/${orgId}/`);
       return data;
     } catch (error) {
       console.error('Error fetching organization details:', error);

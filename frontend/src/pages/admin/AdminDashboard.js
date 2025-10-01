@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../services/api';
 import { 
   ChartBarIcon, 
   UsersIcon, 
@@ -28,21 +28,15 @@ const AdminDashboard = () => {
         const token = localStorage.getItem('access_token');
         
         // Load metrics
-        const metricsResponse = await axios.get('http://localhost:8000/api/payments/admin/metrics/', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const metricsResponse = await api.get('/api/payments/admin/metrics/');
         setMetrics(metricsResponse.data);
         
         // Load recent activity (last 5 users)
-        const activityResponse = await axios.get('http://localhost:8000/api/auth/admin/users/', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const activityResponse = await api.get('/api/auth/admin/users/');
         setRecentActivity(activityResponse.data.slice(0, 5));
         
         // Load system health
-        const healthResponse = await axios.get('http://localhost:8000/api/payments/admin/plans/', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const healthResponse = await api.get('/api/payments/admin/plans/');
         setSystemHealth({
           activePlans: healthResponse.data.results?.length || 0,
           lastUpdated: new Date().toLocaleString()

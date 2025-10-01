@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../services/api';
 import { 
   EyeIcon,
   TrashIcon,
@@ -66,9 +66,7 @@ const AdminSessions = () => {
         ...filters
       });
       
-      const response = await axios.get(`http://localhost:8000/api/auth/admin/sessions/?${params}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const response = await api.get(`/api/auth/admin/sessions/?${params}`);
       
       setSessions(response.data.results || []);
       setTotalPages(response.data.total_pages || 1);
@@ -83,9 +81,7 @@ const AdminSessions = () => {
   const loadMetrics = async () => {
     try {
       const token = localStorage.getItem('access_token');
-      const response = await axios.get('http://localhost:8000/api/auth/admin/sessions/metrics/', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const response = await api.get('/api/auth/admin/sessions/metrics/');
       setMetrics(response.data);
     } catch (error) {
       console.error('Error loading metrics:', error);
@@ -97,12 +93,10 @@ const AdminSessions = () => {
       if (selectedSessions.length === 0) return;
       
       const token = localStorage.getItem('access_token');
-      const response = await axios.post('http://localhost:8000/api/auth/admin/sessions/bulk-action/', {
+      const response = await api.post('/api/auth/admin/sessions/bulk-action/', {
         session_ids: selectedSessions,
         action,
         reason
-      }, {
-        headers: { 'Authorization': `Bearer ${token}` }
       });
       
       // Refresh data
@@ -122,11 +116,8 @@ const AdminSessions = () => {
   const terminateSession = async (sessionId, reason = '') => {
     try {
       const token = localStorage.getItem('access_token');
-      await axios.post('http://localhost:8000/api/auth/admin/sessions/terminate/', {
-        session_ids: [sessionId],
+      await api.post(`/api/auth/admin/sessions/terminate/${sessionId}/`, {
         reason: reason || 'Admin terminated'
-      }, {
-        headers: { 'Authorization': `Bearer ${token}` }
       });
       
       loadSessions();
@@ -157,9 +148,7 @@ const AdminSessions = () => {
   const getSessionDetails = async (sessionId) => {
     try {
       const token = localStorage.getItem('access_token');
-      const response = await axios.get(`http://localhost:8000/api/auth/admin/sessions/${sessionId}/`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const response = await api.get(`/api/auth/admin/sessions/${sessionId}/`);
       setViewingSession(response.data);
     } catch (error) {
       console.error('Error fetching session details:', error);

@@ -8,7 +8,7 @@ const TestComponent = () => {
   const testBackendConnection = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_URL || 'http://localhost:8000/api'}/auth/profile/`, {
+      const response = await fetch(`https://unipay-oyn6.onrender.com/api/auth/profile/`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
@@ -54,7 +54,7 @@ const TestComponent = () => {
       
       <div className="mt-4 text-sm text-gray-600">
         <p><strong>Environment:</strong> {process.env.NODE_ENV}</p>
-        <p><strong>API URL:</strong> {process.env.REACT_APP_API_URL || 'http://localhost:8000/api'}</p>
+        <p><strong>API URL:</strong> https://unipay-oyn6.onrender.com/api</p>
         <p><strong>Token:</strong> {localStorage.getItem('access_token') ? 'Present' : 'Missing'}</p>
       </div>
     </div>

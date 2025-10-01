@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../services/api';
 import { 
   PlusIcon, 
   PencilIcon, 
@@ -40,12 +40,8 @@ const AdminSubscriptions = () => {
       
       // Load both subscriptions and statistics
       const [subsResponse, statsResponse] = await Promise.all([
-        axios.get('http://localhost:8000/api/payments/subscriptions/', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        }),
-        axios.get('http://localhost:8000/api/payments/admin/metrics/', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        })
+        api.get('/api/payments/subscriptions/'),
+        api.get('/api/payments/admin/metrics/')
       ]);
       
       const subsData = subsResponse.data.results || subsResponse.data;
@@ -67,10 +63,8 @@ const AdminSubscriptions = () => {
   const updateSubscriptionStatus = async (subId, newStatus) => {
     try {
       const token = localStorage.getItem('access_token');
-      await axios.patch(`http://localhost:8000/api/payments/subscriptions/${subId}/`, {
+      await api.patch(`/api/payments/subscriptions/${subId}/`, {
         status: newStatus
-      }, {
-        headers: { 'Authorization': `Bearer ${token}` }
       });
       load();
     } catch (error) {
@@ -82,10 +76,8 @@ const AdminSubscriptions = () => {
     if (window.confirm('Are you sure you want to cancel this subscription?')) {
       try {
         const token = localStorage.getItem('access_token');
-        await axios.patch(`http://localhost:8000/api/payments/subscriptions/${subId}/`, {
+        await api.patch(`/api/payments/subscriptions/${subId}/`, {
           status: 'cancelled'
-        }, {
-          headers: { 'Authorization': `Bearer ${token}` }
         });
         load();
       } catch (error) {

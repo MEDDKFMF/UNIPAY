@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../services/api';
 import { 
   ChartBarIcon, 
   ArrowTrendingUpIcon, 
@@ -22,12 +22,8 @@ const AdminAnalytics = () => {
         
         // Load comprehensive analytics data
         const [metricsResponse, detailedResponse] = await Promise.all([
-          axios.get(`http://localhost:8000/api/payments/admin/metrics/?time_range=${timeRange}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-          }),
-          axios.get(`http://localhost:8000/api/payments/admin/analytics/detailed/?time_range=${timeRange}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-          })
+          api.get(`/api/payments/admin/metrics/?time_range=${timeRange}`),
+          api.get(`/api/payments/admin/analytics/detailed/?time_range=${timeRange}`)
         ]);
 
         // Process and combine data

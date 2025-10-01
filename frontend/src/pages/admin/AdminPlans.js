@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../../services/api';
 import { 
   PlusIcon, 
   PencilIcon, 
@@ -50,12 +50,8 @@ const AdminPlans = () => {
       
       // Load both plans and statistics
       const [plansResponse, statsResponse] = await Promise.all([
-        axios.get('http://localhost:8000/api/payments/admin/plans/', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        }),
-        axios.get('http://localhost:8000/api/payments/admin/metrics/', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        })
+        api.get('/api/payments/admin/plans/'),
+        api.get('/api/payments/admin/metrics/')
       ]);
       
       console.log('Plans response:', plansResponse);
@@ -94,11 +90,7 @@ const AdminPlans = () => {
         limits: form.limits ? JSON.parse(form.limits) : {}
       };
       
-      await axios.post('http://localhost:8000/api/payments/admin/plans/', planData, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      await api.post('/api/payments/admin/plans/', planData);
       setForm({ name: '', price: 0, currency: 'USD', interval: 'month', description: '', features: '', limits: '', is_active: true, trial_days: 0 });
       setShowCreateForm(false);
       load();
@@ -116,11 +108,7 @@ const AdminPlans = () => {
         limits: editingPlan.limits ? JSON.parse(editingPlan.limits) : {}
       };
       
-      await axios.put(`http://localhost:8000/api/payments/admin/plans/${planId}/`, planData, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      await api.put(`/api/payments/admin/plans/${planId}/`, planData);
       setEditingPlan(null);
       load();
     } catch (error) {
@@ -132,11 +120,7 @@ const AdminPlans = () => {
     if (window.confirm('Are you sure you want to delete this plan?')) {
       try {
         const token = localStorage.getItem('access_token');
-        await axios.delete(`http://localhost:8000/api/payments/admin/plans/${planId}/`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
+        await api.delete(`/api/payments/admin/plans/${planId}/`);
         load();
       } catch (error) {
         console.error('Error deleting plan:', error);
@@ -147,12 +131,8 @@ const AdminPlans = () => {
   const togglePlanStatus = async (planId, currentStatus) => {
     try {
       const token = localStorage.getItem('access_token');
-      await axios.patch(`http://localhost:8000/api/payments/admin/plans/${planId}/`, {
+      await api.patch(`/api/payments/admin/plans/${planId}/`, {
         is_active: !currentStatus
-      }, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
       });
       load();
     } catch (error) {

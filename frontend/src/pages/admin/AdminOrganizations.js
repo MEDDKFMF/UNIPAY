@@ -42,11 +42,7 @@ const AdminOrganizations = () => {
       const token = localStorage.getItem('access_token');
       
       // Load organizations
-      const { data } = await axios.get('http://localhost:8000/api/auth/admin/organizations/', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const { data } = await api.get('/api/auth/admin/organizations/');
       setOrganizations(Array.isArray(data) ? data : []);
       
       // Load organization statistics from admin metrics

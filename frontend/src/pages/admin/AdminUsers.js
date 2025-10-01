@@ -104,19 +104,11 @@ const AdminUsers = () => {
       const promises = selectedUsers.map(userId => {
         switch (action) {
           case 'activate':
-            return axios.patch(`http://localhost:8000/api/auth/admin/users/${userId}/`, 
-              { is_active: true }, 
-              { headers: { 'Authorization': `Bearer ${token}` } }
-            );
+            return api.patch(`/api/auth/admin/users/${userId}/`, { is_active: true });
           case 'deactivate':
-            return axios.patch(`http://localhost:8000/api/auth/admin/users/${userId}/`, 
-              { is_active: false }, 
-              { headers: { 'Authorization': `Bearer ${token}` } }
-            );
+            return api.patch(`/api/auth/admin/users/${userId}/`, { is_active: false });
           case 'delete':
-            return axios.delete(`http://localhost:8000/api/auth/admin/users/${userId}/`, 
-              { headers: { 'Authorization': `Bearer ${token}` } }
-            );
+            return api.delete(`/api/auth/admin/users/${userId}/`);
           default:
             return Promise.resolve();
         }

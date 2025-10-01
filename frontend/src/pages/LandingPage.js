@@ -171,7 +171,7 @@ const LandingPage = () => {
       id: plan.id,
       name: plan.name,
       price: locationDetected ? formatPrice(plan.price, plan.currency) : `${plan.currency}${plan.price}`,
-      period: `/${plan.interval}`,
+      period: `/${plan.billing_cycle}`,
       description: plan.description || 'Professional invoicing solution',
       features: [
         'Unlimited invoices',
@@ -354,7 +354,7 @@ const LandingPage = () => {
                   <span className="text-gray-600">{plan.period}</span>
                   {plan.originalCurrency !== userCurrency.code && (
                     <div className="text-sm text-gray-500 mt-1">
-                      Originally {plan.originalCurrency}{plan.originalPrice}/{plan.interval}
+                      Originally {plan.originalCurrency}{plan.originalPrice}/{plan.billing_cycle}
                     </div>
                   )}
                 </div>

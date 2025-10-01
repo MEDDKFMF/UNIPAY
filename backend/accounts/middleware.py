@@ -222,10 +222,11 @@ class SessionTrackingMiddleware:
         """Create a security alert for admin notification."""
         try:
             from messaging.models import UserNotification
-            from django.contrib.auth.models import User
+            from django.contrib.auth import get_user_model
             
             # Get all platform admins
-            admin_users = User.objects.filter(role='platform_admin')
+            UserModel = get_user_model()
+            admin_users = UserModel.objects.filter(role='platform_admin')
             
             # Create alert message
             alert_message = f"Suspicious activity detected for user {session_record.user.username}: {suspicious_reason}"

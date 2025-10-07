@@ -33,12 +33,19 @@ const Login = () => {
       if (result.success) {
         toast.success('Login successful!');
         // Navigate based on role immediately to avoid race with AuthContext check
-        const role = result.user?.role;
-        if (role === 'platform_admin') {
-          navigate('/admin/overview', { replace: true });
-        } else {
-          navigate('/app/dashboard', { replace: true });
+        let role = result.user?.role;
+        if (!role) {
+          try {
+            const res = await fetch('https://unipay-oyn6.onrender.com/api/auth/profile/', {
+              headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` }
+            });
+            if (res.ok) {
+              const data = await res.json();
+              role = data?.role;
+            }
+          } catch (_) {}
         }
+        navigate(role === 'platform_admin' ? '/admin/overview' : '/app/dashboard', { replace: true });
       } else {
         toast.error(result.error || 'Login failed');
       }

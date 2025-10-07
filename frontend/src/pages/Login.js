@@ -32,16 +32,11 @@ const Login = () => {
       const result = await login(data);
       if (result.success) {
         toast.success('Login successful!');
-        // Proactively navigate to the correct destination to avoid race conditions
-        try {
-          const stored = localStorage.getItem('access_token');
-          // If token exists, send user to app dashboard; admin will be redirected by AdminGuard
-          if (stored) {
-            navigate('/app/dashboard', { replace: true });
-          } else {
-            navigate('/', { replace: true });
-          }
-        } catch (_) {
+        // Navigate based on role immediately to avoid race with AuthContext check
+        const role = result.user?.role;
+        if (role === 'platform_admin') {
+          navigate('/admin/overview', { replace: true });
+        } else {
           navigate('/app/dashboard', { replace: true });
         }
       } else {

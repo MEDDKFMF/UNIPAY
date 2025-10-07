@@ -98,7 +98,8 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(true);
       
       toast.success('Login successful!');
-      return { success: true };
+      // Return user data so caller can navigate based on role without waiting for profile fetch
+      return { success: true, user: userData };
     } catch (error) {
       console.error('Login error:', error);
       const message = error.response?.data?.detail || 'Login failed. Please try again.';

@@ -99,7 +99,6 @@ const AdminSettings = () => {
     try {
       setLoading(true);
       setError(null);
-      const token = localStorage.getItem('access_token');
       
       // Load platform settings
       const response = await api.get('/api/settings/platform/');
@@ -188,7 +187,7 @@ const AdminSettings = () => {
     try {
       setSaving(true);
       setError(null);
-      const token = localStorage.getItem('access_token');
+      
       
       // Map frontend settings to backend format
       const backendData = {
@@ -267,7 +266,7 @@ const AdminSettings = () => {
 
   const testEmailSettings = async () => {
     try {
-      const token = localStorage.getItem('access_token');
+      
       await api.post('/api/settings/test-email/', { email: settings.email.fromEmail });
       alert('Test email sent successfully!');
     } catch (error) {

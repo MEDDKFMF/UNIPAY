@@ -2,22 +2,13 @@ import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
 import { 
   MagnifyingGlassIcon, 
-  FunnelIcon, 
   EllipsisVerticalIcon,
   UserPlusIcon,
   ShieldCheckIcon,
-  UserMinusIcon,
   EyeIcon,
   PencilIcon,
   TrashIcon,
-  ChartBarIcon,
   UsersIcon,
-  CurrencyDollarIcon,
-  CalendarIcon,
-  StarIcon,
-  ExclamationTriangleIcon,
-  InformationCircleIcon,
-  ClockIcon,
   CreditCardIcon,
   ArrowPathIcon,
   CheckIcon,
@@ -45,7 +36,6 @@ const AdminUsers = () => {
       try {
         setLoading(true);
         setError(null);
-        const token = localStorage.getItem('access_token');
         
         // Load both users and statistics
         const [usersResponse, statsResponse] = await Promise.all([
@@ -100,7 +90,7 @@ const AdminUsers = () => {
     if (selectedUsers.length === 0) return;
     
     try {
-      const token = localStorage.getItem('access_token');
+      
       const promises = selectedUsers.map(userId => {
         switch (action) {
           case 'activate':
@@ -142,7 +132,6 @@ const AdminUsers = () => {
 
   const updateUser = async (userId, userData) => {
     try {
-      const token = localStorage.getItem('access_token');
       await api.patch(`/api/auth/admin/users/${userId}/`, userData);
       // Reload users
       window.location.reload();
@@ -153,7 +142,6 @@ const AdminUsers = () => {
 
   const toggleUserActiveDirect = async (user) => {
     try {
-      const token = localStorage.getItem('access_token');
       await api.patch(
         `/api/auth/admin/users/${user.id}/`,
         { is_active: !user.is_active }
@@ -167,7 +155,6 @@ const AdminUsers = () => {
   const deleteUser = async (userId) => {
     if (window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
       try {
-        const token = localStorage.getItem('access_token');
         await api.delete(`/api/auth/admin/users/${userId}/`);
         // Reload users
         window.location.reload();

@@ -10,7 +10,6 @@ import {
   ChartBarIcon,
   UsersIcon,
   CurrencyDollarIcon,
-  CalendarIcon,
   StarIcon,
   ExclamationTriangleIcon,
   InformationCircleIcon
@@ -45,8 +44,6 @@ const AdminPlans = () => {
       setLoading(true);
       setError(null);
       console.log('Loading plans...');
-      const token = localStorage.getItem('access_token');
-      console.log('Auth token:', token);
       
       // Load both plans and statistics
       const [plansResponse, statsResponse] = await Promise.all([
@@ -81,7 +78,6 @@ const AdminPlans = () => {
   const create = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('access_token');
       
       // Process features from comma-separated string to array
       const planData = {
@@ -101,7 +97,6 @@ const AdminPlans = () => {
 
   const updatePlan = async (planId) => {
     try {
-      const token = localStorage.getItem('access_token');
       const planData = {
         ...editingPlan,
         features: editingPlan.features ? editingPlan.features.split(',').map(f => f.trim()).filter(f => f) : [],
@@ -130,7 +125,6 @@ const AdminPlans = () => {
 
   const togglePlanStatus = async (planId, currentStatus) => {
     try {
-      const token = localStorage.getItem('access_token');
       await api.patch(`/api/payments/admin/plans/${planId}/`, {
         is_active: !currentStatus
       });

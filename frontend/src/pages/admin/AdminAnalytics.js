@@ -18,7 +18,6 @@ const AdminAnalytics = () => {
     const loadAnalytics = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('access_token');
         
         // Load comprehensive analytics data
         const [metricsResponse, detailedResponse] = await Promise.all([
@@ -76,7 +75,7 @@ const AdminAnalytics = () => {
 
   // Calculate additional metrics
   const calculateMetrics = () => {
-    const { metrics, detailed } = analytics;
+    const { metrics } = analytics;
     
     // Use real data from backend
     const activeUsers = metrics.total_users;

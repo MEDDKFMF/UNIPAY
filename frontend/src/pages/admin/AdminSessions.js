@@ -16,17 +16,10 @@ import {
   MagnifyingGlassIcon,
   FunnelIcon,
   ArrowPathIcon,
-  InformationCircleIcon,
   MapPinIcon,
   WifiIcon,
-  CalendarIcon,
-  PlayIcon,
-  StopIcon,
-  PauseIcon,
   ChartBarIcon,
-  UsersIcon,
-  ShieldCheckIcon,
-  ExclamationCircleIcon
+  UsersIcon
 } from '@heroicons/react/24/outline';
 import RealTimeSessionMonitor from '../../components/admin/RealTimeSessionMonitor';
 
@@ -59,7 +52,6 @@ const AdminSessions = () => {
   const loadSessions = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('access_token');
       
       const params = new URLSearchParams({
         page: currentPage,
@@ -80,7 +72,6 @@ const AdminSessions = () => {
 
   const loadMetrics = async () => {
     try {
-      const token = localStorage.getItem('access_token');
       const response = await api.get('/api/auth/admin/sessions/metrics/');
       setMetrics(response.data);
     } catch (error) {
@@ -92,7 +83,6 @@ const AdminSessions = () => {
     try {
       if (selectedSessions.length === 0) return;
       
-      const token = localStorage.getItem('access_token');
       const response = await api.post('/api/auth/admin/sessions/bulk-action/', {
         session_ids: selectedSessions,
         action,
@@ -115,7 +105,6 @@ const AdminSessions = () => {
 
   const terminateSession = async (sessionId, reason = '') => {
     try {
-      const token = localStorage.getItem('access_token');
       await api.post(`/api/auth/admin/sessions/terminate/${sessionId}/`, {
         reason: reason || 'Admin terminated'
       });
@@ -147,7 +136,6 @@ const AdminSessions = () => {
 
   const getSessionDetails = async (sessionId) => {
     try {
-      const token = localStorage.getItem('access_token');
       const response = await api.get(`/api/auth/admin/sessions/${sessionId}/`);
       setViewingSession(response.data);
     } catch (error) {
@@ -386,7 +374,7 @@ const AdminSessions = () => {
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Device Type</label>
+            <label className="block text sm font-medium text-gray-700 mb-1">Device Type</label>
             <select
               value={filters.device_type}
               onChange={(e) => setFilters(prev => ({ ...prev, device_type: e.target.value }))}

@@ -25,7 +25,6 @@ const AdminDashboard = () => {
     const loadDashboardData = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('access_token');
         
         // Load metrics
         const metricsResponse = await api.get('/api/payments/admin/metrics/');

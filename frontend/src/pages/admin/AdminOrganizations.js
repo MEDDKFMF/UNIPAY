@@ -39,7 +39,6 @@ const AdminOrganizations = () => {
     try {
       setLoading(true);
       setError(null);
-      const token = localStorage.getItem('access_token');
       
       // Load organizations
       const { data } = await api.get('/api/auth/admin/organizations/');
@@ -104,7 +103,7 @@ const AdminOrganizations = () => {
     if (selectedOrgs.length === 0) return;
     
     try {
-      const token = localStorage.getItem('access_token');
+      
       const promises = selectedOrgs.map(orgId => {
         const org = organizations.find(o => o.id === orgId);
         if (!org) return Promise.resolve();
@@ -129,7 +128,7 @@ const AdminOrganizations = () => {
 
   const getOrgDetails = async (orgId) => {
     try {
-      const token = localStorage.getItem('access_token');
+      
       const { data } = await api.get(`/api/auth/admin/organizations/${orgId}/`);
       return data;
     } catch (error) {

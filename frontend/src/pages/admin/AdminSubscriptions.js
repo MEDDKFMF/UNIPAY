@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
 import { 
-  PlusIcon, 
-  PencilIcon, 
   TrashIcon, 
   EyeIcon,
   CheckIcon,
@@ -11,8 +9,6 @@ import {
   UsersIcon,
   CurrencyDollarIcon,
   CalendarIcon,
-  StarIcon,
-  ExclamationTriangleIcon,
   InformationCircleIcon,
   ClockIcon,
   CreditCardIcon,
@@ -36,7 +32,6 @@ const AdminSubscriptions = () => {
     try {
       setLoading(true);
       setError(null);
-      const token = localStorage.getItem('access_token');
       
       // Load both subscriptions and statistics
       const [subsResponse, statsResponse] = await Promise.all([
@@ -62,7 +57,6 @@ const AdminSubscriptions = () => {
 
   const updateSubscriptionStatus = async (subId, newStatus) => {
     try {
-      const token = localStorage.getItem('access_token');
       await api.patch(`/api/payments/subscriptions/${subId}/`, {
         status: newStatus
       });
@@ -74,8 +68,7 @@ const AdminSubscriptions = () => {
 
   const cancelSubscription = async (subId) => {
     if (window.confirm('Are you sure you want to cancel this subscription?')) {
-      try {
-        const token = localStorage.getItem('access_token');
+    try {
         await api.patch(`/api/payments/subscriptions/${subId}/`, {
           status: 'cancelled'
         });

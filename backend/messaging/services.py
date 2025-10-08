@@ -58,6 +58,18 @@ class EmailService:
             subject = template.render_template('subject', context) or template.subject
             message = template.render_template('email_template', context) or template.email_template
             
+            # Add tracking pixel to email content
+            tracking_pixel = f'<img src="https://yourdomain.com/api/invoices/{invoice.id}/track/opened/" width="1" height="1" style="display:none;" alt="" />'
+            if '<html>' in message.lower():
+                # If HTML email, add pixel before closing body tag
+                if '</body>' in message.lower():
+                    message = message.replace('</body>', f'{tracking_pixel}</body>')
+                else:
+                    message += tracking_pixel
+            else:
+                # If plain text, convert to HTML and add pixel
+                message = f'<html><body>{message.replace(chr(10), "<br>")}{tracking_pixel}</body></html>'
+            
             # Send email
             email = EmailMessage(
                 subject=subject,
@@ -65,12 +77,16 @@ class EmailService:
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 to=[recipient_email]
             )
+            email.content_subtype = "html"  # Set content type to HTML
             
             # Attach PDF if available
             if hasattr(invoice, 'pdf_file') and invoice.pdf_file:
                 email.attach_file(invoice.pdf_file.path)
             
             email.send()
+            
+            # Mark invoice as sent via email
+            invoice.mark_email_sent()
             
             # Create notification record
             Notification.objects.create(

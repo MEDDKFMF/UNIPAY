@@ -54,6 +54,14 @@ class Invoice(models.Model):
     notes = models.TextField(blank=True)
     terms_conditions = models.TextField(blank=True)
     
+    # Email tracking fields
+    email_sent_at = models.DateTimeField(blank=True, null=True, help_text='When invoice was last sent via email')
+    email_delivered_at = models.DateTimeField(blank=True, null=True, help_text='When email was delivered')
+    email_opened_at = models.DateTimeField(blank=True, null=True, help_text='When email was opened by client')
+    email_clicked_at = models.DateTimeField(blank=True, null=True, help_text='When client clicked payment link')
+    email_bounced = models.BooleanField(default=False, help_text='Whether email bounced')
+    email_bounce_reason = models.TextField(blank=True, null=True, help_text='Reason for email bounce')
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -125,6 +133,66 @@ class Invoice(models.Model):
     def convert_to_base_currency(self, amount):
         """Convert amount to base currency (KSH)"""
         return amount * self.exchange_rate
+    
+    def mark_email_sent(self):
+        """Mark invoice as sent via email"""
+        from django.utils import timezone
+        self.email_sent_at = timezone.now()
+        self.email_bounced = False
+        self.email_bounce_reason = None
+        self.save(update_fields=['email_sent_at', 'email_bounced', 'email_bounce_reason'])
+    
+    def mark_email_delivered(self):
+        """Mark email as delivered"""
+        from django.utils import timezone
+        self.email_delivered_at = timezone.now()
+        self.save(update_fields=['email_delivered_at'])
+    
+    def mark_email_opened(self):
+        """Mark email as opened by client"""
+        from django.utils import timezone
+        self.email_opened_at = timezone.now()
+        self.save(update_fields=['email_opened_at'])
+    
+    def mark_email_clicked(self):
+        """Mark payment link as clicked"""
+        from django.utils import timezone
+        self.email_clicked_at = timezone.now()
+        self.save(update_fields=['email_clicked_at'])
+    
+    def mark_email_bounced(self, reason=None):
+        """Mark email as bounced"""
+        from django.utils import timezone
+        self.email_bounced = True
+        self.email_bounce_reason = reason
+        self.save(update_fields=['email_bounced', 'email_bounce_reason'])
+    
+    def get_email_status(self):
+        """Get current email status"""
+        if self.email_bounced:
+            return 'bounced'
+        elif self.email_clicked_at:
+            return 'clicked'
+        elif self.email_opened_at:
+            return 'opened'
+        elif self.email_delivered_at:
+            return 'delivered'
+        elif self.email_sent_at:
+            return 'sent'
+        else:
+            return 'not_sent'
+    
+    def get_email_status_display(self):
+        """Get human-readable email status"""
+        status_map = {
+            'not_sent': 'Not Sent',
+            'sent': 'Sent',
+            'delivered': 'Delivered',
+            'opened': 'Opened',
+            'clicked': 'Clicked',
+            'bounced': 'Bounced'
+        }
+        return status_map.get(self.get_email_status(), 'Unknown')
 
 
 class InvoiceItem(models.Model):

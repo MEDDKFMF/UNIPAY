@@ -101,6 +101,16 @@ class InvoiceSerializer(serializers.ModelSerializer):
     tax_rate = serializers.SerializerMethodField()
     discount_rate = serializers.SerializerMethodField()
     
+    # Email tracking fields
+    email_status = serializers.SerializerMethodField()
+    email_status_display = serializers.SerializerMethodField()
+    email_sent_at = serializers.DateTimeField(read_only=True)
+    email_delivered_at = serializers.DateTimeField(read_only=True)
+    email_opened_at = serializers.DateTimeField(read_only=True)
+    email_clicked_at = serializers.DateTimeField(read_only=True)
+    email_bounced = serializers.BooleanField(read_only=True)
+    email_bounce_reason = serializers.CharField(read_only=True)
+    
     class Meta:
         model = Invoice
         fields = [
@@ -111,6 +121,8 @@ class InvoiceSerializer(serializers.ModelSerializer):
             'discount_amount', 'total_amount', 'notes', 'terms_conditions',
             'items', 'currency_symbol', 'formatted_total', 'formatted_subtotal',
             'formatted_tax', 'formatted_discount', 'tax_rate', 'discount_rate',
+            'email_status', 'email_status_display', 'email_sent_at', 'email_delivered_at',
+            'email_opened_at', 'email_clicked_at', 'email_bounced', 'email_bounce_reason',
             'created_at', 'updated_at'
         ]
     
@@ -140,6 +152,12 @@ class InvoiceSerializer(serializers.ModelSerializer):
         if obj.subtotal > 0:
             return round((obj.discount_amount / obj.subtotal) * 100, 2)
         return 0
+    
+    def get_email_status(self, obj):
+        return obj.get_email_status()
+    
+    def get_email_status_display(self, obj):
+        return obj.get_email_status_display()
 
 
 class InvoiceListSerializer(serializers.ModelSerializer):
@@ -148,13 +166,17 @@ class InvoiceListSerializer(serializers.ModelSerializer):
     currency_symbol = serializers.SerializerMethodField()
     formatted_total = serializers.SerializerMethodField()
     status_display = serializers.CharField(source='get_status_display', read_only=True)
+    email_status = serializers.SerializerMethodField()
+    email_status_display = serializers.SerializerMethodField()
     
     class Meta:
         model = Invoice
         fields = [
             'id', 'invoice_number', 'client', 'client_name', 'client_email',
             'currency', 'currency_symbol', 'formatted_total', 'issue_date',
-            'due_date', 'status', 'status_display', 'total_amount', 'created_at'
+            'due_date', 'status', 'status_display', 'email_status', 'email_status_display',
+            'email_sent_at', 'email_delivered_at', 'email_opened_at', 'email_clicked_at',
+            'email_bounced', 'total_amount', 'created_at'
         ]
     
     def get_currency_symbol(self, obj):
@@ -162,6 +184,12 @@ class InvoiceListSerializer(serializers.ModelSerializer):
     
     def get_formatted_total(self, obj):
         return obj.get_formatted_total()
+    
+    def get_email_status(self, obj):
+        return obj.get_email_status()
+    
+    def get_email_status_display(self, obj):
+        return obj.get_email_status_display()
 
 
 class InvoiceStatusUpdateSerializer(serializers.ModelSerializer):

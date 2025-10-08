@@ -528,5 +528,133 @@ def export_invoices_csv(request):
             invoice.created_at
         ])
     
-    return response 
+    return response
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def track_email_delivery(request, invoice_id):
+    """
+    Track email delivery status (webhook endpoint for email providers)
+    """
+    try:
+        invoice = Invoice.objects.get(id=invoice_id)
+        invoice.mark_email_delivered()
+        return Response({'status': 'success'}, status=status.HTTP_200_OK)
+    except Invoice.DoesNotExist:
+        return Response({'error': 'Invoice not found'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET', 'POST'])
+@permission_classes([permissions.AllowAny])  # Allow anonymous access for email tracking
+def track_email_opened(request, invoice_id):
+    """
+    Track email opened by client - returns 1x1 pixel image
+    """
+    try:
+        invoice = Invoice.objects.get(id=invoice_id)
+        invoice.mark_email_opened()
+        
+        # Return 1x1 transparent pixel
+        pixel_data = b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\x00\x00\x00\x21\xf9\x04\x01\x00\x00\x00\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02\x04\x01\x00\x3b'
+        response = HttpResponse(pixel_data, content_type='image/gif')
+        response['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response['Pragma'] = 'no-cache'
+        response['Expires'] = '0'
+        return response
+    except Invoice.DoesNotExist:
+        # Still return pixel even if invoice not found
+        pixel_data = b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\x00\x00\x00\x21\xf9\x04\x01\x00\x00\x00\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02\x04\x01\x00\x3b'
+        response = HttpResponse(pixel_data, content_type='image/gif')
+        return response
+    except Exception as e:
+        # Still return pixel even on error
+        pixel_data = b'\x47\x49\x46\x38\x39\x61\x01\x00\x01\x00\x80\x00\x00\x00\x00\x00\x00\x00\x00\x21\xf9\x04\x01\x00\x00\x00\x00\x2c\x00\x00\x00\x00\x01\x00\x01\x00\x00\x02\x02\x04\x01\x00\x3b'
+        response = HttpResponse(pixel_data, content_type='image/gif')
+        return response
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def track_email_clicked(request, invoice_id):
+    """
+    Track payment link clicked by client
+    """
+    try:
+        invoice = Invoice.objects.get(id=invoice_id)
+        invoice.mark_email_clicked()
+        return Response({'status': 'success'}, status=status.HTTP_200_OK)
+    except Invoice.DoesNotExist:
+        return Response({'error': 'Invoice not found'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAuthenticated])
+def track_email_bounced(request, invoice_id):
+    """
+    Track email bounce
+    """
+    try:
+        invoice = Invoice.objects.get(id=invoice_id)
+        reason = request.data.get('reason', 'Unknown bounce reason')
+        invoice.mark_email_bounced(reason)
+        return Response({'status': 'success'}, status=status.HTTP_200_OK)
+    except Invoice.DoesNotExist:
+        return Response({'error': 'Invoice not found'}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def get_email_tracking_stats(request):
+    """
+    Get email tracking statistics for admin dashboard
+    """
+    try:
+        user = request.user
+        
+        # Get invoices based on user role
+        if user.is_client:
+            invoices = Invoice.objects.filter(client__email=user.email)
+        elif not (user.is_admin or user.is_accountant):
+            invoices = Invoice.objects.filter(created_by=user)
+        else:
+            invoices = Invoice.objects.all()
+        
+        # Calculate statistics
+        total_invoices = invoices.count()
+        emails_sent = invoices.filter(email_sent_at__isnull=False).count()
+        emails_delivered = invoices.filter(email_delivered_at__isnull=False).count()
+        emails_opened = invoices.filter(email_opened_at__isnull=False).count()
+        emails_clicked = invoices.filter(email_clicked_at__isnull=False).count()
+        emails_bounced = invoices.filter(email_bounced=True).count()
+        
+        # Calculate rates
+        delivery_rate = (emails_delivered / emails_sent * 100) if emails_sent > 0 else 0
+        open_rate = (emails_opened / emails_sent * 100) if emails_sent > 0 else 0
+        click_rate = (emails_clicked / emails_sent * 100) if emails_sent > 0 else 0
+        bounce_rate = (emails_bounced / emails_sent * 100) if emails_sent > 0 else 0
+        
+        stats = {
+            'total_invoices': total_invoices,
+            'emails_sent': emails_sent,
+            'emails_delivered': emails_delivered,
+            'emails_opened': emails_opened,
+            'emails_clicked': emails_clicked,
+            'emails_bounced': emails_bounced,
+            'delivery_rate': round(delivery_rate, 2),
+            'open_rate': round(open_rate, 2),
+            'click_rate': round(click_rate, 2),
+            'bounce_rate': round(bounce_rate, 2)
+        }
+        
+        return Response(stats, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     

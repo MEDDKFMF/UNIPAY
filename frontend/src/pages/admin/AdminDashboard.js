@@ -6,6 +6,7 @@ import {
   DocumentTextIcon,
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
+import EmailTrackingDashboard from '../../components/admin/EmailTrackingDashboard';
 
 const StatCard = ({ title, value }) => (
   <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
@@ -212,6 +213,9 @@ const AdminDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Email Tracking Dashboard */}
+      <EmailTrackingDashboard />
     </div>
   );
 };

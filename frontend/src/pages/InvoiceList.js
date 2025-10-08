@@ -55,6 +55,25 @@ const InvoiceList = () => {
     }
   };
 
+  const getEmailStatusColor = (emailStatus) => {
+    switch (emailStatus) {
+      case 'not_sent':
+        return 'bg-gray-100 text-gray-600';
+      case 'sent':
+        return 'bg-blue-100 text-blue-600';
+      case 'delivered':
+        return 'bg-green-100 text-green-600';
+      case 'opened':
+        return 'bg-green-100 text-green-700';
+      case 'clicked':
+        return 'bg-green-100 text-green-800';
+      case 'bounced':
+        return 'bg-red-100 text-red-600';
+      default:
+        return 'bg-gray-100 text-gray-600';
+    }
+  };
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString();
   };
@@ -212,6 +231,9 @@ const InvoiceList = () => {
                     Status
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                    Email Status
+                  </th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Due Date
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
@@ -260,6 +282,16 @@ const InvoiceList = () => {
                       <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(invoice.status)}`}>
                         {invoice.status_display || invoice.status}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getEmailStatusColor(invoice.email_status)}`}>
+                        {invoice.email_status_display || 'Not Sent'}
+                      </span>
+                      {invoice.email_sent_at && (
+                        <div className="text-xs text-gray-500 mt-1">
+                          Sent: {new Date(invoice.email_sent_at).toLocaleDateString()}
+                        </div>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                       {formatDate(invoice.due_date)}

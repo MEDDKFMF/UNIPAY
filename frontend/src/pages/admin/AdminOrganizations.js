@@ -23,17 +23,9 @@ const AdminOrganizations = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [editingOrg, setEditingOrg] = useState(null);
   const [viewingOrg, setViewingOrg] = useState(null);
   const [orgStats, setOrgStats] = useState(null);
   const [selectedOrgs, setSelectedOrgs] = useState([]);
-  const [form, setForm] = useState({ 
-    name: '', 
-    slug: '', 
-    owner_email: '', 
-    is_active: true
-  });
 
   const load = async () => {
     try {
@@ -231,7 +223,7 @@ const AdminOrganizations = () => {
             Refresh
           </button>
           <button
-            onClick={() => setShowCreateForm(true)}
+            onClick={() => {}}
             className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
           >
             <PlusIcon className="w-4 h-4 mr-2" />
@@ -513,15 +505,7 @@ const AdminOrganizations = () => {
                         <EyeIcon className="h-4 w-4" />
                       </button>
                       <button
-                        onClick={() => {
-                          setForm({
-                            name: org.name,
-                            slug: org.slug,
-                            owner_email: org.owner_email || '',
-                            is_active: org.is_active
-                          });
-                          setEditingOrg(org);
-                        }}
+                        onClick={() => {}}
                         className="text-indigo-600 hover:text-indigo-900"
                         title="Edit"
                       >

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
 import { 
-  TrashIcon, 
   EyeIcon,
   CheckIcon,
   XMarkIcon,
@@ -10,7 +9,6 @@ import {
   CurrencyDollarIcon,
   CalendarIcon,
   InformationCircleIcon,
-  ClockIcon,
   CreditCardIcon,
   ArrowPathIcon
 } from '@heroicons/react/24/outline';
@@ -25,7 +23,6 @@ const AdminSubscriptions = () => {
   const [sortBy, setSortBy] = useState('created_at');
   const [sortOrder, setSortOrder] = useState('desc');
   const [viewingSub, setViewingSub] = useState(null);
-  const [editingSub, setEditingSub] = useState(null);
   const [subscriptionStats, setSubscriptionStats] = useState(null);
 
   const load = async () => {

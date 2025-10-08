@@ -26,7 +26,6 @@ const AdminUsers = () => {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [showBulkActions, setShowBulkActions] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
-  const [viewingUser, setViewingUser] = useState(null);
   const [userStats, setUserStats] = useState(null);
   const [sortBy, setSortBy] = useState('date_joined');
   const [sortOrder, setSortOrder] = useState('desc');
@@ -532,7 +531,7 @@ const AdminUsers = () => {
                 <td className="p-3">
                   <div className="flex space-x-2">
                     <button
-                      onClick={() => setViewingUser(user)}
+                      onClick={() => {}}
                       className="p-1 text-gray-600 hover:bg-gray-100 rounded"
                       title="View Details"
                     >

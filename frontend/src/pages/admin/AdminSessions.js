@@ -42,7 +42,6 @@ const AdminSessions = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [viewingSession, setViewingSession] = useState(null);
   const [sortBy, setSortBy] = useState('last_activity');
-  const [sortOrder, setSortOrder] = useState('desc');
 
   useEffect(() => {
     loadSessions();
@@ -157,20 +156,6 @@ const AdminSessions = () => {
     return `${minutes}m`;
   };
 
-  const getTimeAgo = (dateString) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now - date;
-    
-    const minutes = Math.floor(diffMs / (1000 * 60));
-    const hours = Math.floor(diffMs / (1000 * 60 * 60));
-    const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    
-    if (days > 0) return `${days}d ago`;
-    if (hours > 0) return `${hours}h ago`;
-    if (minutes > 0) return `${minutes}m ago`;
-    return 'Just now';
-  };
 
   const getStatusIcon = (status) => {
     switch (status) {

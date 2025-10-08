@@ -33,7 +33,7 @@ export const STATUS_LABELS = {
  * @returns {string} - Updated status
  */
 export const getAutoStatus = (invoice) => {
-  const { status, due_date, created_at } = invoice;
+  const { status, due_date } = invoice;
   const today = new Date();
   const dueDate = new Date(due_date);
   

@@ -12,6 +12,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { toast } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 import logger from '../../utils/logger';
 import EmailTrackingDashboard from '../../components/admin/EmailTrackingDashboard';
 
@@ -27,6 +28,7 @@ const SkeletonCard = () => (
 );
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
   const [metrics, setMetrics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [recentActivity, setRecentActivity] = useState([]);
@@ -37,9 +39,7 @@ const AdminDashboard = () => {
     const loadDashboardData = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('access_token');
-        
-        // Load metrics
+  // Load metrics
         const metricsResponse = await api.get('/api/payments/admin/metrics/');
         setMetrics(metricsResponse.data);
 
@@ -56,12 +56,12 @@ const AdminDashboard = () => {
 
         // Set quick actions (use icons for clarity)
         setQuickActions([
-          { name: 'Create Plan', action: () => window.location.href = '/admin/plans', icon: DocumentTextIcon },
-          { name: 'Add User', action: () => window.location.href = '/admin/users', icon: UserPlusIcon },
-          { name: 'View Reports', action: () => window.location.href = '/admin/analytics', icon: ChartBarIcon },
-          { name: 'Session Monitor', action: () => window.location.href = '/admin/sessions', icon: MagnifyingGlassCircleIcon },
-          { name: 'Manage Orgs', action: () => window.location.href = '/admin/organizations', icon: BuildingOffice2Icon },
-          { name: 'Platform Settings', action: () => window.location.href = '/admin/settings', icon: Cog6ToothIcon }
+          { name: 'Create Plan', action: () => navigate('/admin/plans'), icon: DocumentTextIcon },
+          { name: 'Add User', action: () => navigate('/admin/users'), icon: UserPlusIcon },
+          { name: 'View Reports', action: () => navigate('/admin/analytics'), icon: ChartBarIcon },
+          { name: 'Session Monitor', action: () => navigate('/admin/sessions'), icon: MagnifyingGlassCircleIcon },
+          { name: 'Manage Orgs', action: () => navigate('/admin/organizations'), icon: BuildingOffice2Icon },
+          { name: 'Platform Settings', action: () => navigate('/admin/settings'), icon: Cog6ToothIcon }
         ]);
 
       } catch (error) {
@@ -89,7 +89,7 @@ const AdminDashboard = () => {
     // Auto-refresh every 30 seconds
     const interval = setInterval(loadDashboardData, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [navigate]);
 
   if (loading) {
     return (
@@ -173,7 +173,7 @@ const AdminDashboard = () => {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <button
-            onClick={() => window.location.href = '/admin/analytics'}
+            onClick={() => navigate('/admin/analytics')}
             className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors"
           >
             <ChartBarIcon className="h-8 w-8 text-blue-600 mb-2" />
@@ -182,7 +182,7 @@ const AdminDashboard = () => {
           </button>
           
           <button
-            onClick={() => window.location.href = '/admin/sessions'}
+            onClick={() => navigate('/admin/sessions')}
             className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:border-green-300 hover:bg-green-50 transition-colors"
           >
             <UsersIcon className="h-8 w-8 text-green-600 mb-2" />
@@ -191,7 +191,7 @@ const AdminDashboard = () => {
           </button>
           
           <button
-            onClick={() => window.location.href = '/admin/users'}
+            onClick={() => navigate('/admin/users')}
             className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:border-purple-300 hover:bg-purple-50 transition-colors"
           >
             <UsersIcon className="h-8 w-8 text-purple-600 mb-2" />
@@ -200,7 +200,7 @@ const AdminDashboard = () => {
           </button>
           
           <button
-            onClick={() => window.location.href = '/admin/plans'}
+            onClick={() => navigate('/admin/plans')}
             className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:border-orange-300 hover:bg-orange-50 transition-colors"
           >
             <DocumentTextIcon className="h-8 w-8 text-orange-600 mb-2" />

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
+import logger from '../../utils/logger';
 import { 
   PlusIcon, 
   PencilIcon, 
@@ -43,7 +44,7 @@ const AdminPlans = () => {
     try {
       setLoading(true);
       setError(null);
-      console.log('Loading plans...');
+  logger.debug('Loading plans...');
       
       // Load both plans and statistics
       const [plansResponse, statsResponse] = await Promise.all([
@@ -51,18 +52,18 @@ const AdminPlans = () => {
         api.get('/api/payments/admin/metrics/')
       ]);
       
-      console.log('Plans response:', plansResponse);
-      console.log('Stats response:', statsResponse);
+  logger.debug('Plans response:', plansResponse);
+  logger.debug('Stats response:', statsResponse);
       
       // Handle paginated response structure
       const plansData = plansResponse.data.results || plansResponse.data;
       const plansArray = Array.isArray(plansData) ? plansData : [];
-      console.log('Processed plans:', plansArray);
+  logger.debug('Processed plans:', plansArray);
       
       setPlans(plansArray);
       setPlanStats(statsResponse.data);
     } catch (error) {
-      console.error('Error loading plans:', error);
+      logger.error('Error loading plans:', error);
       setError(error.message);
       setPlans([]);
     } finally {
@@ -71,7 +72,7 @@ const AdminPlans = () => {
   };
 
   useEffect(() => { 
-    console.log('AdminPlans mounted, plans state:', plans);
+    logger.debug('AdminPlans mounted, plans state:', plans);
     load(); 
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -91,7 +92,7 @@ const AdminPlans = () => {
       setShowCreateForm(false);
       load();
     } catch (error) {
-      console.error('Error creating plan:', error);
+      logger.error('Error creating plan:', error);
     }
   };
 
@@ -107,7 +108,7 @@ const AdminPlans = () => {
       setEditingPlan(null);
       load();
     } catch (error) {
-      console.error('Error updating plan:', error);
+      logger.error('Error updating plan:', error);
     }
   };
 
@@ -118,7 +119,7 @@ const AdminPlans = () => {
         await api.delete(`/api/payments/admin/plans/${planId}/`);
         load();
       } catch (error) {
-        console.error('Error deleting plan:', error);
+        logger.error('Error deleting plan:', error);
       }
     }
   };
@@ -130,7 +131,7 @@ const AdminPlans = () => {
       });
       load();
     } catch (error) {
-      console.error('Error toggling plan status:', error);
+      logger.error('Error toggling plan status:', error);
     }
   };
 

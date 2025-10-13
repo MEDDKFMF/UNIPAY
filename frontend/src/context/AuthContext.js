@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api, { clearAuthTokens } from '../services/api';
-import toast from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
+import logger from '../utils/logger';
 
 const AuthContext = createContext();
 
@@ -34,31 +35,31 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const checkAuthStatus = useCallback(async () => {
-    console.log('checkAuthStatus called');
+  logger.debug('checkAuthStatus called');
     try {
       const token = localStorage.getItem('access_token');
       if (!token) {
-        console.log('No token found, setting loading to false');
+        logger.debug('No token found, setting loading to false');
         setLoading(false);
         return;
       }
 
-      console.log('Token found, fetching profile...');
+      logger.debug('Token found, fetching profile...');
       // Get user profile using the centralized API instance
       const response = await api.get('/api/auth/profile/');
-      console.log('Profile response:', response.data);
-      console.log('Profile role:', response.data.role);
+  logger.debug('Profile response:', response.data);
+  logger.debug('Profile role:', response.data.role);
       setUser(response.data);
       setIsAuthenticated(true);
     } catch (error) {
-      console.error('Auth check failed:', error);
+  logger.error('Auth check failed:', error);
       // Only logout if it's an authentication error, not a network error
       if (error.response?.status === 401) {
-        console.log('401 error, calling logout');
+  logger.debug('401 error, calling logout');
       logout();
       } else {
         // For network errors, just set loading to false
-        console.log('Network error, setting loading to false');
+  logger.debug('Network error, setting loading to false');
         setLoading(false);
       }
     } finally {
@@ -91,8 +92,8 @@ export const AuthProvider = ({ children }) => {
         company_name
       };
       
-      console.log('Login response:', response.data);
-      console.log('Setting user data:', userData);
+  logger.debug('Login response:', response.data);
+  logger.debug('Setting user data:', userData);
       
       setUser(userData);
       setIsAuthenticated(true);
@@ -101,7 +102,7 @@ export const AuthProvider = ({ children }) => {
       // Return user data so caller can navigate based on role without waiting for profile fetch
       return { success: true, user: userData };
     } catch (error) {
-      console.error('Login error:', error);
+  logger.error('Login error:', error);
       const message = error.response?.data?.detail || 'Login failed. Please try again.';
       toast.error(message);
       return { success: false, error: message };
@@ -114,7 +115,7 @@ export const AuthProvider = ({ children }) => {
       toast.success('Registration successful! Please login.');
       return { success: true };
     } catch (error) {
-      console.error('Registration error:', error);
+  logger.error('Registration error:', error);
       const message = error.response?.data?.detail || 'Registration failed. Please try again.';
       toast.error(message);
       return { success: false, error: message };
@@ -129,7 +130,7 @@ export const AuthProvider = ({ children }) => {
       toast.success('Profile updated successfully!');
       return { success: true };
     } catch (error) {
-      console.error('Profile update error:', error);
+  logger.error('Profile update error:', error);
       const message = error.response?.data?.detail || 'Profile update failed.';
       toast.error(message);
       return { success: false, error: message };
@@ -150,7 +151,7 @@ export const AuthProvider = ({ children }) => {
       
       return access;
     } catch (error) {
-      console.error('Token refresh failed:', error);
+  logger.error('Token refresh failed:', error);
       logout();
       throw error;
     }

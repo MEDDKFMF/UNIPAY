@@ -4,15 +4,22 @@ import {
   ChartBarIcon, 
   UsersIcon, 
   DocumentTextIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
+  Cog6ToothIcon,
+  BuildingOffice2Icon,
+  UserPlusIcon,
+  MagnifyingGlassCircleIcon
 } from '@heroicons/react/24/outline';
-import EmailTrackingDashboard from '../../components/admin/EmailTrackingDashboard';
 
 const StatCard = ({ title, value }) => (
   <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
     <p className="text-sm text-gray-600">{title}</p>
     <p className="text-2xl font-bold text-gray-900 mt-2">{value}</p>
   </div>
+);
+
+const SkeletonCard = () => (
+  <div className="bg-gray-100 animate-pulse rounded-2xl p-6 h-28" />
 );
 
 const AdminDashboard = () => {
@@ -26,34 +33,48 @@ const AdminDashboard = () => {
     const loadDashboardData = async () => {
       try {
         setLoading(true);
+        const token = localStorage.getItem('access_token');
         
         // Load metrics
         const metricsResponse = await api.get('/api/payments/admin/metrics/');
         setMetrics(metricsResponse.data);
-        
+
         // Load recent activity (last 5 users)
         const activityResponse = await api.get('/api/auth/admin/users/');
         setRecentActivity(activityResponse.data.slice(0, 5));
-        
+
         // Load system health
         const healthResponse = await api.get('/api/payments/admin/plans/');
         setSystemHealth({
           activePlans: healthResponse.data.results?.length || 0,
-          lastUpdated: new Date().toLocaleString()
+          lastUpdated: new Date().toISOString()
         });
-        
-        // Set quick actions
+
+        // Set quick actions (use icons for clarity)
         setQuickActions([
-          { name: 'Create Plan', action: () => window.location.href = '/admin/plans', icon: '📋' },
-          { name: 'Add User', action: () => window.location.href = '/admin/users', icon: '👤' },
-          { name: 'View Reports', action: () => window.location.href = '/admin/analytics', icon: '📊' },
-          { name: 'Session Monitor', action: () => window.location.href = '/admin/sessions', icon: '🔍' },
-          { name: 'Manage Orgs', action: () => window.location.href = '/admin/organizations', icon: '🏢' },
-          { name: 'Platform Settings', action: () => window.location.href = '/admin/settings', icon: '⚙️' }
+          { name: 'Create Plan', action: () => window.location.href = '/admin/plans', icon: DocumentTextIcon },
+          { name: 'Add User', action: () => window.location.href = '/admin/users', icon: UserPlusIcon },
+          { name: 'View Reports', action: () => window.location.href = '/admin/analytics', icon: ChartBarIcon },
+          { name: 'Session Monitor', action: () => window.location.href = '/admin/sessions', icon: MagnifyingGlassCircleIcon },
+          { name: 'Manage Orgs', action: () => window.location.href = '/admin/organizations', icon: BuildingOffice2Icon },
+          { name: 'Platform Settings', action: () => window.location.href = '/admin/settings', icon: Cog6ToothIcon }
         ]);
-        
+
       } catch (error) {
-        console.error('Error loading dashboard data:', error);
+        logger.error('Error loading dashboard data:', error);
+        toast.error((t) => (
+          <div>
+            <div className="font-medium">Failed to load dashboard</div>
+            <div className="text-xs text-gray-500 mt-1">{error.message}</div>
+            <div className="mt-2">
+              <button onClick={() => {
+                toast.dismiss(t.id);
+                // retry
+                window.location.reload();
+              }} className="px-3 py-1 bg-blue-600 text-white rounded text-xs">Retry</button>
+            </div>
+          </div>
+        ));
       } finally {
         setLoading(false);
       }
@@ -67,7 +88,25 @@ const AdminDashboard = () => {
   }, []);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Platform Overview</h1>
+            <p className="text-gray-600">Real-time subscription and revenue metrics</p>
+          </div>
+          <div className="text-sm text-gray-500">Last updated: ---</div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -78,7 +117,7 @@ const AdminDashboard = () => {
           <p className="text-gray-600">Real-time subscription and revenue metrics</p>
         </div>
         <div className="text-sm text-gray-500">
-          Last updated: {systemHealth.lastUpdated}
+          Last updated: {systemHealth.lastUpdated ? formatDistanceToNowStrict(new Date(systemHealth.lastUpdated), { addSuffix: true }) : 'N/A'}
         </div>
       </div>
 
@@ -86,27 +125,39 @@ const AdminDashboard = () => {
       <div className="bg-white rounded-xl border p-6">
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {quickActions.map((action, index) => (
-            <button
-              key={index}
-              onClick={action.action}
-              className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors"
-            >
-              <span className="text-2xl mb-2">{action.icon}</span>
-              <span className="text-sm font-medium text-gray-700">{action.name}</span>
-            </button>
-          ))}
+          {quickActions.map((action, index) => {
+            const Icon = action.icon;
+            return (
+              <button
+                key={index}
+                onClick={action.action}
+                aria-label={action.name}
+                className="flex flex-col items-center p-4 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400"
+              >
+                <Icon className="h-6 w-6 text-gray-700 mb-2" />
+                <span className="text-sm font-medium text-gray-700">{action.name}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* Main Metrics */}
-      {metrics && (
+      {metrics ? (
         <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
           <StatCard title="Organizations" value={metrics.total_organizations} />
           <StatCard title="Plans" value={metrics.total_plans} />
           <StatCard title="Subscriptions" value={metrics.total_subscriptions} />
           <StatCard title="Active Subs" value={metrics.active_subscriptions} />
           <StatCard title="MRR" value={`$${Number(metrics.mrr || 0).toFixed(2)}`} />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
         </div>
       )}
 

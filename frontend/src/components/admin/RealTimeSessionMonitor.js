@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { sessionMonitoringService } from '../../services/sessionMonitoringService';
+import logger from '../../utils/logger';
 
 const RealTimeSessionMonitor = () => {
   const [sessions, setSessions] = useState({
@@ -33,11 +34,11 @@ const RealTimeSessionMonitor = () => {
 
   const fetchSessionData = useCallback(async () => {
     try {
-      const data = await sessionMonitoringService.getRealTimeSessions();
-      console.log('RealTimeSessionMonitor - Raw API response:', data);
-      console.log('Active sessions:', data.active_sessions);
-      console.log('Suspicious sessions:', data.suspicious_sessions);
-      console.log('Statistics:', data.statistics);
+  const data = await sessionMonitoringService.getRealTimeSessions();
+  logger.debug('RealTimeSessionMonitor - Raw API response:', data);
+  logger.debug('Active sessions:', data.active_sessions);
+  logger.debug('Suspicious sessions:', data.suspicious_sessions);
+  logger.debug('Statistics:', data.statistics);
       
       setSessions({
         active: data.active_sessions || [],
@@ -46,7 +47,7 @@ const RealTimeSessionMonitor = () => {
       });
       setStatistics(data.statistics || {});
     } catch (error) {
-      console.error('Error fetching session data:', error);
+      logger.error('Error fetching session data:', error);
       toast.error('Failed to load session data');
     } finally {
       setLoading(false);
@@ -70,7 +71,7 @@ const RealTimeSessionMonitor = () => {
       toast.success('Session terminated successfully');
       fetchSessionData(); // Refresh data
     } catch (error) {
-      console.error('Error terminating session:', error);
+      logger.error('Error terminating session:', error);
       toast.error('Failed to terminate session');
     }
   };

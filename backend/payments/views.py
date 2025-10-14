@@ -776,6 +776,12 @@ def public_initiate_payment_link(request, token):
 
         payment = link.payment
         invoice = payment.invoice
+        # Ensure the payment is attributed to the invoice sender (who created the invoice)
+        try:
+            payment.created_by = invoice.created_by
+        except Exception:
+            # created_by may be null in some legacy records; ignore if not present
+            pass
         payment_method = payment.payment_method
 
         # Load platform gateway
@@ -819,6 +825,8 @@ def public_initiate_payment_link(request, token):
                 return Response({'error': error}, status=status.HTTP_400_BAD_REQUEST)
 
             payment.gateway_session_id = result.get('CheckoutRequestID', payment.gateway_session_id)
+            # persist attribution and gateway details
+            payment.created_by = invoice.created_by
             payment.save()
 
             return Response({'message': 'M-Pesa STK Push initiated. Check phone.', 'merchant_request_id': result.get('MerchantRequestID'), 'checkout_request_id': result.get('CheckoutRequestID')})
@@ -850,6 +858,8 @@ def public_initiate_payment_link(request, token):
                 return Response({'error': error}, status=status.HTTP_400_BAD_REQUEST)
 
             payment.gateway_session_id = checkout_url
+            # persist attribution and gateway details
+            payment.created_by = invoice.created_by
             payment.save()
 
             return Response({'checkout_url': checkout_url})
@@ -877,6 +887,8 @@ def public_initiate_payment_link(request, token):
                 payment.gateway_session_id = session.id
                 if getattr(session, 'payment_intent', None):
                     payment.payment_intent_id = session.payment_intent
+                # persist attribution and gateway details
+                payment.created_by = invoice.created_by
                 payment.save()
 
                 return Response({'checkout_url': session.url})

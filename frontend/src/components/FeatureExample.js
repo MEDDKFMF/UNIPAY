@@ -4,8 +4,6 @@ import { FeatureGuard, useFeatureAccess } from './FeatureGuard';
 // Example of how to use feature access control
 export const InvoiceCreationExample = ({ user }) => {
   const hasUnlimitedInvoices = useFeatureAccess(user, 'Unlimited invoices');
-  const hasApiAccess = useFeatureAccess(user, 'API access');
-  const hasPrioritySupport = useFeatureAccess(user, 'Priority support');
 
   return (
     <div className="space-y-6">

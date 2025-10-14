@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Payment, Plan, Subscription, UserPaymentMethod, ClientPaymentMethod, PlatformPaymentGateway
+from .models import Payment, Plan, Subscription, UserPaymentMethod, ClientPaymentMethod, PlatformPaymentGateway, PaymentLink
 from invoices.serializers import InvoiceSerializer
 
 
@@ -170,6 +170,17 @@ class CreateCheckoutSessionSerializer(serializers.Serializer):
     )
 
 
+class PaymentLinkSerializer(serializers.ModelSerializer):
+    payment_id = serializers.IntegerField(source='payment.id', read_only=True)
+    amount = serializers.DecimalField(source='payment.amount', max_digits=12, decimal_places=2, read_only=True)
+    currency = serializers.CharField(source='payment.currency', read_only=True)
+    invoice_number = serializers.CharField(source='payment.invoice.invoice_number', read_only=True)
+
+    class Meta:
+        model = PaymentLink
+        fields = ['token', 'payment_id', 'amount', 'currency', 'invoice_number', 'created_at', 'expires_at', 'is_active']
+
+
 class PaymentWebhookSerializer(serializers.Serializer):
     """
     Serializer for payment webhook data.
@@ -206,3 +217,14 @@ class SubscriptionSerializer(serializers.ModelSerializer):
             'auto_renew', 'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'user', 'created_at', 'updated_at']
+
+
+class PaymentLinkSerializer(serializers.ModelSerializer):
+    payment_id = serializers.IntegerField(source='payment.id', read_only=True)
+    amount = serializers.DecimalField(source='payment.amount', max_digits=12, decimal_places=2, read_only=True)
+    currency = serializers.CharField(source='payment.currency', read_only=True)
+    invoice_number = serializers.CharField(source='payment.invoice.invoice_number', read_only=True)
+
+    class Meta:
+        model = PaymentLink
+        fields = ['token', 'payment_id', 'amount', 'currency', 'invoice_number', 'created_at', 'expires_at', 'is_active']

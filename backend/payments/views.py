@@ -14,7 +14,7 @@ from django.views.decorators.http import require_http_methods
 from django.db.models import Q
 import json
 import logging
-from .models import Payment, Plan, Subscription, UserPaymentMethod, ClientPaymentMethod, PlatformPaymentGateway
+from .models import Payment, Plan, Subscription, UserPaymentMethod, ClientPaymentMethod, PlatformPaymentGateway, PaymentLink
 from .serializers import (
     PaymentSerializer,
     PaymentCreateSerializer,
@@ -27,6 +27,7 @@ from .serializers import (
     ClientPaymentMethodSerializer,
     PlatformPaymentGatewaySerializer
 )
+from .serializers import PaymentLinkSerializer
 from invoices.models import Invoice
 
 # Configure Stripe
@@ -149,30 +150,32 @@ def create_checkout_session(request):
         success_url = serializer.validated_data['success_url']
         cancel_url = serializer.validated_data['cancel_url']
         payment_method = request.data.get('payment_method', 'unipay')
-        
+
         try:
             invoice = Invoice.objects.get(id=invoice_id, created_by=request.user)
-            
+
             # Validate payment method
-            if payment_method not in ['unipay', 'flutterwave']:
+            if payment_method not in ['unipay', 'flutterwave', 'stripe']:
                 return Response(
-                    {'error': 'Invalid payment method. Supported: unipay, flutterwave'}, 
+                    {'error': 'Invalid payment method. Supported: unipay, flutterwave, stripe'}, 
                     status=status.HTTP_400_BAD_REQUEST
                 )
-            
-            # Get user's payment receiving method for this gateway
-            user_payment_method = UserPaymentMethod.objects.filter(
-                user=request.user,
-                payment_type=payment_method,
-                is_active=True
-            ).first()
-            
-            if not user_payment_method:
-                return Response(
-                    {'error': f'Please configure your {payment_method} receiving details in Payment Settings first.'}, 
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-            
+
+            # Get user's payment receiving method for this gateway where applicable
+            user_payment_method = None
+            if payment_method in ['unipay', 'flutterwave']:
+                user_payment_method = UserPaymentMethod.objects.filter(
+                    user=request.user,
+                    payment_type=payment_method,
+                    is_active=True
+                ).first()
+
+                if not user_payment_method:
+                    return Response(
+                        {'error': f'Please configure your {payment_method} receiving details in Payment Settings first.'}, 
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
             # Create payment record first
             payment = Payment.objects.create(
                 invoice=invoice,
@@ -258,6 +261,50 @@ def create_checkout_session(request):
                     'checkout_url': checkout_url,
                     'message': 'Redirecting to Flutterwave payment page...'
                 })
+            elif payment_method == 'stripe':
+                # Create a Stripe Checkout Session and return the hosted URL
+                try:
+                    # Amount in smallest currency unit (e.g., cents)
+                    amount_cents = int(round(float(invoice.total_amount) * 100))
+
+                    session = stripe.checkout.Session.create(
+                        payment_method_types=['card'],
+                        line_items=[{
+                            'price_data': {
+                                'currency': invoice.currency.lower(),
+                                'product_data': {
+                                    'name': f'Invoice {invoice.invoice_number}',
+                                },
+                                'unit_amount': amount_cents,
+                            },
+                            'quantity': 1,
+                        }],
+                        mode='payment',
+                        success_url=success_url,
+                        cancel_url=cancel_url,
+                        metadata={
+                            'invoice_id': str(invoice.id),
+                            'user_id': str(request.user.id),
+                        }
+                    )
+
+                    # Persist session info to payment record
+                    payment.gateway_session_id = session.id
+                    # payment_intent may be None until completed; store if present
+                    if getattr(session, 'payment_intent', None):
+                        payment.payment_intent_id = session.payment_intent
+                    payment.save()
+
+                    return Response({
+                        'payment_id': payment.id,
+                        'checkout_url': session.url,
+                        'message': 'Redirecting to Stripe Checkout...'
+                    })
+                except Exception as e:
+                    payment.status = 'failed'
+                    payment.error_message = str(e)
+                    payment.save()
+                    return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
             
         except Invoice.DoesNotExist:
             return Response(
@@ -653,7 +700,10 @@ def create_payment_link(request):
             # Update payment with checkout URL
             payment.gateway_session_id = checkout_url
             payment.save()
-            
+
+            # Create an internal PaymentLink token so the client can access without login
+            link = PaymentLink.objects.create(payment=payment)
+
             return Response({
                 'payment_id': payment.id,
                 'payment_link': checkout_url,
@@ -663,13 +713,17 @@ def create_payment_link(request):
                 'invoice_number': invoice.invoice_number,
                 'client_name': client_name,
                 'expires_at': None,  # Flutterwave links don't expire by default
-                'message': 'Payment link created successfully'
+                'message': 'Payment link created successfully',
+                'token': link.token
             })
             
         elif payment_method == 'unipay':
-            # For M-Pesa, we'll create a payment page that initiates STK Push
-            payment_page_url = f"{settings.FRONTEND_URL}/app/payments/{payment.id}/mpesa"
-            
+            # For M-Pesa, we'll create a public payment page that initiates STK Push
+            payment_page_url = f"{settings.FRONTEND_URL}/pay/{payment.id}/{payment.id}"
+
+            # Create PaymentLink token
+            link = PaymentLink.objects.create(payment=payment)
+
             return Response({
                 'payment_id': payment.id,
                 'payment_link': payment_page_url,
@@ -679,7 +733,8 @@ def create_payment_link(request):
                 'invoice_number': invoice.invoice_number,
                 'client_name': invoice.client.name if invoice.client else f"{request.user.first_name} {request.user.last_name}".strip(),
                 'expires_at': None,
-                'message': 'M-Pesa payment page created successfully'
+                'message': 'M-Pesa payment page created successfully',
+                'token': link.token
             })
         
         else:
@@ -691,6 +746,153 @@ def create_payment_link(request):
         return Response({
             'error': f'Failed to create payment link: {str(e)}'
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR) 
+
+
+@api_view(['GET'])
+@permission_classes([permissions.AllowAny])
+def public_get_payment_link(request, token):
+    """Public: retrieve payment link info by token (no auth)."""
+    try:
+        link = PaymentLink.objects.filter(token=token, is_active=True).select_related('payment', 'payment__invoice').first()
+        if not link or link.is_expired():
+            return Response({'error': 'Link not found or expired'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = PaymentLinkSerializer(link)
+        return Response(serializer.data)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@permission_classes([permissions.AllowAny])
+def public_initiate_payment_link(request, token):
+    """Public: initiate payment for a tokenized link. Accepts optional payer data in body.
+    For M-Pesa, expects {'phone_number': '2547XXXXXXXX'}. For Stripe, will create a Checkout Session and return checkout_url.
+    """
+    try:
+        link = PaymentLink.objects.select_related('payment', 'payment__invoice', 'payment__user_payment_method').filter(token=token, is_active=True).first()
+        if not link or link.is_expired():
+            return Response({'error': 'Link not found or expired'}, status=status.HTTP_404_NOT_FOUND)
+
+        payment = link.payment
+        invoice = payment.invoice
+        payment_method = payment.payment_method
+
+        # Load platform gateway
+        platform_gateway = PlatformPaymentGateway.objects.get(name=payment_method, is_active=True)
+
+        # Payment services
+        from .payment_services import UnipayService, FlutterwaveService
+
+        if payment_method == 'unipay':
+            # Use stored user_payment_method on payment (receiver)
+            receiving_method = payment.user_payment_method
+            if not receiving_method:
+                # try to find receiver's method
+                receiving_method = UserPaymentMethod.objects.filter(user=invoice.created_by, payment_type='unipay', is_active=True).first()
+
+            if not receiving_method or not receiving_method.mpesa_phone_number:
+                return Response({'error': 'Receiver does not have M-Pesa details configured'}, status=status.HTTP_400_BAD_REQUEST)
+
+            unipay_service = UnipayService(
+                consumer_key=platform_gateway.api_public_key,
+                consumer_secret=platform_gateway.api_secret_key,
+                shortcode="N/A",
+                callback_url=f"{settings.FRONTEND_URL}/api/payments/mpesa-callback/"
+            )
+
+            payer_phone = request.data.get('phone_number')
+            if not payer_phone:
+                return Response({'error': 'phone_number is required for M-Pesa payments'}, status=status.HTTP_400_BAD_REQUEST)
+
+            result, error = unipay_service.stk_push(
+                phone_number=payer_phone,
+                amount=float(payment.amount),
+                account_reference=f"INV{invoice.id}",
+                transaction_desc=f"Payment for Invoice {invoice.invoice_number}"
+            )
+
+            if error:
+                payment.status = 'failed'
+                payment.error_message = error
+                payment.save()
+                return Response({'error': error}, status=status.HTTP_400_BAD_REQUEST)
+
+            payment.gateway_session_id = result.get('CheckoutRequestID', payment.gateway_session_id)
+            payment.save()
+
+            return Response({'message': 'M-Pesa STK Push initiated. Check phone.', 'merchant_request_id': result.get('MerchantRequestID'), 'checkout_request_id': result.get('CheckoutRequestID')})
+
+        elif payment_method == 'flutterwave':
+            flutterwave_service = FlutterwaveService(
+                client_id=platform_gateway.api_public_key,
+                client_secret=platform_gateway.api_secret_key,
+                encryption_key=platform_gateway.webhook_secret
+            )
+
+            client_email = invoice.client.email if invoice.client else ''
+            client_phone = invoice.client.phone if invoice.client else ''
+            client_name = invoice.client.name if invoice.client else ''
+
+            checkout_url, error = flutterwave_service.create_payment_link(
+                amount=float(payment.amount),
+                email=client_email or request.data.get('email'),
+                phone_number=client_phone or request.data.get('phone_number'),
+                name=client_name or request.data.get('name'),
+                currency=payment.currency,
+                description=f"Payment for Invoice {invoice.invoice_number}"
+            )
+
+            if error:
+                payment.status = 'failed'
+                payment.error_message = error
+                payment.save()
+                return Response({'error': error}, status=status.HTTP_400_BAD_REQUEST)
+
+            payment.gateway_session_id = checkout_url
+            payment.save()
+
+            return Response({'checkout_url': checkout_url})
+
+        elif payment_method == 'stripe':
+            # Create Stripe Checkout Session (public)
+            try:
+                amount_cents = int(round(float(payment.amount) * 100))
+                session = stripe.checkout.Session.create(
+                    payment_method_types=['card'],
+                    line_items=[{
+                        'price_data': {
+                            'currency': payment.currency.lower(),
+                            'product_data': {'name': f'Invoice {invoice.invoice_number}'},
+                            'unit_amount': amount_cents,
+                        },
+                        'quantity': 1,
+                    }],
+                    mode='payment',
+                    success_url=request.data.get('success_url') or f"{settings.FRONTEND_URL}/pay/success",
+                    cancel_url=request.data.get('cancel_url') or f"{settings.FRONTEND_URL}/pay/cancel",
+                    metadata={'invoice_id': str(invoice.id)}
+                )
+
+                payment.gateway_session_id = session.id
+                if getattr(session, 'payment_intent', None):
+                    payment.payment_intent_id = session.payment_intent
+                payment.save()
+
+                return Response({'checkout_url': session.url})
+            except Exception as e:
+                payment.status = 'failed'
+                payment.error_message = str(e)
+                payment.save()
+                return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+            return Response({'error': 'Unsupported payment method for public link'}, status=status.HTTP_400_BAD_REQUEST)
+
+    except PlatformPaymentGateway.DoesNotExist:
+        return Response({'error': 'Payment gateway not configured'}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 # ---------------- Platform Admin: Plans ----------------

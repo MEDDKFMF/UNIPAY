@@ -39,6 +39,8 @@ urlpatterns = [
     path('flutterwave-webhook/', flutterwave_webhook, name='flutterwave_webhook'),
     path('mpesa-callback/', mpesa_callback, name='mpesa_callback'),
     path('status/<int:payment_id>/', payment_status, name='payment_status'),
+    path('link/<str:token>/', public_get_payment_link, name='public_get_payment_link'),
+    path('link/<str:token>/initiate/', public_initiate_payment_link, name='public_initiate_payment_link'),
     path('invoice/<int:invoice_id>/', PaymentListView.as_view(), name='payment_list'),
     path('', UserPaymentListView.as_view(), name='user_payment_list'),
     

@@ -2,6 +2,7 @@ from django.db import models
 from django.conf import settings
 from django.core.validators import RegexValidator
 from django.utils import timezone
+import uuid
 
 
 class UserPaymentMethod(models.Model):
@@ -239,6 +240,30 @@ class ClientPaymentMethod(models.Model):
         verbose_name = "Client Payment Method"
         verbose_name_plural = "Client Payment Methods"
         ordering = ['-created_at']
+
+
+class PaymentLink(models.Model):
+    """
+    Public tokenized link that references a Payment record so clients can pay
+    without requiring a logged-in client portal.
+    """
+    token = models.CharField(max_length=64, unique=True, default=lambda: uuid.uuid4().hex)
+    payment = models.OneToOneField('Payment', on_delete=models.CASCADE, related_name='payment_link')
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = 'Payment Link'
+        verbose_name_plural = 'Payment Links'
+
+    def is_expired(self):
+        if self.expires_at:
+            return timezone.now() > self.expires_at
+        return False
+
+    def __str__(self):
+        return f"PaymentLink {self.token} -> Payment {self.payment_id}"
     
     def __str__(self):
         if self.payment_type == 'card':

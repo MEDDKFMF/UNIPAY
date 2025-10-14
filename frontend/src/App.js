@@ -35,6 +35,7 @@ import AdminSessions from './pages/admin/AdminSessions';
 import AdminSettings from './pages/admin/AdminSettings';
 
 const LazyPaymentMpesa = lazy(() => import('./pages/PaymentMpesaPage'));
+const LazyPublicPay = lazy(() => import('./pages/PublicPayPage'));
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -91,6 +92,11 @@ function AppRoutes() {
           <PublicRoute>
             <Register />
           </PublicRoute>
+        } />
+        <Route path="/pay/:token" element={
+          <Suspense fallback={<div>Loading...</div>}>
+            <LazyPublicPay />
+          </Suspense>
         } />
         
         {/* Protected Routes */}

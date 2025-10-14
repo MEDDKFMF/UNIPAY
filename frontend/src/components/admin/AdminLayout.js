@@ -6,7 +6,15 @@ import {
   Bars3Icon, 
   XMarkIcon,
   ChevronLeftIcon,
-  ChevronRightIcon
+  ChevronRightIcon,
+  ChartBarIcon,
+  ArrowTrendingUpIcon,
+  DocumentTextIcon,
+  CreditCardIcon,
+  UsersIcon,
+  MagnifyingGlassIcon,
+  BuildingOffice2Icon,
+  Cog6ToothIcon
 } from '@heroicons/react/24/outline';
 
 const AdminLayout = () => {
@@ -79,7 +87,7 @@ const AdminLayout = () => {
             }`}
             title="Overview"
           >
-            <div className="w-5 h-5 flex-shrink-0">📊</div>
+            <ChartBarIcon className="h-5 w-5 flex-shrink-0" />
             {!sidebarCollapsed && <span className="ml-3">Overview</span>}
           </NavLink>
           
@@ -90,7 +98,7 @@ const AdminLayout = () => {
             }`}
             title="Analytics"
           >
-            <div className="w-5 h-5 flex-shrink-0">📈</div>
+            <ArrowTrendingUpIcon className="h-5 w-5 flex-shrink-0" />
             {!sidebarCollapsed && <span className="ml-3">Analytics</span>}
           </NavLink>
           
@@ -101,7 +109,7 @@ const AdminLayout = () => {
             }`}
             title="Plans"
           >
-            <div className="w-5 h-5 flex-shrink-0">📋</div>
+            <DocumentTextIcon className="h-5 w-5 flex-shrink-0" />
             {!sidebarCollapsed && <span className="ml-3">Plans</span>}
           </NavLink>
           
@@ -112,7 +120,7 @@ const AdminLayout = () => {
             }`}
             title="Subscriptions"
           >
-            <div className="w-5 h-5 flex-shrink-0">💳</div>
+            <CreditCardIcon className="h-5 w-5 flex-shrink-0" />
             {!sidebarCollapsed && <span className="ml-3">Subscriptions</span>}
           </NavLink>
           
@@ -123,7 +131,7 @@ const AdminLayout = () => {
             }`}
             title="Users"
           >
-            <div className="w-5 h-5 flex-shrink-0">👥</div>
+            <UsersIcon className="h-5 w-5 flex-shrink-0" />
             {!sidebarCollapsed && <span className="ml-3">Users</span>}
           </NavLink>
           
@@ -134,7 +142,7 @@ const AdminLayout = () => {
             }`}
             title="Sessions"
           >
-            <div className="w-5 h-5 flex-shrink-0">🔍</div>
+            <MagnifyingGlassIcon className="h-5 w-5 flex-shrink-0" />
             {!sidebarCollapsed && <span className="ml-3">Sessions</span>}
           </NavLink>
           
@@ -145,7 +153,7 @@ const AdminLayout = () => {
             }`}
             title="Organizations"
           >
-            <div className="w-5 h-5 flex-shrink-0">🏢</div>
+            <BuildingOffice2Icon className="h-5 w-5 flex-shrink-0" />
             {!sidebarCollapsed && <span className="ml-3">Organizations</span>}
           </NavLink>
           
@@ -156,7 +164,7 @@ const AdminLayout = () => {
             }`}
             title="Settings"
           >
-            <div className="w-5 h-5 flex-shrink-0">⚙️</div>
+            <Cog6ToothIcon className="h-5 w-5 flex-shrink-0" />
             {!sidebarCollapsed && <span className="ml-3">Settings</span>}
           </NavLink>
         </nav>

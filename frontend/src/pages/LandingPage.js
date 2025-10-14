@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import logger from '../utils/logger';
 import { Link } from 'react-router-dom';
+import api from '../services/api';
 import { 
   FileText, 
   CreditCard, 
@@ -41,16 +42,16 @@ const LandingPage = () => {
     logger.debug('LandingPage useEffect triggered - fetching plans - v2');
     const fetchPlans = async () => {
       try {
-        logger.debug('Fetching plans from API...');
-        const response = await fetch(`https://unipay-oyn6.onrender.com/api/payments/plans/public/`);
-        const data = await response.json();
+        logger.debug('Fetching plans from API via api client...');
+        const response = await api.get('/api/payments/plans/public/');
+        const data = response.data;
         logger.debug('Plans API response:', data);
-        
+
         // Handle both array and paginated response
         const plansData = data.results || data;
         const plansArray = Array.isArray(plansData) ? plansData : [];
-  logger.debug('Processed plans:', plansArray);
-        
+        logger.debug('Processed plans:', plansArray);
+
         setPlans(plansArray);
       } catch (error) {
         logger.error('Error fetching plans:', error);
@@ -167,14 +168,16 @@ const LandingPage = () => {
 
   // Transform API plans to display format
   const pricingPlans = plans.map((plan, index) => {
-  logger.debug('Processing plan:', plan);
+    logger.debug('Processing plan:', plan);
+    const period = plan.billing_cycle === 'yearly' ? '/year' : '/month';
     return {
       id: plan.id,
       name: plan.name,
       price: locationDetected ? formatPrice(plan.price, plan.currency) : `${plan.currency}${plan.price}`,
-      period: `/${plan.billing_cycle}`,
+      period,
       description: plan.description || 'Professional invoicing solution',
-      features: [
+      // Use features supplied by admin; fall back to common features if not provided
+      features: Array.isArray(plan.features) && plan.features.length > 0 ? plan.features : [
         'Unlimited invoices',
         'Multi-currency support',
         'Professional templates',
@@ -182,9 +185,10 @@ const LandingPage = () => {
         'Payment tracking',
         'Export options'
       ],
-      popular: index === 1, // Make middle plan popular
+      popular: !!plan.is_featured || index === 1,
       originalPrice: plan.price,
-      originalCurrency: plan.currency
+      originalCurrency: plan.currency,
+      billing_cycle: plan.billing_cycle
     };
   });
   

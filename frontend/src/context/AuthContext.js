@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import api, { clearAuthTokens } from '../services/api';
 import { toast } from 'react-hot-toast';
 import logger from '../utils/logger';
@@ -18,6 +18,20 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  // Session timeout configuration (minutes)
+  const IDLE_TIMEOUT_MINUTES = Number(process.env.REACT_APP_IDLE_TIMEOUT_MINUTES) || 15; // default 15 minutes
+  const WARNING_MINUTES = Number(process.env.REACT_APP_WARNING_MINUTES) || 1; // default show warning 1 minute before timeout
+
+  const idleTimeoutMs = IDLE_TIMEOUT_MINUTES * 60 * 1000;
+  const warningTimeoutMs = Math.max(0, idleTimeoutMs - WARNING_MINUTES * 60 * 1000);
+
+  // Refs to store timers and state across renders
+  const idleTimerRef = useRef(null);
+  const warningTimerRef = useRef(null);
+  const lastActivityRef = useRef(Date.now());
+  const warningToastIdRef = useRef(null);
+  const resetIdleTimersRef = useRef(null);
+
   // Initialize auth state
   useEffect(() => {
     // The API instance handles token management automatically
@@ -32,6 +46,19 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
     
     toast.success('Logged out successfully');
+    // Clear any timers when logging out
+    if (idleTimerRef.current) {
+      clearTimeout(idleTimerRef.current);
+      idleTimerRef.current = null;
+    }
+    if (warningTimerRef.current) {
+      clearTimeout(warningTimerRef.current);
+      warningTimerRef.current = null;
+    }
+    if (warningToastIdRef.current) {
+      toast.dismiss(warningToastIdRef.current);
+      warningToastIdRef.current = null;
+    }
   }, []);
 
   const checkAuthStatus = useCallback(async () => {
@@ -137,7 +164,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const refreshToken = async () => {
+  const refreshToken = useCallback(async () => {
     try {
       const refresh = localStorage.getItem('refresh_token');
       if (!refresh) {
@@ -148,14 +175,133 @@ export const AuthProvider = ({ children }) => {
       const { access } = response.data;
       
       localStorage.setItem('access_token', access);
-      
+
       return access;
     } catch (error) {
   logger.error('Token refresh failed:', error);
       logout();
       throw error;
     }
-  };
+  }, [logout]);
+
+  // Inactivity handling
+  const handleIdleLogout = useCallback(() => {
+    logger.info('User idle timeout reached, logging out');
+    toast.error('You have been logged out due to inactivity');
+    logout();
+  }, [logout]);
+
+  const handleShowWarning = useCallback(() => {
+    // Show a warning toast with a Stay signed in button
+    if (warningToastIdRef.current) return; // already showing
+
+    warningToastIdRef.current = toast((t) => (
+      <div className="flex flex-col">
+        <div className="font-medium">Session expiring soon</div>
+        <div className="text-xs text-gray-500 mt-1">You will be signed out due to inactivity soon.</div>
+        <div className="mt-2 flex items-center space-x-2">
+          <button
+            onClick={async () => {
+              toast.dismiss(t.id);
+              warningToastIdRef.current = null;
+              try {
+                await refreshToken();
+                // reset timers after a successful refresh (via ref to avoid circular deps)
+                resetIdleTimersRef.current?.();
+                toast.success('Session extended');
+              } catch (err) {
+                logger.error('Failed to refresh token from warning action', err);
+              }
+            }}
+            className="px-3 py-1 bg-blue-600 text-white rounded text-xs"
+          >
+            Stay signed in
+          </button>
+          <button
+            onClick={() => {
+              toast.dismiss(t.id);
+              warningToastIdRef.current = null;
+              handleIdleLogout();
+            }}
+            className="px-3 py-1 bg-gray-100 text-gray-800 rounded text-xs"
+          >
+            Sign out now
+          </button>
+        </div>
+      </div>
+    ), { duration: 1000 * 60 * 5 }); // keep for up to 5 minutes or until dismissed
+  }, [refreshToken, handleIdleLogout]);
+
+  const resetIdleTimers = useCallback(() => {
+    // Clear existing timers
+    if (idleTimerRef.current) {
+      clearTimeout(idleTimerRef.current);
+      idleTimerRef.current = null;
+    }
+    if (warningTimerRef.current) {
+      clearTimeout(warningTimerRef.current);
+      warningTimerRef.current = null;
+    }
+    if (warningToastIdRef.current) {
+      toast.dismiss(warningToastIdRef.current);
+      warningToastIdRef.current = null;
+    }
+
+    // Set new timers only when authenticated
+    if (!isAuthenticated) return;
+
+    lastActivityRef.current = Date.now();
+
+    warningTimerRef.current = setTimeout(() => {
+      handleShowWarning();
+    }, warningTimeoutMs);
+
+    idleTimerRef.current = setTimeout(() => {
+      handleIdleLogout();
+    }, idleTimeoutMs);
+  }, [isAuthenticated, warningTimeoutMs, idleTimeoutMs, handleShowWarning, handleIdleLogout]);
+
+  // Keep ref updated with the latest resetIdleTimers function
+  useEffect(() => {
+    resetIdleTimersRef.current = resetIdleTimers;
+    return () => {
+      resetIdleTimersRef.current = null;
+    };
+  }, [resetIdleTimers]);
+
+  // Activity handler
+  const activityHandler = useCallback(() => {
+    // Update last activity and reset timers
+    lastActivityRef.current = Date.now();
+    resetIdleTimers();
+  }, [resetIdleTimers]);
+
+  // Attach activity listeners when authenticated
+  useEffect(() => {
+    if (!isAuthenticated) return undefined;
+
+    const events = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'click'];
+    events.forEach((ev) => window.addEventListener(ev, activityHandler));
+
+    // Initialize timers
+    resetIdleTimers();
+
+    return () => {
+      events.forEach((ev) => window.removeEventListener(ev, activityHandler));
+      if (idleTimerRef.current) {
+        clearTimeout(idleTimerRef.current);
+        idleTimerRef.current = null;
+      }
+      if (warningTimerRef.current) {
+        clearTimeout(warningTimerRef.current);
+        warningTimerRef.current = null;
+      }
+      if (warningToastIdRef.current) {
+        toast.dismiss(warningToastIdRef.current);
+        warningToastIdRef.current = null;
+      }
+    };
+  }, [isAuthenticated, activityHandler, resetIdleTimers]);
 
   // Token refresh is now handled by the centralized API instance
 

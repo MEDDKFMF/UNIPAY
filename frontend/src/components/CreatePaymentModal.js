@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import logger from '../utils/logger';
 import { X, CreditCard, DollarSign, AlertCircle, Loader } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { createPayment, createCheckoutSession, getAvailablePaymentMethods } from '../services/paymentService';
@@ -33,7 +34,7 @@ const CreatePaymentModal = ({ isOpen, onClose, invoice, onPaymentCreated }) => {
         }));
       }
     } catch (error) {
-      console.error('Error fetching available payment methods:', error);
+      logger.error('Error fetching available payment methods:', error);
       // Keep manual as fallback
       setAvailableMethods(['manual']);
     }
@@ -46,7 +47,7 @@ const CreatePaymentModal = ({ isOpen, onClose, invoice, onPaymentCreated }) => {
       const invoicesList = response.results || response;
       setInvoices(invoicesList);
     } catch (error) {
-      console.error('Error fetching invoices:', error);
+      logger.error('Error fetching invoices:', error);
       toast.error('Failed to fetch invoices');
       setInvoices([]);
     } finally {
@@ -122,7 +123,7 @@ const CreatePaymentModal = ({ isOpen, onClose, invoice, onPaymentCreated }) => {
       // Reset form
       resetForm();
     } catch (error) {
-      console.error('Error creating payment:', error);
+      logger.error('Error creating payment:', error);
       toast.error(error.response?.data?.detail || 'Failed to record payment');
     } finally {
       setIsLoading(false);
@@ -149,7 +150,7 @@ const CreatePaymentModal = ({ isOpen, onClose, invoice, onPaymentCreated }) => {
         toast.error('Failed to create payment session');
       }
     } catch (error) {
-      console.error('Error creating checkout session:', error);
+      logger.error('Error creating checkout session:', error);
       toast.error('Failed to process payment');
     } finally {
       setIsProcessingPayment(false);
@@ -413,12 +414,15 @@ const CreatePaymentModal = ({ isOpen, onClose, invoice, onPaymentCreated }) => {
                   {method === 'manual' && 'Manual Entry (Record existing payment)'}
                   {method === 'unipay' && 'Unipay M-Pesa (Process payment now)'}
                   {method === 'flutterwave' && 'Flutterwave (Process payment now)'}
+                  {method === 'stripe' && 'Stripe (Card payments)'}
                 </option>
               ))}
             </select>
             <p className="text-xs text-gray-500 mt-1">
-              {formData.payment_method === 'manual' 
+              {formData.payment_method === 'manual'
                 ? 'Record a payment that has already been made'
+                : formData.payment_method === 'stripe'
+                ? 'You will be redirected to Stripe to complete card payment.'
                 : 'Process payment through the selected gateway'
               }
             </p>

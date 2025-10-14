@@ -1,11 +1,12 @@
 import api from './api';
+import logger from '../utils/logger';
 
 export const getPayments = async (params = {}) => {
   try {
     const response = await api.get('/api/payments/', { params });
     return response.data;
   } catch (error) {
-    console.error('Error fetching payments:', error);
+    logger.error('Error fetching payments:', error);
     throw error;
   }
 };
@@ -15,7 +16,7 @@ export const getPaymentById = async (paymentId) => {
     const response = await api.get(`/api/payments/${paymentId}/`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching payment:', error);
+    logger.error('Error fetching payment:', error);
     throw error;
   }
 };
@@ -25,7 +26,7 @@ export const getPaymentsForInvoice = async (invoiceId) => {
     const response = await api.get(`/api/payments/invoice/${invoiceId}/`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching payments for invoice:', error);
+    logger.error('Error fetching payments for invoice:', error);
     throw error;
   }
 };
@@ -35,7 +36,7 @@ export const createPayment = async (paymentData) => {
     const response = await api.post(`/api/payments/`, paymentData);
     return response.data;
   } catch (error) {
-    console.error('Error creating payment:', error);
+    logger.error('Error creating payment:', error);
     throw error;
   }
 };
@@ -45,7 +46,7 @@ export const updatePayment = async (paymentId, paymentData) => {
     const response = await api.patch(`/api/payments/${paymentId}/`, paymentData);
     return response.data;
   } catch (error) {
-    console.error('Error updating payment:', error);
+    logger.error('Error updating payment:', error);
     throw error;
   }
 };
@@ -55,7 +56,7 @@ export const deletePayment = async (paymentId) => {
     const response = await api.delete(`/api/payments/${paymentId}/`);
     return response.data;
   } catch (error) {
-    console.error('Error deleting payment:', error);
+    logger.error('Error deleting payment:', error);
     throw error;
   }
 };
@@ -95,7 +96,7 @@ export const getPaymentStats = async () => {
     
     return stats;
   } catch (error) {
-    console.error('Error fetching payment stats:', error);
+    logger.error('Error fetching payment stats:', error);
     throw error;
   }
 };
@@ -110,7 +111,7 @@ export const createCheckoutSession = async (invoiceId, successUrl, cancelUrl, pa
     });
     return response.data;
   } catch (error) {
-    console.error('Error creating checkout session:', error);
+    logger.error('Error creating checkout session:', error);
     throw error;
   }
 };
@@ -120,7 +121,7 @@ export const getPaymentStatus = async (paymentId) => {
     const response = await api.get(`/api/payments/status/${paymentId}/`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching payment status:', error);
+    logger.error('Error fetching payment status:', error);
     throw error;
   }
 };
@@ -131,7 +132,7 @@ export const getUserPaymentMethods = async () => {
     const response = await api.get(`/api/payments/user-methods/`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching user payment methods:', error);
+    logger.error('Error fetching user payment methods:', error);
     throw error;
   }
 };
@@ -141,7 +142,7 @@ export const createUserPaymentMethod = async (methodData) => {
     const response = await api.post(`/api/payments/user-methods/`, methodData);
     return response.data;
   } catch (error) {
-    console.error('Error creating user payment method:', error);
+    logger.error('Error creating user payment method:', error);
     throw error;
   }
 };
@@ -151,7 +152,7 @@ export const updateUserPaymentMethod = async (methodId, methodData) => {
     const response = await api.patch(`/api/payments/user-methods/${methodId}/`, methodData);
     return response.data;
   } catch (error) {
-    console.error('Error updating user payment method:', error);
+    logger.error('Error updating user payment method:', error);
     throw error;
   }
 };
@@ -161,7 +162,7 @@ export const deleteUserPaymentMethod = async (methodId) => {
     const response = await api.delete(`/api/payments/user-methods/${methodId}/`);
     return response.data;
   } catch (error) {
-    console.error('Error deleting user payment method:', error);
+    logger.error('Error deleting user payment method:', error);
     throw error;
   }
 };
@@ -172,7 +173,7 @@ export const getClientPaymentMethods = async () => {
     const response = await api.get(`/api/payments/client-methods/`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching client payment methods:', error);
+    logger.error('Error fetching client payment methods:', error);
     throw error;
   }
 };
@@ -182,7 +183,7 @@ export const createClientPaymentMethod = async (methodData) => {
     const response = await api.post(`/api/payments/client-methods/`, methodData);
     return response.data;
   } catch (error) {
-    console.error('Error creating client payment method:', error);
+    logger.error('Error creating client payment method:', error);
     throw error;
   }
 };
@@ -192,7 +193,7 @@ export const updateClientPaymentMethod = async (methodId, methodData) => {
     const response = await api.patch(`/api/payments/client-methods/${methodId}/`, methodData);
     return response.data;
   } catch (error) {
-    console.error('Error updating client payment method:', error);
+    logger.error('Error updating client payment method:', error);
     throw error;
   }
 };
@@ -202,7 +203,7 @@ export const deleteClientPaymentMethod = async (methodId) => {
     const response = await api.delete(`/api/payments/client-methods/${methodId}/`);
     return response.data;
   } catch (error) {
-    console.error('Error deleting client payment method:', error);
+    logger.error('Error deleting client payment method:', error);
     throw error;
   }
 };
@@ -212,7 +213,7 @@ export const getAvailablePaymentMethods = async () => {
     const response = await api.get(`/api/payments/available-methods/`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching available payment methods:', error);
+    logger.error('Error fetching available payment methods:', error);
     throw error;
   }
 };
@@ -224,7 +225,7 @@ export const testPaymentGateway = async (gateway) => {
     });
     return response.data;
   } catch (error) {
-    console.error(`Error testing ${gateway} gateway:`, error);
+    logger.error(`Error testing ${gateway} gateway:`, error);
     throw error;
   }
 };

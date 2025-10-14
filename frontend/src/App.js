@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -34,6 +34,7 @@ import AdminAnalytics from './pages/admin/AdminAnalytics';
 import AdminSessions from './pages/admin/AdminSessions';
 import AdminSettings from './pages/admin/AdminSettings';
 
+const LazyPaymentMpesa = lazy(() => import('./pages/PaymentMpesaPage'));
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
@@ -110,6 +111,11 @@ function AppRoutes() {
           <Route path="clients/:id/edit" element={<EditClient />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="payments" element={<Payments />} />
+          <Route path="payments/:id/mpesa" element={
+            <Suspense fallback={<div>Loading...</div>}>
+              <LazyPaymentMpesa />
+            </Suspense>
+          } />
           <Route path="recurring-payments" element={<RecurringPayments />} />
           <Route path="settings" element={<Settings />} />
           <Route path="payment-settings" element={<PaymentSettings />} />

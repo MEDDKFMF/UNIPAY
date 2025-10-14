@@ -12,6 +12,8 @@ from .views import (
     mpesa_callback,
     payment_status,
     create_payment_link,
+    public_get_payment_link,
+    public_initiate_payment_link,
     PlanListCreateView,
     PlanDetailView,
     SubscriptionListCreateView,

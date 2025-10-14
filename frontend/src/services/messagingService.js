@@ -1,4 +1,5 @@
 import api from './api';
+import logger from '../utils/logger';
 
 // Send invoice notification
 export const sendInvoiceNotification = async (data) => {
@@ -6,7 +7,7 @@ export const sendInvoiceNotification = async (data) => {
     const response = await api.post('/api/messaging/send-invoice/', data);
     return response.data;
   } catch (error) {
-    console.error('Error sending invoice notification:', error);
+    logger.error('Error sending invoice notification:', error);
     throw error;
   }
 };
@@ -17,7 +18,7 @@ export const sendPaymentConfirmation = async (data) => {
     const response = await api.post('/api/messaging/send-payment-confirmation/', data);
     return response.data;
   } catch (error) {
-    console.error('Error sending payment confirmation:', error);
+    logger.error('Error sending payment confirmation:', error);
     throw error;
   }
 };
@@ -28,7 +29,7 @@ export const sendPaymentReminder = async (data) => {
     const response = await api.post('/api/messaging/send-reminder/', data);
     return response.data;
   } catch (error) {
-    console.error('Error sending payment reminder:', error);
+    logger.error('Error sending payment reminder:', error);
     throw error;
   }
 };
@@ -39,7 +40,7 @@ export const getTemplates = async () => {
     const response = await api.get('/api/messaging/templates/');
     return response.data;
   } catch (error) {
-    console.error('Error fetching templates:', error);
+    logger.error('Error fetching templates:', error);
     throw error;
   }
 };
@@ -50,7 +51,7 @@ export const getTemplate = async (id) => {
     const response = await api.get(`/api/messaging/templates/${id}/`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching template:', error);
+    logger.error('Error fetching template:', error);
     throw error;
   }
 };
@@ -61,7 +62,7 @@ export const createTemplate = async (templateData) => {
     const response = await api.post('/api/messaging/templates/', templateData);
     return response.data;
   } catch (error) {
-    console.error('Error creating template:', error);
+    logger.error('Error creating template:', error);
     throw error;
   }
 };
@@ -72,7 +73,7 @@ export const updateTemplate = async (id, templateData) => {
     const response = await api.put(`/api/messaging/templates/${id}/`, templateData);
     return response.data;
   } catch (error) {
-    console.error('Error updating template:', error);
+    logger.error('Error updating template:', error);
     throw error;
   }
 };
@@ -83,7 +84,7 @@ export const deleteTemplate = async (id) => {
     const response = await api.delete(`/api/messaging/templates/${id}/`);
     return response.data;
   } catch (error) {
-    console.error('Error deleting template:', error);
+    logger.error('Error deleting template:', error);
     throw error;
   }
 };

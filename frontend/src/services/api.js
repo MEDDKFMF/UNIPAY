@@ -1,4 +1,5 @@
 import axios from 'axios';
+import logger from '../utils/logger';
 
 // Fixed API base URL (avoid env to prevent redeploys changing URLs)
 const resolveBaseURL = () => 'https://unipay-oyn6.onrender.com';
@@ -51,7 +52,7 @@ api.interceptors.response.use(
           localStorage.removeItem('refresh_token');
         }
       } catch (refreshError) {
-        console.error('Token refresh failed:', refreshError);
+        logger.error('Token refresh failed:', refreshError);
         // Refresh failed, clear tokens and let AuthContext handle redirect
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');

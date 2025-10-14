@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'react-hot-toast';
+import logger from '../utils/logger';
 import { 
   getUserProfileSettings, 
   updateUserProfileSettings, 
@@ -93,7 +94,7 @@ const Settings = () => {
         const settingsData = await getUserProfileSettings();
         setProfileSettings(settingsData);
       } catch (error) {
-        console.log('Profile settings not available yet:', error.message);
+        logger.debug('Profile settings not available yet:', error.message);
       }
 
       // Load user profile data
@@ -120,7 +121,7 @@ const Settings = () => {
         const currenciesData = await getSupportedCurrencies();
         setCurrencies(currenciesData);
       } catch (error) {
-        console.log('Currencies not available yet:', error.message);
+        logger.debug('Currencies not available yet:', error.message);
         // Set default currencies
         setCurrencies([
           { code: 'KES', name: 'Kenyan Shilling', symbol: 'KSh' },
@@ -131,7 +132,7 @@ const Settings = () => {
       }
 
     } catch (error) {
-      console.error('Error loading settings data:', error);
+      logger.error('Error loading settings data:', error);
       toast.error('Failed to load settings data');
     } finally {
       setInitialLoading(false);
@@ -150,7 +151,7 @@ const Settings = () => {
       setProfileSettings(result);
       toast.success('Profile settings updated successfully');
     } catch (error) {
-      console.error('Profile settings save error:', error);
+      logger.error('Profile settings save error:', error);
       toast.error(error.message || 'Failed to update profile settings');
     } finally {
       setLoading(false);
@@ -187,7 +188,7 @@ const Settings = () => {
       
       toast.success('User profile updated successfully');
     } catch (error) {
-      console.error('User profile save error:', error);
+      logger.error('User profile save error:', error);
       toast.error(error.message || 'Failed to update user profile');
     } finally {
       setLoading(false);

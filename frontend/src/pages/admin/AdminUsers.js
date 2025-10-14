@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
+import logger from '../../utils/logger';
 import { 
   MagnifyingGlassIcon, 
   EllipsisVerticalIcon,
@@ -45,7 +46,7 @@ const AdminUsers = () => {
         setUsers(Array.isArray(usersResponse.data) ? usersResponse.data : []);
         setUserStats(statsResponse.data);
       } catch (error) {
-        console.error('Error loading users:', error);
+        logger.error('Error loading users:', error);
         setError(error.message);
         setUsers([]);
       } finally {
@@ -109,7 +110,7 @@ const AdminUsers = () => {
       // Reload users
       window.location.reload();
     } catch (error) {
-      console.error('Error performing bulk action:', error);
+      logger.error('Error performing bulk action:', error);
     }
   };
 
@@ -135,7 +136,7 @@ const AdminUsers = () => {
       // Reload users
       window.location.reload();
     } catch (error) {
-      console.error('Error updating user:', error);
+      logger.error('Error updating user:', error);
     }
   };
 
@@ -147,7 +148,7 @@ const AdminUsers = () => {
       );
       window.location.reload();
     } catch (error) {
-      console.error('Error toggling user active state:', error);
+      logger.error('Error toggling user active state:', error);
     }
   };
 
@@ -158,7 +159,7 @@ const AdminUsers = () => {
         // Reload users
         window.location.reload();
       } catch (error) {
-        console.error('Error deleting user:', error);
+        logger.error('Error deleting user:', error);
       }
     }
   };

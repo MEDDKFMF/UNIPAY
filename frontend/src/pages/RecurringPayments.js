@@ -10,6 +10,7 @@ import {
   Clock
 } from 'lucide-react';
 import { useNotifications } from '../context/NotificationContext';
+import logger from '../utils/logger';
 
 const RecurringPayments = () => {
   const [subscriptions, setSubscriptions] = useState([]);
@@ -42,7 +43,7 @@ const RecurringPayments = () => {
         setSubscriptions(data);
       }
     } catch (error) {
-      console.error('Error fetching subscriptions:', error);
+      logger.error('Error fetching subscriptions:', error);
     } finally {
       setLoading(false);
     }
@@ -61,7 +62,7 @@ const RecurringPayments = () => {
         setPlans(data);
       }
     } catch (error) {
-      console.error('Error fetching plans:', error);
+      logger.error('Error fetching plans:', error);
     }
   };
 
@@ -91,7 +92,7 @@ const RecurringPayments = () => {
         fetchSubscriptions();
       }
     } catch (error) {
-      console.error('Error creating subscription:', error);
+      logger.error('Error creating subscription:', error);
     }
   };
 
@@ -122,7 +123,7 @@ const RecurringPayments = () => {
         fetchSubscriptions();
       }
     } catch (error) {
-      console.error('Error updating subscription:', error);
+      logger.error('Error updating subscription:', error);
     }
   };
 
@@ -148,7 +149,7 @@ const RecurringPayments = () => {
         fetchSubscriptions();
       }
     } catch (error) {
-      console.error('Error cancelling subscription:', error);
+      logger.error('Error cancelling subscription:', error);
     }
   };
 

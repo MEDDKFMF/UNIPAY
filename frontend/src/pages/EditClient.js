@@ -5,6 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { getClient, updateClient } from '../services/clientService';
 import { toast } from 'react-hot-toast';
+import logger from '../utils/logger';
 import { User, Mail, Phone, Building, MapPin, FileText, Save, ArrowLeft } from 'lucide-react';
 
 const schema = yup.object({
@@ -52,7 +53,7 @@ const EditClient = () => {
         is_active: clientData.is_active,
       });
     } catch (error) {
-      console.error('Error fetching client:', error);
+      logger.error('Error fetching client:', error);
       toast.error('Failed to load client details');
       navigate('/app/clients');
     } finally {
@@ -67,7 +68,7 @@ const EditClient = () => {
       toast.success('Client updated successfully!');
       navigate(`/app/clients/${id}`);
     } catch (error) {
-      console.error('Error updating client:', error);
+      logger.error('Error updating client:', error);
       toast.error(error.message || 'Failed to update client. Please try again.');
     } finally {
       setIsLoading(false);

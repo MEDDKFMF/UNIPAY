@@ -1,5 +1,6 @@
 // Exchange rate service for real-time currency conversion
 import api from './api';
+import logger from '../utils/logger';
 
 const API_BASE_URL = 'https://unipay-oyn6.onrender.com';
 
@@ -27,7 +28,7 @@ export const getExchangeRates = async () => {
     
     return rates;
   } catch (error) {
-    console.error('Error fetching exchange rates:', error);
+    logger.error('Error fetching exchange rates:', error);
     
     // Return fallback rates if API fails
     return {
@@ -67,7 +68,7 @@ export const getExchangeRate = async (fromCurrency, toCurrency = 'KSH') => {
     const data = await response.json();
     return data.rate;
   } catch (error) {
-    console.error('Error getting exchange rate:', error);
+    logger.error('Error getting exchange rate:', error);
     return 1; // Fallback to 1:1 ratio
   }
 };
@@ -90,7 +91,7 @@ export const getAvailableCurrencies = async () => {
     const data = await response.json();
     return data.currencies;
   } catch (error) {
-    console.error('Error getting available currencies:', error);
+    logger.error('Error getting available currencies:', error);
     return ['KSH', 'USD', 'EUR', 'GBP', 'NGN', 'GHS', 'ZAR', 'UGX', 'TZS', 'KES'];
   }
 };
@@ -119,7 +120,7 @@ export const getFormattedExchangeRate = async (fromCurrency, toCurrency = 'KSH')
     const data = await response.json();
     return data.formatted_rate;
   } catch (error) {
-    console.error('Error getting formatted exchange rate:', error);
+    logger.error('Error getting formatted exchange rate:', error);
     return `1 ${fromCurrency} = 1.0000 ${toCurrency}`;
   }
 };
@@ -135,7 +136,7 @@ export const refreshExchangeRates = async () => {
     
     return response.data.rates;
   } catch (error) {
-    console.error('Error refreshing exchange rates:', error);
+    logger.error('Error refreshing exchange rates:', error);
     throw error;
   }
 };

@@ -6,6 +6,7 @@ import * as yup from 'yup';
 import { createClient } from '../services/clientService';
 import { useNotifications } from '../context/NotificationContext';
 import { toast } from 'react-hot-toast';
+import logger from '../utils/logger';
 import { User, Mail, Phone, Building, MapPin, FileText, Save, ArrowLeft } from 'lucide-react';
 
 const schema = yup.object({
@@ -58,7 +59,7 @@ const CreateClient = () => {
       reset();
       navigate('/app/clients');
     } catch (error) {
-      console.error('Error creating client:', error);
+      logger.error('Error creating client:', error);
       toast.error(error.message || 'Failed to create client. Please try again.');
     } finally {
       setIsLoading(false);

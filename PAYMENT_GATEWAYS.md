@@ -9,15 +9,17 @@ This invoice platform supports multiple payment gateways for processing payments
 - **Features**: PCI compliant, instant processing, global support
 - **Setup**: Requires Stripe account and API keys
 
-### 2. Flutterwave
-- **Best for**: African markets, local payment methods
-- **Features**: Bank transfers, mobile money, local cards
-- **Setup**: Requires Flutterwave account and API keys
+### 2. Flutterwave (Deprecated)
 
-### 3. M-Pesa
-- **Best for**: Kenya mobile payments
-- **Features**: STK Push, instant settlement
-- **Setup**: Requires Safaricom developer account
+- **Status**: Removed from the current codebase. Existing historical data may reference Flutterwave but the runtime no longer initiates Flutterwave payments.
+
+- **Recommendation**: Use Stripe Checkout for card payments or use Manual payment recording for offline/bank transfer flows.
+
+### 3. M-Pesa / Unipay (Deprecated)
+
+- **Status**: M-Pesa (Unipay) integration has been removed from the runtime. The M-Pesa webhook and STK push endpoints now return 410 (Gone).
+
+- **Recommendation**: For region-specific mobile money you can implement a new gateway adapter that uses your provider's latest APIs, or accept manual payments and reconcile them externally.
 
 ## How It Works
 

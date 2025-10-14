@@ -412,9 +412,8 @@ const CreatePaymentModal = ({ isOpen, onClose, invoice, onPaymentCreated }) => {
               {availableMethods.map(method => (
                 <option key={method} value={method}>
                   {method === 'manual' && 'Manual Entry (Record existing payment)'}
-                  {method === 'unipay' && 'Unipay M-Pesa (Process payment now)'}
-                  {method === 'flutterwave' && 'Flutterwave (Process payment now)'}
                   {method === 'stripe' && 'Stripe (Card payments)'}
+                  {method !== 'manual' && method !== 'stripe' && method}
                 </option>
               ))}
             </select>

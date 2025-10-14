@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getClient, deleteClient } from '../services/clientService';
 import { toast } from 'react-hot-toast';
+import logger from '../utils/logger';
 import { 
   ArrowLeft, 
   Edit, 
@@ -37,7 +38,7 @@ const ViewClient = () => {
       // const invoicesData = await getClientInvoices(id);
       // setInvoices(invoicesData);
     } catch (error) {
-      console.error('Error fetching client:', error);
+      logger.error('Error fetching client:', error);
       toast.error('Failed to load client details');
       navigate('/app/clients');
     } finally {
@@ -55,7 +56,7 @@ const ViewClient = () => {
       toast.success('Client deleted successfully');
       navigate('/app/clients');
     } catch (error) {
-      console.error('Error deleting client:', error);
+      logger.error('Error deleting client:', error);
       toast.error('Failed to delete client');
     }
   };

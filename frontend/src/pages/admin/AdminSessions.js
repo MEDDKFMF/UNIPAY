@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import logger from '../../utils/logger';
 import api from '../../services/api';
 import { 
   EyeIcon,
@@ -62,7 +63,7 @@ const AdminSessions = () => {
       setSessions(response.data.results || []);
       setTotalPages(response.data.total_pages || 1);
     } catch (error) {
-      console.error('Error loading sessions:', error);
+  logger.error('Error loading sessions:', error);
       setError('Failed to load sessions');
     } finally {
       setLoading(false);
@@ -74,7 +75,7 @@ const AdminSessions = () => {
       const response = await api.get('/api/auth/admin/sessions/metrics/');
       setMetrics(response.data);
     } catch (error) {
-      console.error('Error loading metrics:', error);
+  logger.error('Error loading metrics:', error);
     }
   };
 
@@ -97,7 +98,7 @@ const AdminSessions = () => {
       // Show success message
       alert(response.data.message);
     } catch (error) {
-      console.error('Error performing bulk action:', error);
+  logger.error('Error performing bulk action:', error);
       alert('Failed to perform bulk action');
     }
   };
@@ -112,7 +113,7 @@ const AdminSessions = () => {
       loadMetrics();
       alert('Session terminated successfully');
     } catch (error) {
-      console.error('Error terminating session:', error);
+  logger.error('Error terminating session:', error);
       alert('Failed to terminate session');
     }
   };
@@ -138,7 +139,7 @@ const AdminSessions = () => {
       const response = await api.get(`/api/auth/admin/sessions/${sessionId}/`);
       setViewingSession(response.data);
     } catch (error) {
-      console.error('Error fetching session details:', error);
+  logger.error('Error fetching session details:', error);
     }
   };
 

@@ -1,5 +1,6 @@
 // User service for API calls
 import api from './api';
+import logger from '../utils/logger';
 
 // Get current user profile
 export const getCurrentUser = async () => {
@@ -7,7 +8,7 @@ export const getCurrentUser = async () => {
     const response = await api.get('/api/auth/profile/');
     return response.data;
   } catch (error) {
-    console.error('Error fetching user profile:', error);
+    logger.error('Error fetching user profile:', error);
     throw error;
   }
 };
@@ -18,7 +19,7 @@ export const updateUserProfile = async (profileData) => {
     const response = await api.put('/api/auth/profile/', profileData);
     return response.data;
   } catch (error) {
-    console.error('Error updating user profile:', error);
+    logger.error('Error updating user profile:', error);
     throw error;
   }
 };
@@ -29,7 +30,7 @@ export const changePassword = async (passwordData) => {
     const response = await api.post('/api/auth/change-password/', passwordData);
     return response.data;
   } catch (error) {
-    console.error('Error changing password:', error);
+    logger.error('Error changing password:', error);
     throw error;
   }
 };
@@ -47,7 +48,7 @@ export const uploadAvatar = async (file) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error uploading avatar:', error);
+    logger.error('Error uploading avatar:', error);
     throw error;
   }
 };
@@ -60,7 +61,7 @@ export const getUserProfileSettings = async () => {
     const response = await api.get('/api/settings/profile/');
     return response.data;
   } catch (error) {
-    console.error('Error fetching user profile settings:', error);
+    logger.error('Error fetching user profile settings:', error);
     throw error;
   }
 };
@@ -71,7 +72,7 @@ export const updateUserProfileSettings = async (settingsData) => {
     const response = await api.put('/api/settings/profile/update/', settingsData);
     return response.data;
   } catch (error) {
-    console.error('Error updating user profile settings:', error);
+    logger.error('Error updating user profile settings:', error);
     throw error;
   }
 };
@@ -82,7 +83,7 @@ export const getInvoiceHeaderData = async () => {
     const response = await api.get('/api/settings/profile/header/');
     return response.data;
   } catch (error) {
-    console.error('Error fetching invoice header data:', error);
+    logger.error('Error fetching invoice header data:', error);
     throw error;
   }
 };
@@ -93,7 +94,7 @@ export const getPlatformSettings = async () => {
     const response = await api.get('/api/settings/platform/');
     return response.data;
   } catch (error) {
-    console.error('Error fetching platform settings:', error);
+    logger.error('Error fetching platform settings:', error);
     throw error;
   }
 };
@@ -104,7 +105,7 @@ export const getSupportedCurrencies = async () => {
     const response = await api.get('/api/settings/currencies/');
     return response.data;
   } catch (error) {
-    console.error('Error fetching supported currencies:', error);
+    logger.error('Error fetching supported currencies:', error);
     throw error;
   }
 };
@@ -115,7 +116,7 @@ export const testEmailSettings = async () => {
     const response = await api.post('/api/settings/test-email/');
     return response.data;
   } catch (error) {
-    console.error('Error testing email settings:', error);
+    logger.error('Error testing email settings:', error);
     throw error;
   }
 };

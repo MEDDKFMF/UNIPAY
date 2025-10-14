@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useAuth } from '../context/AuthContext';
+import logger from '../utils/logger';
 import { Eye, EyeOff, Mail, Lock, User, Building } from 'lucide-react';
 
 const schema = yup.object({
@@ -40,7 +41,7 @@ const Register = () => {
         navigate('/login');
       }
     } catch (error) {
-      console.error('Registration error:', error);
+      logger.error('Registration error:', error);
     } finally {
       setIsLoading(false);
     }

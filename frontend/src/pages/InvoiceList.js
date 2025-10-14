@@ -4,6 +4,7 @@ import { Plus, Search, Edit, Download, FileText, Send } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { getInvoices, downloadInvoicePDF, updateInvoiceStatus } from '../services/invoiceService';
 import { sendInvoiceNotification } from '../services/messagingService';
+import logger from '../utils/logger';
 
 const InvoiceList = () => {
   const [invoices, setInvoices] = useState([]);
@@ -27,14 +28,14 @@ const InvoiceList = () => {
       });
       
       const response = await getInvoices(params);
-      console.log('Invoice response:', response);
-      console.log('Response type:', typeof response);
-      console.log('Response keys:', Object.keys(response));
+      logger.debug('Invoice response:', response);
+      logger.debug('Response type:', typeof response);
+      logger.debug('Response keys:', Object.keys(response));
       setInvoices(response.results || response);
       setTotalPages(response.total_pages || 1);
     } catch (error) {
       toast.error('Failed to fetch invoices');
-      console.error('Error fetching invoices:', error);
+      logger.error('Error fetching invoices:', error);
     } finally {
       setLoading(false);
     }
@@ -91,27 +92,23 @@ const InvoiceList = () => {
     );
     
     if (!confirmed) return;
-    
     try {
-      // Update invoice status to 'sent' if it's currently 'draft'
       if (invoice.status === 'draft') {
         await updateInvoiceStatus(invoice.id, 'sent');
         // Update local state
-        setInvoices(prev => prev.map(inv => 
-          inv.id === invoice.id ? { ...inv, status: 'sent' } : inv
-        ));
+        setInvoices(prev => prev.map(inv => inv.id === invoice.id ? { ...inv, status: 'sent' } : inv));
       }
-      
+
       // Send email notification
       await sendInvoiceNotification({
         invoice_id: invoice.id,
         notification_type: 'invoice_sent'
       });
-      
+
       toast.success('Invoice sent to client successfully');
     } catch (error) {
       toast.error('Failed to send invoice');
-      console.error('Error sending invoice:', error);
+      logger.error('Error sending invoice:', error);
     }
   };
 
@@ -131,7 +128,7 @@ const InvoiceList = () => {
       toast.success('PDF downloaded successfully');
     } catch (error) {
       toast.error('Failed to download PDF');
-      console.error('Error downloading PDF:', error);
+      logger.error('Error downloading PDF:', error);
     }
   };
 

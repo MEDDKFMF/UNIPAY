@@ -1,5 +1,6 @@
 // Notification service for API calls
 import api from './api';
+import logger from '../utils/logger';
 
 
 // Get all notifications with optional filters
@@ -13,7 +14,7 @@ export const getNotifications = async (params = {}) => {
     const response = await api.get('/api/messaging/notifications/', { params });
     return response.data;
   } catch (error) {
-    console.error('Error fetching notifications:', error);
+    logger.error('Error fetching notifications:', error);
     throw error;
   }
 };
@@ -24,7 +25,7 @@ export const getNotification = async (id) => {
     const response = await api.get(`/api/messaging/notifications/${id}/`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching notification:', error);
+    logger.error('Error fetching notification:', error);
     throw error;
   }
 };
@@ -37,7 +38,7 @@ export const markNotificationAsRead = async (id) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error marking notification as read:', error);
+    logger.error('Error marking notification as read:', error);
     throw error;
   }
 };
@@ -48,7 +49,7 @@ export const markAllNotificationsAsRead = async () => {
     const response = await api.post('/api/messaging/notifications/mark-all-read/');
     return response.data;
   } catch (error) {
-    console.error('Error marking all notifications as read:', error);
+    logger.error('Error marking all notifications as read:', error);
     throw error;
   }
 };
@@ -59,7 +60,7 @@ export const deleteNotification = async (id) => {
     await api.delete(`/api/messaging/notifications/${id}/`);
     return true;
   } catch (error) {
-    console.error('Error deleting notification:', error);
+    logger.error('Error deleting notification:', error);
     throw error;
   }
 };
@@ -70,7 +71,7 @@ export const createNotification = async (notificationData) => {
     const response = await api.post('/api/messaging/notifications/', notificationData);
     return response.data;
   } catch (error) {
-    console.error('Error creating notification:', error);
+    logger.error('Error creating notification:', error);
     throw error;
   }
 };
@@ -81,7 +82,7 @@ export const getNotificationPreferences = async () => {
     const response = await api.get('/api/messaging/notification-preferences/');
     return response.data;
   } catch (error) {
-    console.error('Error fetching notification preferences:', error);
+    logger.error('Error fetching notification preferences:', error);
     throw error;
   }
 };
@@ -92,7 +93,7 @@ export const updateNotificationPreferences = async (preferences) => {
     const response = await api.put('/api/messaging/notification-preferences/', preferences);
     return response.data;
   } catch (error) {
-    console.error('Error updating notification preferences:', error);
+    logger.error('Error updating notification preferences:', error);
     throw error;
   }
 };
@@ -107,7 +108,7 @@ export const sendTestNotification = async (type = 'system_update', data = {}) =>
     });
     return response.data;
   } catch (error) {
-    console.error('Error sending test notification:', error);
+    logger.error('Error sending test notification:', error);
     throw error;
   }
 };
@@ -118,7 +119,7 @@ export const getNotificationStats = async () => {
     const response = await api.get('/api/messaging/notification-stats/');
     return response.data;
   } catch (error) {
-    console.error('Error fetching notification stats:', error);
+    logger.error('Error fetching notification stats:', error);
     throw error;
   }
 };

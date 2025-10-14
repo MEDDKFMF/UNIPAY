@@ -17,6 +17,7 @@ import { createInvoice } from '../services/invoiceService';
 import { getClients } from '../services/clientService';
 import { useNotifications } from '../context/NotificationContext';
 import { CURRENCIES, getPopularCurrencies } from '../config/currencies';
+import logger from '../utils/logger';
 
 const schema = yup.object({
   client: yup.string().required('Please select a client'),
@@ -72,7 +73,7 @@ const CreateInvoice = () => {
       const response = await getClients();
       setClients(response.data || response || []);
     } catch (error) {
-      console.error('Error fetching clients:', error);
+      logger.error('Error fetching clients:', error);
     } finally {
       setClientsLoading(false);
     }
@@ -95,7 +96,7 @@ const CreateInvoice = () => {
       setExchangeRate(roundedRate);
       setValue('exchange_rate', roundedRate);
     } catch (error) {
-      console.error('Error fetching exchange rate:', error);
+      logger.error('Error fetching exchange rate:', error);
       setExchangeRate(1);
       setValue('exchange_rate', 1);
     } finally {
@@ -140,7 +141,7 @@ const CreateInvoice = () => {
     try {
     setLoading(true);
       
-      console.log('Form data before processing:', data);
+  logger.debug('Form data before processing:', data);
       
       // Process form data
       const processedData = {
@@ -159,7 +160,7 @@ const CreateInvoice = () => {
         }))
       };
 
-      console.log('Processed data being sent:', processedData);
+  logger.debug('Processed data being sent:', processedData);
 
       const response = await createInvoice(processedData);
       
@@ -179,7 +180,7 @@ const CreateInvoice = () => {
       
       navigate('/app/invoices');
     } catch (error) {
-      console.error('Error creating invoice:', error);
+      logger.error('Error creating invoice:', error);
       alert(`Error creating invoice: ${error.message}`);
     } finally {
       setLoading(false);

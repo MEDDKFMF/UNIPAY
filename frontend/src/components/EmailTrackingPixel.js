@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import api from '../services/api';
+import logger from '../utils/logger';
 
 const EmailTrackingPixel = ({ invoiceId }) => {
   useEffect(() => {
@@ -8,7 +9,7 @@ const EmailTrackingPixel = ({ invoiceId }) => {
       try {
         await api.post(`/api/invoices/${invoiceId}/track/opened/`);
       } catch (error) {
-        console.error('Error tracking email opened:', error);
+        logger.error('Error tracking email opened:', error);
       }
     };
 

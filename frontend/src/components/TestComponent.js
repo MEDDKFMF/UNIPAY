@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
+import logger from '../utils/logger';
 
 const TestComponent = () => {
   const [testData, setTestData] = useState(null);
@@ -24,7 +25,7 @@ const TestComponent = () => {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
     } catch (error) {
-      console.error('Backend connection test failed:', error);
+      logger.error('Backend connection test failed:', error);
       toast.error('Backend connection failed: ' + error.message);
     } finally {
       setLoading(false);

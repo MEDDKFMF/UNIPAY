@@ -1,11 +1,12 @@
 import api from './api';
+import logger from '../utils/logger';
 
 /**
  * Payment Link Service
  * Handles creation and management of payment links for invoices
  */
 
-export const createPaymentLink = async (invoiceId, paymentMethod = 'flutterwave') => {
+export const createPaymentLink = async (invoiceId, paymentMethod = 'stripe') => {
   try {
     const response = await api.post('/api/payments/create-payment-link/', {
       invoice_id: invoiceId,
@@ -13,7 +14,7 @@ export const createPaymentLink = async (invoiceId, paymentMethod = 'flutterwave'
     });
     return response.data;
   } catch (error) {
-    console.error('Error creating payment link:', error);
+    logger.error('Error creating payment link:', error);
     throw error;
   }
 };
@@ -23,7 +24,7 @@ export const getPaymentStatus = async (paymentId) => {
     const response = await api.get(`/api/payments/status/${paymentId}/`);
     return response.data;
   } catch (error) {
-    console.error('Error getting payment status:', error);
+    logger.error('Error getting payment status:', error);
     throw error;
   }
 };
@@ -65,7 +66,7 @@ export const sharePaymentLink = async (link, invoiceNumber) => {
       await navigator.share(shareData);
       return true;
     } catch (error) {
-      console.error('Error sharing payment link:', error);
+      logger.error('Error sharing payment link:', error);
       return false;
     }
   } else {
@@ -74,7 +75,7 @@ export const sharePaymentLink = async (link, invoiceNumber) => {
       await copyPaymentLink(link);
       return true;
     } catch (error) {
-      console.error('Error copying payment link:', error);
+      logger.error('Error copying payment link:', error);
       return false;
     }
   }
@@ -91,9 +92,7 @@ export const validatePaymentLink = (link) => {
     const url = new URL(link);
     // Check if it's a valid payment link
     return url.protocol === 'https:' && (
-      url.hostname.includes('flutterwave') || 
-      url.hostname.includes('checkout') ||
-      url.pathname.includes('/app/payments/')
+      url.pathname.includes('/app/payments/') || url.hostname.includes('checkout')
     );
   } catch (error) {
     return false;

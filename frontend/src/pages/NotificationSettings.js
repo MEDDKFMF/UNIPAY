@@ -8,6 +8,7 @@ import {
   DEFAULT_PREFERENCES 
 } from '../services/notificationService';
 import { toast } from 'react-hot-toast';
+import logger from '../utils/logger';
 
 const NotificationSettings = () => {
   const { showToast } = useNotifications();
@@ -26,7 +27,7 @@ const NotificationSettings = () => {
       const data = await getNotificationPreferences();
       setPreferences({ ...DEFAULT_PREFERENCES, ...data });
     } catch (error) {
-      console.error('Error fetching preferences:', error);
+      logger.error('Error fetching preferences:', error);
       toast.error('Failed to load notification preferences');
     } finally {
       setLoading(false);
@@ -39,7 +40,7 @@ const NotificationSettings = () => {
       await updateNotificationPreferences(preferences);
       toast.success('Notification preferences saved successfully');
     } catch (error) {
-      console.error('Error saving preferences:', error);
+      logger.error('Error saving preferences:', error);
       toast.error('Failed to save notification preferences');
     } finally {
       setSaving(false);
@@ -52,7 +53,7 @@ const NotificationSettings = () => {
       await sendTestNotification(type);
       showToast(`Test ${type} notification sent!`, 'success');
     } catch (error) {
-      console.error('Error sending test notification:', error);
+      logger.error('Error sending test notification:', error);
       toast.error('Failed to send test notification');
     } finally {
       setTesting(false);

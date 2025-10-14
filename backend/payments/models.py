@@ -11,8 +11,6 @@ class UserPaymentMethod(models.Model):
     Platform handles gateway integration, users just specify their details.
     """
     PAYMENT_TYPE_CHOICES = [
-        ('unipay', 'Unipay (M-Pesa)'),
-        ('flutterwave', 'Flutterwave'),
         ('bank_account', 'Bank Account'),
         ('other', 'Other'),
     ]
@@ -131,8 +129,6 @@ class ClientPaymentMethod(models.Model):
     Users can store client card/account details for recurring billing.
     """
     PAYMENT_TYPE_CHOICES = [
-        ('unipay', 'Unipay (M-Pesa)'),
-        ('flutterwave', 'Flutterwave'),
         ('bank_account', 'Bank Account'),
         ('other', 'Other'),
     ]
@@ -282,8 +278,8 @@ class PlatformPaymentGateway(models.Model):
     Contains API keys and settings managed by platform administrators.
     """
     GATEWAY_CHOICES = [
-        ('unipay', 'Unipay (M-Pesa)'),
-        ('flutterwave', 'Flutterwave'),
+        ('stripe', 'Stripe'),
+        ('mpesa', 'M-Pesa (legacy)'),
     ]
     
     name = models.CharField(
@@ -368,8 +364,7 @@ class Payment(models.Model):
     ]
     
     PAYMENT_METHOD_CHOICES = [
-        ('unipay', 'Unipay (M-Pesa)'),
-        ('flutterwave', 'Flutterwave'),
+        ('stripe', 'Stripe'),
         ('manual', 'Manual Entry'),
         ('cash', 'Cash'),
         ('bank_transfer', 'Bank Transfer'),

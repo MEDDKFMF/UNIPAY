@@ -13,6 +13,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import logger from '../utils/logger';
 import { getPayments } from '../services/paymentService';
 import { getExchangeRates } from '../services/exchangeRateService';
 import { CURRENCIES, getPopularCurrencies } from '../config/currencies';
@@ -43,12 +44,12 @@ const Payments = () => {
   // Currency conversion function
   const convertToCurrency = (amount, fromCurrency, toCurrency) => {
     if (!exchangeRates) {
-      console.log(`No exchange rates available, returning original amount: ${amount} ${fromCurrency}`);
+      logger.debug(`No exchange rates available, returning original amount: ${amount} ${fromCurrency}`);
       return amount;
     }
     
     if (fromCurrency === toCurrency) {
-      console.log(`Same currency, no conversion needed: ${amount} ${fromCurrency}`);
+  logger.debug(`Same currency, no conversion needed: ${amount} ${fromCurrency}`);
       return amount;
     }
     
@@ -65,16 +66,16 @@ const Payments = () => {
       const fromRate = exchangeRates[fromCurrency] || 1;
       const toRate = exchangeRates[toCurrency] || 1;
       
-      console.log(`Converting ${amount} ${fromCurrency} to ${toCurrency}: fromRate=${fromRate}, toRate=${toRate}`);
+  logger.debug(`Converting ${amount} ${fromCurrency} to ${toCurrency}: fromRate=${fromRate}, toRate=${toRate}`);
       
       // Convert to USD first, then to target currency
       const usdAmount = amount / fromRate;
       const convertedAmount = usdAmount * toRate;
       
-      console.log(`Conversion result: ${amount} ${fromCurrency} -> ${usdAmount} USD -> ${convertedAmount} ${toCurrency}`);
+  logger.debug(`Conversion result: ${amount} ${fromCurrency} -> ${usdAmount} USD -> ${convertedAmount} ${toCurrency}`);
       return convertedAmount;
     } catch (error) {
-      console.error('Currency conversion error:', error);
+      logger.error('Currency conversion error:', error);
       return amount; // Return original amount if conversion fails
     }
   };
@@ -99,12 +100,12 @@ const Payments = () => {
   const fetchExchangeRates = async () => {
     try {
       setCurrencyLoading(true);
-      console.log('Payments - Fetching exchange rates...');
-      const rates = await getExchangeRates();
-      console.log('Payments - Exchange rates received:', rates);
+  logger.debug('Payments - Fetching exchange rates...');
+  const rates = await getExchangeRates();
+  logger.debug('Payments - Exchange rates received:', rates);
       setExchangeRates(rates);
     } catch (error) {
-      console.error('Payments - Error fetching exchange rates:', error);
+      logger.error('Payments - Error fetching exchange rates:', error);
       toast.error('Failed to fetch exchange rates');
     } finally {
       setCurrencyLoading(false);
@@ -156,7 +157,7 @@ const Payments = () => {
         totalCount: paymentsList.length
       });
     } catch (error) {
-      console.error('Error fetching payments:', error);
+      logger.error('Error fetching payments:', error);
       toast.error('Failed to fetch payments');
       setPayments([]);
       setStats({
@@ -241,10 +242,6 @@ const Payments = () => {
     switch (method?.toLowerCase()) {
       case 'stripe':
         return '💳';
-      case 'flutterwave':
-        return '🌍';
-      case 'mpesa':
-        return '📱';
       case 'manual':
         return '✋';
       default:

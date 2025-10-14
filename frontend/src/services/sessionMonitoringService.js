@@ -1,4 +1,5 @@
 import axios from 'axios';
+import logger from '../utils/logger';
 
 const API_BASE_URL = 'https://unipay-oyn6.onrender.com';
 
@@ -60,7 +61,7 @@ export const sessionMonitoringService = {
       const response = await sessionAPI.get('/api/auth/admin/sessions/realtime/');
       return response.data;
     } catch (error) {
-      console.error('Error fetching real-time sessions:', error);
+      logger.error('Error fetching real-time sessions:', error);
       throw error;
     }
   },
@@ -71,7 +72,7 @@ export const sessionMonitoringService = {
       const response = await sessionAPI.get('/api/auth/admin/sessions/metrics/');
       return response.data;
     } catch (error) {
-      console.error('Error fetching session metrics:', error);
+      logger.error('Error fetching session metrics:', error);
       throw error;
     }
   },
@@ -82,7 +83,7 @@ export const sessionMonitoringService = {
       const response = await sessionAPI.get('/api/auth/admin/sessions/', { params });
       return response.data;
     } catch (error) {
-      console.error('Error fetching sessions:', error);
+      logger.error('Error fetching sessions:', error);
       throw error;
     }
   },
@@ -93,7 +94,7 @@ export const sessionMonitoringService = {
       const response = await sessionAPI.get(`/api/auth/admin/sessions/${sessionId}/`);
       return response.data;
     } catch (error) {
-      console.error('Error fetching session details:', error);
+      logger.error('Error fetching session details:', error);
       throw error;
     }
   },
@@ -106,7 +107,7 @@ export const sessionMonitoringService = {
       });
       return response.data;
     } catch (error) {
-      console.error('Error terminating session:', error);
+      logger.error('Error terminating session:', error);
       throw error;
     }
   },
@@ -121,7 +122,7 @@ export const sessionMonitoringService = {
       });
       return response.data;
     } catch (error) {
-      console.error('Error performing bulk action:', error);
+      logger.error('Error performing bulk action:', error);
       throw error;
     }
   },
@@ -132,7 +133,7 @@ export const sessionMonitoringService = {
       const response = await sessionAPI.get('/api/auth/admin/security-alerts/', { params });
       return response.data;
     } catch (error) {
-      console.error('Error fetching security alerts:', error);
+      logger.error('Error fetching security alerts:', error);
       throw error;
     }
   },
@@ -143,7 +144,7 @@ export const sessionMonitoringService = {
       const response = await sessionAPI.patch(`/security-alerts/${alertId}/read/`);
       return response.data;
     } catch (error) {
-      console.error('Error marking alert as read:', error);
+      logger.error('Error marking alert as read:', error);
       throw error;
     }
   }

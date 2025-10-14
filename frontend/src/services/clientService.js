@@ -1,5 +1,6 @@
 // Client service for API calls
 import api from './api';
+import logger from '../utils/logger';
 
 // Get all clients with optional filters
 export const getClients = async (params = new URLSearchParams()) => {
@@ -8,7 +9,7 @@ export const getClients = async (params = new URLSearchParams()) => {
     // Handle paginated response
     return response.data.results || response.data;
   } catch (error) {
-    console.error('Error fetching clients:', error);
+    logger.error('Error fetching clients:', error);
     throw error;
   }
 };
@@ -19,7 +20,7 @@ export const getClient = async (id) => {
     const response = await api.get(`/api/clients/${id}/`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching client:', error);
+    logger.error('Error fetching client:', error);
     throw error;
   }
 };
@@ -30,7 +31,7 @@ export const createClient = async (clientData) => {
     const response = await api.post('/api/clients/', clientData);
     return response.data;
   } catch (error) {
-    console.error('Error creating client:', error);
+    logger.error('Error creating client:', error);
     throw error;
   }
 };
@@ -41,7 +42,7 @@ export const updateClient = async (id, clientData) => {
     const response = await api.put(`/api/clients/${id}/`, clientData);
     return response.data;
   } catch (error) {
-    console.error('Error updating client:', error);
+    logger.error('Error updating client:', error);
     throw error;
   }
 };
@@ -52,7 +53,7 @@ export const deleteClient = async (id) => {
     await api.delete(`/api/clients/${id}/`);
     return true;
   } catch (error) {
-    console.error('Error deleting client:', error);
+    logger.error('Error deleting client:', error);
     throw error;
   }
 };
@@ -65,7 +66,7 @@ export const searchClients = async (searchQuery) => {
     // Handle paginated response
     return response.data.results || response.data;
   } catch (error) {
-    console.error('Error searching clients:', error);
+    logger.error('Error searching clients:', error);
     throw error;
   }
 };
@@ -76,7 +77,7 @@ export const getClientStats = async () => {
     const response = await api.get('/api/auth/user-stats/');
     return response.data;
   } catch (error) {
-    console.error('Error fetching client stats:', error);
+    logger.error('Error fetching client stats:', error);
     throw error;
   }
 }; 

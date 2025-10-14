@@ -142,39 +142,24 @@ class ClientPaymentMethodDetailView(generics.RetrieveUpdateDestroyAPIView):
 @permission_classes([permissions.IsAuthenticated])
 def create_checkout_session(request):
     """
-    Create payment session for invoice payment using Unipay (M-Pesa) or Flutterwave.
+    Create payment session for invoice payment.
+
+    Legacy gateways (Unipay/Flutterwave) have been removed. This endpoint now
+    supports Stripe Checkout sessions (server-side) and manual payments.
     """
     serializer = CreateCheckoutSessionSerializer(data=request.data)
     if serializer.is_valid():
         invoice_id = serializer.validated_data['invoice_id']
         success_url = serializer.validated_data['success_url']
         cancel_url = serializer.validated_data['cancel_url']
-        payment_method = request.data.get('payment_method', 'unipay')
+        payment_method = request.data.get('payment_method', 'stripe')
 
         try:
             invoice = Invoice.objects.get(id=invoice_id, created_by=request.user)
 
-            # Validate payment method
-            if payment_method not in ['unipay', 'flutterwave', 'stripe']:
-                return Response(
-                    {'error': 'Invalid payment method. Supported: unipay, flutterwave, stripe'}, 
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-
-            # Get user's payment receiving method for this gateway where applicable
-            user_payment_method = None
-            if payment_method in ['unipay', 'flutterwave']:
-                user_payment_method = UserPaymentMethod.objects.filter(
-                    user=request.user,
-                    payment_type=payment_method,
-                    is_active=True
-                ).first()
-
-                if not user_payment_method:
-                    return Response(
-                        {'error': f'Please configure your {payment_method} receiving details in Payment Settings first.'}, 
-                        status=status.HTTP_400_BAD_REQUEST
-                    )
+            # Only stripe and manual are supported now
+            if payment_method not in ['stripe', 'manual']:
+                return Response({'error': 'Invalid payment method. Supported: stripe, manual'}, status=status.HTTP_400_BAD_REQUEST)
 
             # Create payment record first
             payment = Payment.objects.create(
@@ -186,95 +171,16 @@ def create_checkout_session(request):
                 gateway_session_id=f"session_{int(timezone.now().timestamp())}",
                 created_by=request.user
             )
-            
-            # Get platform gateway configuration
-            platform_gateway = PlatformPaymentGateway.objects.get(
-                name=payment_method,
-                is_active=True
-            )
-            
-            # Import payment services
-            from .payment_services import UnipayService, FlutterwaveService
-            
-            # Prepare payment data based on gateway
-            if payment_method == 'unipay':
-                # Initialize Unipay service with platform credentials
-                unipay_service = UnipayService(
-                    consumer_key=platform_gateway.api_public_key,
-                    consumer_secret=platform_gateway.api_secret_key,
-                    shortcode="N/A",  # Will be provided by Unipay
-                    callback_url=f"{settings.FRONTEND_URL}/api/payments/mpesa-callback/"
-                )
-                
-                # M-Pesa STK Push
-                result, error = unipay_service.stk_push(
-                    phone_number=user_payment_method.mpesa_phone_number,
-                    amount=float(invoice.total_amount),
-                    account_reference=f"INV{invoice.id}",
-                    transaction_desc=f"Payment for Invoice {invoice.invoice_number}"
-                )
-                
-                if error:
-                    payment.status = 'failed'
-                    payment.error_message = error
-                    payment.save()
-                    return Response({'error': error}, status=status.HTTP_400_BAD_REQUEST)
-                
-                # Update payment with M-Pesa response
-                payment.gateway_session_id = result.get('CheckoutRequestID', payment.gateway_session_id)
-                payment.save()
-                
-                return Response({
-                    'payment_id': payment.id,
-                    'checkout_url': success_url,
-                    'message': 'M-Pesa STK Push initiated. Please check your phone to complete payment.',
-                    'merchant_request_id': result.get('MerchantRequestID'),
-                    'checkout_request_id': result.get('CheckoutRequestID')
-                })
-                
-            elif payment_method == 'flutterwave':
-                # Initialize Flutterwave service with platform credentials
-                flutterwave_service = FlutterwaveService(
-                    client_id=platform_gateway.api_public_key,
-                    client_secret=platform_gateway.api_secret_key,
-                    encryption_key=platform_gateway.webhook_secret
-                )
-                
-                # Create Flutterwave payment link
-                checkout_url, error = flutterwave_service.create_payment_link(
-                    amount=float(invoice.total_amount),
-                    email=request.user.email,
-                    phone_number=user_payment_method.flutterwave_phone or user_payment_method.mpesa_phone_number,
-                    name=f"{request.user.first_name} {request.user.last_name}".strip(),
-                    currency=invoice.currency,
-                    description=f"Payment for Invoice {invoice.invoice_number}"
-                )
-                
-                if error:
-                    payment.status = 'failed'
-                    payment.error_message = error
-                    payment.save()
-                    return Response({'error': error}, status=status.HTTP_400_BAD_REQUEST)
-                
-                return Response({
-                    'payment_id': payment.id,
-                    'checkout_url': checkout_url,
-                    'message': 'Redirecting to Flutterwave payment page...'
-                })
-            elif payment_method == 'stripe':
-                # Create a Stripe Checkout Session and return the hosted URL
-                try:
-                    # Amount in smallest currency unit (e.g., cents)
-                    amount_cents = int(round(float(invoice.total_amount) * 100))
 
+            if payment_method == 'stripe':
+                try:
+                    amount_cents = int(round(float(invoice.total_amount) * 100))
                     session = stripe.checkout.Session.create(
                         payment_method_types=['card'],
                         line_items=[{
                             'price_data': {
                                 'currency': invoice.currency.lower(),
-                                'product_data': {
-                                    'name': f'Invoice {invoice.invoice_number}',
-                                },
+                                'product_data': {'name': f'Invoice {invoice.invoice_number}'},
                                 'unit_amount': amount_cents,
                             },
                             'quantity': 1,
@@ -282,40 +188,29 @@ def create_checkout_session(request):
                         mode='payment',
                         success_url=success_url,
                         cancel_url=cancel_url,
-                        metadata={
-                            'invoice_id': str(invoice.id),
-                            'user_id': str(request.user.id),
-                        }
+                        metadata={'invoice_id': str(invoice.id), 'user_id': str(request.user.id)}
                     )
 
-                    # Persist session info to payment record
                     payment.gateway_session_id = session.id
-                    # payment_intent may be None until completed; store if present
                     if getattr(session, 'payment_intent', None):
                         payment.payment_intent_id = session.payment_intent
                     payment.save()
 
-                    return Response({
-                        'payment_id': payment.id,
-                        'checkout_url': session.url,
-                        'message': 'Redirecting to Stripe Checkout...'
-                    })
+                    return Response({'payment_id': payment.id, 'checkout_url': session.url, 'message': 'Redirecting to Stripe Checkout...'})
                 except Exception as e:
                     payment.status = 'failed'
                     payment.error_message = str(e)
                     payment.save()
                     return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-            
+
+            else:  # manual
+                # For manual payments we simply return the payment record
+                return Response({'payment_id': payment.id, 'message': 'Manual payment record created', 'payment_method': 'manual'})
+
         except Invoice.DoesNotExist:
-            return Response(
-                {'error': 'Invoice not found'}, 
-                status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({'error': 'Invoice not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return Response(
-                {'error': str(e)}, 
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     else:
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -323,166 +218,15 @@ def create_checkout_session(request):
 @csrf_exempt
 @require_http_methods(["POST"])
 def mpesa_callback(request):
-    """
-    Handle M-Pesa STK Push callback
-    """
-    try:
-        data = json.loads(request.body)
-        
-        # Extract callback data
-        callback_metadata = data.get('Body', {}).get('stkCallback', {}).get('CallbackMetadata', {})
-        merchant_request_id = data.get('Body', {}).get('stkCallback', {}).get('MerchantRequestID')
-        checkout_request_id = data.get('Body', {}).get('stkCallback', {}).get('CheckoutRequestID')
-        result_code = data.get('Body', {}).get('stkCallback', {}).get('ResultCode')
-        
-        # Find payment by merchant request ID or checkout request ID
-        payment = Payment.objects.filter(
-            gateway_session_id__in=[merchant_request_id, checkout_request_id]
-        ).first()
-        
-        if not payment:
-            logger.warning(f"Payment not found for callback: {merchant_request_id}")
-            return JsonResponse({'status': 'error', 'message': 'Payment not found'})
-        
-        if result_code == 0:  # Success
-            # Extract payment details
-            amount = callback_metadata.get('Amount')
-            mpesa_receipt_number = callback_metadata.get('MpesaReceiptNumber')
-            transaction_date = callback_metadata.get('TransactionDate')
-            phone_number = callback_metadata.get('PhoneNumber')
-            
-            # Update payment status
-            payment.status = 'completed'
-            payment.transaction_id = mpesa_receipt_number
-            payment.payment_intent_id = mpesa_receipt_number
-            payment.metadata.update({
-                'mpesa_receipt_number': mpesa_receipt_number,
-                'transaction_date': transaction_date,
-                'phone_number': phone_number,
-                'callback_data': data
-            })
-            payment.save()
-            
-            # Update invoice status to paid
-            invoice = payment.invoice
-            invoice.status = 'paid'
-            invoice.save()
-            
-            logger.info(f"Payment {payment.id} completed successfully")
-            
-        else:  # Failed
-            payment.status = 'failed'
-            payment.metadata.update({
-                'callback_data': data,
-                'error_code': result_code
-            })
-            payment.save()
-            
-            logger.warning(f"Payment {payment.id} failed with code {result_code}")
-        
-        return JsonResponse({'status': 'success'})
-        
-    except Exception as e:
-        logger.error(f"M-Pesa callback error: {str(e)}")
-        return JsonResponse({'status': 'error', 'message': str(e)})
+    # Legacy endpoint removed. Return 410 Gone to indicate it no longer exists.
+    return JsonResponse({'status': 'error', 'message': 'M-Pesa callback endpoint has been removed'}, status=410)
 
 
 @csrf_exempt
 @require_http_methods(["POST"])
 def flutterwave_webhook(request):
-    """
-    Handle Flutterwave webhook events for automatic payment processing.
-    """
-    try:
-        data = json.loads(request.body)
-        
-        # Verify webhook signature (optional but recommended)
-        # signature = request.META.get('HTTP_VERIF_HASH')
-        # if not verify_flutterwave_signature(data, signature):
-        #     return JsonResponse({'status': 'error', 'message': 'Invalid signature'})
-        
-        event_type = data.get('event')
-        
-        if event_type == 'charge.completed':
-            # Payment was successful
-            transaction_data = data.get('data', {})
-            transaction_id = transaction_data.get('id')
-            tx_ref = transaction_data.get('tx_ref')
-            amount = transaction_data.get('amount')
-            currency = transaction_data.get('currency')
-            status = transaction_data.get('status')
-            
-            # Find payment by transaction reference or ID
-            payment = Payment.objects.filter(
-                Q(transaction_id=tx_ref) | 
-                Q(transaction_id=transaction_id) |
-                Q(gateway_session_id__icontains=tx_ref)
-            ).first()
-            
-            if payment and status == 'successful':
-                # Update payment status
-                payment.status = 'completed'
-                payment.transaction_id = transaction_id
-                payment.payment_intent_id = transaction_id
-                payment.metadata.update({
-                    'flutterwave_transaction_id': transaction_id,
-                    'tx_ref': tx_ref,
-                    'amount_paid': amount,
-                    'currency': currency,
-                    'webhook_data': data
-                })
-                payment.save()
-                
-                # Update invoice status to paid
-                invoice = payment.invoice
-                invoice.status = 'paid'
-                invoice.paid_at = timezone.now()
-                invoice.payment_method = 'flutterwave'
-                invoice.save()
-                
-                # Send payment confirmation notification
-                from messaging.tasks import send_payment_confirmation
-                send_payment_confirmation.delay(invoice.id)
-                
-                logger.info(f"Flutterwave payment {payment.id} completed successfully")
-                
-            elif payment and status == 'failed':
-                payment.status = 'failed'
-                payment.error_message = f"Payment failed: {transaction_data.get('processor_response', 'Unknown error')}"
-                payment.metadata.update({
-                    'flutterwave_transaction_id': transaction_id,
-                    'tx_ref': tx_ref,
-                    'webhook_data': data
-                })
-                payment.save()
-                
-                logger.warning(f"Flutterwave payment {payment.id} failed")
-        
-        elif event_type == 'charge.failed':
-            # Payment failed
-            transaction_data = data.get('data', {})
-            tx_ref = transaction_data.get('tx_ref')
-            
-            payment = Payment.objects.filter(
-                Q(transaction_id=tx_ref) | 
-                Q(gateway_session_id__icontains=tx_ref)
-            ).first()
-            
-            if payment:
-                payment.status = 'failed'
-                payment.error_message = f"Payment failed: {transaction_data.get('processor_response', 'Unknown error')}"
-                payment.metadata.update({
-                    'webhook_data': data
-                })
-                payment.save()
-                
-                logger.warning(f"Flutterwave payment {payment.id} failed")
-        
-        return JsonResponse({'status': 'success'})
-        
-    except Exception as e:
-        logger.error(f"Flutterwave webhook error: {str(e)}")
-        return JsonResponse({'status': 'error', 'message': str(e)})
+    # Legacy endpoint removed. Return 410 Gone to indicate it no longer exists.
+    return JsonResponse({'status': 'error', 'message': 'Flutterwave webhook endpoint has been removed'}, status=410)
 
 
 @csrf_exempt

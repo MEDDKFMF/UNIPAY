@@ -16,6 +16,7 @@ import { getInvoices, getClients } from '../services/invoiceService';
 import { getExchangeRates } from '../services/exchangeRateService';
 import { CURRENCIES, getPopularCurrencies } from '../config/currencies';
 import { toast } from 'react-hot-toast';
+import logger from '../utils/logger';
 
 const Analytics = () => {
   const [loading, setLoading] = useState(true);
@@ -56,18 +57,18 @@ const Analytics = () => {
   const [currencyLoading, setCurrencyLoading] = useState(false);
 
   useEffect(() => {
-    console.log('Analytics - useEffect: fetchExchangeRates');
+    logger.debug('Analytics - useEffect: fetchExchangeRates');
     fetchExchangeRates();
   }, []);
 
   useEffect(() => {
-    console.log('Analytics - useEffect: fetchAnalytics triggered', { exchangeRates: !!exchangeRates, timeRange, currency });
+    logger.debug('Analytics - useEffect: fetchAnalytics triggered', { exchangeRates: !!exchangeRates, timeRange, currency });
     if (exchangeRates) {
       fetchAnalytics();
     } else {
       // Fallback: fetch analytics without exchange rates after a delay
       const timer = setTimeout(() => {
-        console.log('Analytics - Fallback: fetching without exchange rates');
+        logger.debug('Analytics - Fallback: fetching without exchange rates');
         fetchAnalytics();
       }, 2000);
       return () => clearTimeout(timer);
@@ -77,12 +78,12 @@ const Analytics = () => {
   const fetchExchangeRates = async () => {
     try {
       setCurrencyLoading(true);
-      console.log('Analytics - Fetching exchange rates...');
+      logger.debug('Analytics - Fetching exchange rates...');
       const rates = await getExchangeRates();
-      console.log('Analytics - Exchange rates received:', rates);
+      logger.debug('Analytics - Exchange rates received:', rates);
       setExchangeRates(rates);
     } catch (error) {
-      console.error('Analytics - Error fetching exchange rates:', error);
+      logger.error('Analytics - Error fetching exchange rates:', error);
       toast.error('Failed to fetch exchange rates');
     } finally {
       setCurrencyLoading(false);
@@ -91,12 +92,12 @@ const Analytics = () => {
 
   const convertToCurrency = (amount, fromCurrency, toCurrency) => {
     if (!exchangeRates) {
-      console.log(`Analytics - No exchange rates available, returning original amount: ${amount} ${fromCurrency}`);
+      logger.debug(`Analytics - No exchange rates available, returning original amount: ${amount} ${fromCurrency}`);
       return amount;
     }
     
     if (fromCurrency === toCurrency) {
-      console.log(`Analytics - Same currency, no conversion needed: ${amount} ${fromCurrency}`);
+      logger.debug(`Analytics - Same currency, no conversion needed: ${amount} ${fromCurrency}`);
       return amount;
     }
     
@@ -113,49 +114,54 @@ const Analytics = () => {
       const fromRate = exchangeRates[fromCurrency] || 1;
       const toRate = exchangeRates[toCurrency] || 1;
       
-      console.log(`Analytics - Converting ${amount} ${fromCurrency} to ${toCurrency}: fromRate=${fromRate}, toRate=${toRate}`);
+  logger.debug(`Analytics - Converting ${amount} ${fromCurrency} to ${toCurrency}: fromRate=${fromRate}, toRate=${toRate}`);
       
       // Convert to USD first, then to target currency
       const usdAmount = amount / fromRate;
       const convertedAmount = usdAmount * toRate;
       
-      console.log(`Analytics - Conversion result: ${amount} ${fromCurrency} -> ${usdAmount} USD -> ${convertedAmount} ${toCurrency}`);
+      logger.debug(`Analytics - Conversion result: ${amount} ${fromCurrency} -> ${usdAmount} USD -> ${convertedAmount} ${toCurrency}`);
       return convertedAmount;
     } catch (error) {
-      console.error('Analytics - Currency conversion error:', error);
+      logger.error('Analytics - Currency conversion error:', error);
       return amount; // Return original amount if conversion fails
     }
   };
 
   const formatCurrency = (amount, currencyCode) => {
     const currencySymbols = {
-      'KES': 'KSh',
-      'USD': '$',
-      'EUR': '€',
-      'GBP': '£',
-      'NGN': '₦',
-      'GHS': '₵',
-      'ZAR': 'R',
-      'UGX': 'USh',
-      'TZS': 'TSh',
-      'CNY': '¥',
-      'JPY': '¥',
-      'INR': '₹',
-      'AUD': 'A$',
-      'CAD': 'C$'
+      KES: 'KSh',
+      USD: '$',
+      EUR: '€',
+      GBP: '£',
+      NGN: '₦',
+      GHS: '₵',
+      ZAR: 'R',
+      UGX: 'USh',
+      TZS: 'TSh',
+      CNY: '¥',
+      JPY: '¥',
+      INR: '₹',
+      AUD: 'A$',
+      CAD: 'C$'
     };
-    
-    const symbol = currencySymbols[currencyCode] || currencyCode;
-    return `${symbol} ${parseFloat(amount).toLocaleString('en-US', { 
-      minimumFractionDigits: 2, 
-      maximumFractionDigits: 2 
-    })}`;
+
+    const symbol = currencySymbols[currencyCode] || currencyCode || '';
+    try {
+      return `${symbol} ${parseFloat(amount).toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      })}`;
+    } catch (e) {
+      logger.error('Analytics - formatCurrency error:', e);
+      return `${symbol} ${amount}`;
+    }
   };
 
   const fetchAnalytics = async () => {
     try {
-      setLoading(true);
-      console.log('Analytics - Starting fetchAnalytics...');
+  setLoading(true);
+  logger.debug('Analytics - Starting fetchAnalytics...');
       
       // Fetch invoices and clients data
       const [invoicesResponse, clientsResponse] = await Promise.all([
@@ -163,12 +169,12 @@ const Analytics = () => {
         getClients()
       ]);
 
-      console.log('Analytics - Raw responses:', { invoicesResponse, clientsResponse });
+  logger.debug('Analytics - Raw responses:', { invoicesResponse, clientsResponse });
 
       const invoices = invoicesResponse.results || invoicesResponse || [];
       const clients = clientsResponse.results || clientsResponse || [];
       
-      console.log('Analytics - Processed data:', { invoices, clients });
+  logger.debug('Analytics - Processed data:', { invoices, clients });
 
       // Calculate analytics
       const now = new Date();
@@ -182,18 +188,18 @@ const Analytics = () => {
 
       // Calculate metrics with currency conversion
       const paidInvoices = filteredInvoices.filter(inv => inv.status === 'paid' || inv.status === 'PAID');
-      console.log('Analytics - Paid invoices:', paidInvoices);
-      console.log('Analytics - Exchange rates:', exchangeRates);
-      console.log('Analytics - Selected currency:', currency);
+  logger.debug('Analytics - Paid invoices:', paidInvoices);
+  logger.debug('Analytics - Exchange rates:', exchangeRates);
+  logger.debug('Analytics - Selected currency:', currency);
       
       const totalRevenue = paidInvoices.reduce((sum, inv) => {
         const amount = parseFloat(inv.total_amount) || 0;
         const convertedAmount = convertToCurrency(amount, inv.currency, currency);
-        console.log(`Analytics - Invoice ${inv.invoice_number}: ${amount} ${inv.currency} -> ${convertedAmount} ${currency}`);
+  logger.debug(`Analytics - Invoice ${inv.invoice_number}: ${amount} ${inv.currency} -> ${convertedAmount} ${currency}`);
         return sum + convertedAmount;
       }, 0);
       
-      console.log('Analytics - Total revenue calculated:', totalRevenue);
+  logger.debug('Analytics - Total revenue calculated:', totalRevenue);
 
       const totalInvoices = filteredInvoices.length;
       const paidInvoicesCount = paidInvoices.length;
@@ -356,7 +362,7 @@ const Analytics = () => {
       });
 
     } catch (error) {
-      console.error('Error fetching analytics:', error);
+      logger.error('Error fetching analytics:', error);
       toast.error('Failed to load analytics data');
     } finally {
       setLoading(false);

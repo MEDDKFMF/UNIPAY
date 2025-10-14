@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import logger from '../utils/logger';
 
 const AdminGuard = ({ children }) => {
   const { user, loading } = useAuth();
@@ -14,11 +15,11 @@ const AdminGuard = ({ children }) => {
   }
 
   if (!user || user.role !== 'platform_admin') {
-    console.log('AdminGuard: User not admin', { user: user?.username, role: user?.role });
+    logger.debug('AdminGuard: User not admin', { user: user?.username, role: user?.role });
     return <Navigate to="/app/dashboard" replace />;
   }
   
-  console.log('AdminGuard: User is admin, allowing access', { user: user?.username, role: user?.role });
+  logger.debug('AdminGuard: User is admin, allowing access', { user: user?.username, role: user?.role });
 
   return children ? children : <Outlet />;
 };

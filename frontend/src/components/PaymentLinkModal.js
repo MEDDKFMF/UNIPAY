@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { X, Copy, Share2, ExternalLink, Check, AlertCircle } from 'lucide-react';
 import { createPaymentLink, copyPaymentLink, sharePaymentLink, generateQRCode } from '../services/paymentLinkService';
 import { toast } from 'react-hot-toast';
+import logger from '../utils/logger';
 
 const PaymentLinkModal = ({ isOpen, onClose, invoice, onPaymentLinkCreated }) => {
   const [loading, setLoading] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('flutterwave');
+  const [paymentMethod, setPaymentMethod] = useState('stripe');
   const [paymentLink, setPaymentLink] = useState(null);
   const [copied, setCopied] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState(null);
@@ -26,7 +27,7 @@ const PaymentLinkModal = ({ isOpen, onClose, invoice, onPaymentLinkCreated }) =>
       
       toast.success('Payment link created successfully!');
     } catch (error) {
-      console.error('Error creating payment link:', error);
+      logger.error('Error creating payment link:', error);
       toast.error(error.response?.data?.error || 'Failed to create payment link');
     } finally {
       setLoading(false);
@@ -42,7 +43,7 @@ const PaymentLinkModal = ({ isOpen, onClose, invoice, onPaymentLinkCreated }) =>
       toast.success('Payment link copied to clipboard!');
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error('Error copying link:', error);
+      logger.error('Error copying link:', error);
       toast.error('Failed to copy payment link');
     }
   };
@@ -58,7 +59,7 @@ const PaymentLinkModal = ({ isOpen, onClose, invoice, onPaymentLinkCreated }) =>
         toast.error('Failed to share payment link');
       }
     } catch (error) {
-      console.error('Error sharing link:', error);
+      logger.error('Error sharing link:', error);
       toast.error('Failed to share payment link');
     }
   };
@@ -117,27 +118,27 @@ const PaymentLinkModal = ({ isOpen, onClose, invoice, onPaymentLinkCreated }) =>
                 </label>
                 <div className="grid grid-cols-2 gap-3">
                   <button
-                    onClick={() => setPaymentMethod('flutterwave')}
+                    onClick={() => setPaymentMethod('stripe')}
                     className={`p-4 border-2 rounded-lg text-left transition-colors ${
-                      paymentMethod === 'flutterwave'
+                      paymentMethod === 'stripe'
                         ? 'border-blue-500 bg-blue-50 text-blue-900'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
-                    <div className="font-medium">Flutterwave</div>
-                    <div className="text-sm text-gray-600">Cards, Bank Transfer, Mobile Money</div>
+                    <div className="font-medium">Card (Stripe)</div>
+                    <div className="text-sm text-gray-600">Pay with card via Stripe Checkout</div>
                   </button>
-                  
+
                   <button
-                    onClick={() => setPaymentMethod('unipay')}
+                    onClick={() => setPaymentMethod('manual')}
                     className={`p-4 border-2 rounded-lg text-left transition-colors ${
-                      paymentMethod === 'unipay'
+                      paymentMethod === 'manual'
                         ? 'border-blue-500 bg-blue-50 text-blue-900'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
-                    <div className="font-medium">M-Pesa (Unipay)</div>
-                    <div className="text-sm text-gray-600">Mobile Money Payments</div>
+                    <div className="font-medium">Manual</div>
+                    <div className="text-sm text-gray-600">Record an offline or bank transfer payment</div>
                   </button>
                 </div>
               </div>
@@ -147,7 +148,7 @@ const PaymentLinkModal = ({ isOpen, onClose, invoice, onPaymentLinkCreated }) =>
                 <div className="flex items-center p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                   <AlertCircle className="w-5 h-5 text-yellow-600 mr-3" />
                   <div className="text-sm text-yellow-800">
-                    This invoice is already marked as paid. Creating a payment link may not be necessary.
+                  
                   </div>
                 </div>
               )}

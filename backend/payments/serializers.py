@@ -165,7 +165,7 @@ class CreateCheckoutSessionSerializer(serializers.Serializer):
     success_url = serializers.URLField()
     cancel_url = serializers.URLField()
     payment_method = serializers.ChoiceField(
-        choices=['stripe', 'flutterwave', 'mpesa'],
+        choices=['stripe', 'manual'],
         default='stripe'
     )
 

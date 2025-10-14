@@ -13,6 +13,7 @@ import {
   CreditCard
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import logger from '../utils/logger';
 import { getInvoices, getClients } from '../services/invoiceService';
 import { getExchangeRates } from '../services/exchangeRateService';
 import { CURRENCIES, getPopularCurrencies } from '../config/currencies';
@@ -41,7 +42,7 @@ const Dashboard = () => {
       const rates = await getExchangeRates();
       setExchangeRates(rates);
     } catch (error) {
-      console.error('Error fetching exchange rates:', error);
+      logger.error('Error fetching exchange rates:', error);
     }
   };
 
@@ -54,11 +55,11 @@ const Dashboard = () => {
       ]);
       
       // Debug: Log exchange rates and invoices
-      console.log('Exchange rates:', exchangeRates);
-      console.log('Exchange rates keys:', exchangeRates ? Object.keys(exchangeRates) : 'No rates');
-      console.log('USD rate:', exchangeRates?.USD);
-      console.log('KSH rate:', exchangeRates?.KSH);
-      console.log('Invoices:', invoicesData.results || []);
+  logger.debug('Exchange rates:', exchangeRates);
+  logger.debug('Exchange rates keys:', exchangeRates ? Object.keys(exchangeRates) : 'No rates');
+  logger.debug('USD rate:', exchangeRates?.USD);
+  logger.debug('KSH rate:', exchangeRates?.KSH);
+  logger.debug('Invoices:', invoicesData.results || []);
 
       const invoices = invoicesData.results || [];
       const clients = Array.isArray(clientsData.results) ? clientsData.results : (Array.isArray(clientsData) ? clientsData : []);
@@ -66,7 +67,7 @@ const Dashboard = () => {
       // Calculate stats from real data
       const totalInvoices = invoices.length;
       const paidInvoices = invoices.filter(inv => inv.status === 'paid');
-      console.log('Paid invoices:', paidInvoices);
+  logger.debug('Paid invoices:', paidInvoices);
       
       // Only calculate revenue if exchange rates are available
       let totalRevenue = 0;
@@ -74,19 +75,19 @@ const Dashboard = () => {
         totalRevenue = paidInvoices.reduce((sum, inv) => {
           const amount = parseFloat(inv.total_amount) || 0;
           const convertedAmount = convertToCurrency(amount, inv.currency, currency);
-          console.log(`Invoice ${inv.invoice_number}: ${amount} ${inv.currency} -> ${convertedAmount} ${currency}`);
+          logger.debug(`Invoice ${inv.invoice_number}: ${amount} ${inv.currency} -> ${convertedAmount} ${currency}`);
           return sum + convertedAmount;
         }, 0);
       } else {
-        console.log('Exchange rates not available, using raw amounts');
+  logger.debug('Exchange rates not available, using raw amounts');
         totalRevenue = paidInvoices.reduce((sum, inv) => {
           const amount = parseFloat(inv.total_amount) || 0;
-          console.log(`Invoice ${inv.invoice_number}: ${amount} ${inv.currency} (no conversion)`);
+          logger.debug(`Invoice ${inv.invoice_number}: ${amount} ${inv.currency} (no conversion)`);
           return sum + amount;
         }, 0);
       }
       
-      console.log('Total revenue calculated:', totalRevenue);
+  logger.debug('Total revenue calculated:', totalRevenue);
       
       const paidInvoicesCount = paidInvoices.length;
       const pendingInvoices = invoices.filter(inv => inv.status === 'sent').length;
@@ -114,7 +115,7 @@ const Dashboard = () => {
       
       setRecentInvoices(recentInvoices);
     } catch (error) {
-      console.error('Error fetching dashboard data:', error);
+      logger.error('Error fetching dashboard data:', error);
       toast.error('Failed to load dashboard data');
     } finally {
       setLoading(false);
@@ -151,12 +152,12 @@ const Dashboard = () => {
 
   const convertToCurrency = (amount, fromCurrency, toCurrency) => {
     if (!exchangeRates) {
-      console.log(`No exchange rates available: ${amount} ${fromCurrency}`);
+  logger.debug(`No exchange rates available: ${amount} ${fromCurrency}`);
       return amount;
     }
     
     if (fromCurrency === toCurrency) {
-      console.log(`Same currency, no conversion needed: ${amount} ${fromCurrency}`);
+  logger.debug(`Same currency, no conversion needed: ${amount} ${fromCurrency}`);
       return amount;
     }
     
@@ -173,10 +174,10 @@ const Dashboard = () => {
       const fromRate = exchangeRates[fromCurrency];
       const toRate = exchangeRates[toCurrency];
       
-      console.log(`Converting ${amount} ${fromCurrency} to ${toCurrency}: fromRate=${fromRate}, toRate=${toRate}`);
+  logger.debug(`Converting ${amount} ${fromCurrency} to ${toCurrency}: fromRate=${fromRate}, toRate=${toRate}`);
       
       if (!fromRate || !toRate) {
-        console.log(`Missing exchange rates for conversion: ${fromCurrency} -> ${toCurrency}`);
+  logger.debug(`Missing exchange rates for conversion: ${fromCurrency} -> ${toCurrency}`);
         return amount;
       }
       
@@ -184,10 +185,10 @@ const Dashboard = () => {
       const usdAmount = amount / fromRate;
       const convertedAmount = usdAmount * toRate;
       
-      console.log(`Conversion result: ${amount} ${fromCurrency} -> ${usdAmount} USD -> ${convertedAmount} ${toCurrency}`);
+  logger.debug(`Conversion result: ${amount} ${fromCurrency} -> ${usdAmount} USD -> ${convertedAmount} ${toCurrency}`);
       return convertedAmount;
-    } catch (error) {
-      console.error('Currency conversion error:', error);
+      } catch (error) {
+      logger.error('Currency conversion error:', error);
       return amount; // Return original amount if conversion fails
     }
   };

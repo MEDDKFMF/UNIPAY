@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import logger from '../../utils/logger';
 import api from '../../services/api';
 import { 
   ChartBarIcon, 
@@ -35,7 +36,7 @@ const AdminAnalytics = () => {
 
         setAnalytics(processedData);
       } catch (error) {
-        console.error('Error loading analytics:', error);
+  logger.error('Error loading analytics:', error);
       } finally {
         setLoading(false);
       }

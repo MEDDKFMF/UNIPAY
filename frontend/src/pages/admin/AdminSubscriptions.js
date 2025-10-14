@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import logger from '../../utils/logger';
 import api from '../../services/api';
 import { 
   EyeIcon,
@@ -40,7 +41,7 @@ const AdminSubscriptions = () => {
       setSubs(Array.isArray(subsData) ? subsData : []);
       setSubscriptionStats(statsResponse.data);
     } catch (error) {
-      console.error('Error loading subscriptions:', error);
+  logger.error('Error loading subscriptions:', error);
       setError(error.message);
       setSubs([]);
     } finally {
@@ -59,7 +60,7 @@ const AdminSubscriptions = () => {
       });
       load();
     } catch (error) {
-      console.error('Error updating subscription:', error);
+  logger.error('Error updating subscription:', error);
     }
   };
 
@@ -71,7 +72,7 @@ const AdminSubscriptions = () => {
         });
         load();
       } catch (error) {
-        console.error('Error cancelling subscription:', error);
+  logger.error('Error cancelling subscription:', error);
       }
     }
   };

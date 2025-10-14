@@ -3,6 +3,7 @@ import { Edit, Save, X, MapPin, Phone, Mail, Globe } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getInvoiceHeaderData, updateUserProfileSettings } from '../services/userService';
 import { toast } from 'react-hot-toast';
+import logger from '../utils/logger';
 
 const InvoiceHeader = ({ isEditable = false, onHeaderUpdate }) => {
   const { user } = useAuth();
@@ -26,7 +27,7 @@ const InvoiceHeader = ({ isEditable = false, onHeaderUpdate }) => {
       const data = await getInvoiceHeaderData();
       setHeaderData(data);
     } catch (error) {
-      console.error('Error loading header data:', error);
+      logger.error('Error loading header data:', error);
       // Fallback to user data
       setHeaderData({
         company_name: user?.company_name || '',

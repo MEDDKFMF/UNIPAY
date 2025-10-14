@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import logger from '../../utils/logger';
 import api from '../../services/api';
 import { 
   ShieldCheckIcon, 
@@ -169,7 +170,7 @@ const AdminSettings = () => {
         }));
       }
     } catch (error) {
-      console.error('Error loading settings:', error);
+  logger.error('Error loading settings:', error);
       setError('Failed to load settings');
     } finally {
       setLoading(false);
@@ -257,7 +258,7 @@ const AdminSettings = () => {
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (error) {
-      console.error('Error saving settings:', error);
+  logger.error('Error saving settings:', error);
       setError('Failed to save settings');
     } finally {
       setSaving(false);
@@ -270,7 +271,7 @@ const AdminSettings = () => {
       await api.post('/api/settings/test-email/', { email: settings.email.fromEmail });
       alert('Test email sent successfully!');
     } catch (error) {
-      console.error('Error sending test email:', error);
+  logger.error('Error sending test email:', error);
       alert('Failed to send test email');
     }
   };

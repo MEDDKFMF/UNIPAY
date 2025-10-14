@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Printer, Send, Edit, Trash2, Calendar, User, Building, Mail, Phone, MapPin, FileText, DollarSign, Clock, CheckCircle, XCircle, AlertCircle, CreditCard, Link } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import logger from '../utils/logger';
 import { getInvoice, deleteInvoice, updateInvoiceStatus } from '../services/invoiceService';
 import { sendInvoiceNotification } from '../services/messagingService';
 import InvoiceHeader from '../components/InvoiceHeader';
@@ -26,7 +27,7 @@ const ViewInvoice = () => {
       setInvoice(data);
     } catch (error) {
       toast.error('Failed to fetch invoice');
-      console.error('Error fetching invoice:', error);
+      logger.error('Error fetching invoice:', error);
     } finally {
       setLoading(false);
     }
@@ -91,7 +92,7 @@ const ViewInvoice = () => {
       toast.success('File opened for printing');
     } catch (error) {
       toast.error('Failed to print file');
-      console.error('Error printing file:', error);
+      logger.error('Error printing file:', error);
     } finally {
       setDownloading(false);
     }
@@ -131,7 +132,7 @@ const ViewInvoice = () => {
       toast.success('Invoice sent to client successfully');
     } catch (error) {
       toast.error('Failed to send invoice');
-      console.error('Error sending invoice:', error);
+      logger.error('Error sending invoice:', error);
     } finally {
       setDownloading(false);
     }
@@ -145,7 +146,7 @@ const ViewInvoice = () => {
         navigate('/app/invoices');
       } catch (error) {
         toast.error('Failed to delete invoice');
-        console.error('Error deleting invoice:', error);
+        logger.error('Error deleting invoice:', error);
       }
     }
   };
@@ -539,7 +540,7 @@ const ViewInvoice = () => {
         onClose={() => setShowPaymentLinkModal(false)}
         invoice={invoice}
         onPaymentLinkCreated={(paymentLink) => {
-          console.log('Payment link created:', paymentLink);
+          logger.debug('Payment link created:', paymentLink);
           // Optionally update invoice status or show success message
         }}
       />

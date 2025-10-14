@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import logger from '../../utils/logger';
 import api from '../../services/api';
 import { 
   PlusIcon, 
@@ -41,11 +42,11 @@ const AdminOrganizations = () => {
         const metricsResponse = await api.get('/api/payments/admin/metrics/');
         setOrgStats(metricsResponse.data);
       } catch (metricsError) {
-        console.warn('Could not load organization statistics:', metricsError);
+  logger.warn('Could not load organization statistics:', metricsError);
       }
       
     } catch (error) {
-      console.error('Error loading organizations:', error);
+  logger.error('Error loading organizations:', error);
       setError(error.message);
       setOrganizations([]);
     } finally {
@@ -114,7 +115,7 @@ const AdminOrganizations = () => {
       setSelectedOrgs([]);
       load(); // Reload data
     } catch (error) {
-      console.error('Bulk action failed:', error);
+  logger.error('Bulk action failed:', error);
     }
   };
 
@@ -124,7 +125,7 @@ const AdminOrganizations = () => {
       const { data } = await api.get(`/api/auth/admin/organizations/${orgId}/`);
       return data;
     } catch (error) {
-      console.error('Error fetching organization details:', error);
+  logger.error('Error fetching organization details:', error);
       return null;
     }
   };

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../services/api';
+import logger from '../../utils/logger';
 import { 
   EnvelopeIcon,
   CheckCircleIcon,
@@ -26,7 +27,7 @@ const EmailTrackingDashboard = () => {
       const response = await api.get('/api/invoices/email-tracking/stats/');
       setStats(response.data);
     } catch (error) {
-      console.error('Error loading email stats:', error);
+      logger.error('Error loading email stats:', error);
       setError('Failed to load email tracking statistics');
     } finally {
       setLoading(false);

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { CreditCard, Settings, XCircle, Plus, Trash2, Building2, Smartphone, Landmark } from 'lucide-react';
+import { CreditCard, Settings, XCircle, Plus, Trash2, Building2, Landmark } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { getUserPaymentMethods, createUserPaymentMethod, updateUserPaymentMethod, deleteUserPaymentMethod, getAvailablePaymentMethods } from '../services/paymentService';
+import logger from '../utils/logger';
 
 const PaymentSettings = () => {
   const [paymentMethods, setPaymentMethods] = useState([]);
@@ -12,16 +13,12 @@ const PaymentSettings = () => {
   const [editingMethod, setEditingMethod] = useState(null);
   
   const [formData, setFormData] = useState({
-    payment_type: 'unipay',
+    payment_type: 'bank_account',
     bank_name: '',
     bank_account_number: '',
     bank_account_name: '',
     bank_swift_code: '',
     bank_branch_code: '',
-    mpesa_phone_number: '',
-    mpesa_account_name: '',
-    flutterwave_email: '',
-    flutterwave_phone: '',
     card_last_four: '',
     card_brand: '',
     card_expiry: '',
@@ -45,7 +42,7 @@ const PaymentSettings = () => {
       setPaymentMethods(Array.isArray(methodsData) ? methodsData : []);
       setAvailableMethods(Array.isArray(availableData?.available_methods) ? availableData.available_methods : []);
     } catch (error) {
-      console.error('Error fetching payment methods:', error);
+      logger.error('Error fetching payment methods:', error);
       toast.error('Failed to load payment methods');
       // Set empty arrays on error
       setPaymentMethods([]);
@@ -72,8 +69,6 @@ const PaymentSettings = () => {
       bank_account_name: '',
       bank_swift_code: '',
       bank_branch_code: '',
-      mpesa_phone_number: '',
-      mpesa_account_name: '',
       card_last_four: '',
       card_brand: '',
       card_expiry: '',
@@ -92,8 +87,6 @@ const PaymentSettings = () => {
       bank_account_name: method.bank_account_name || '',
       bank_swift_code: method.bank_swift_code || '',
       bank_branch_code: method.bank_branch_code || '',
-      mpesa_phone_number: method.mpesa_phone_number || '',
-      mpesa_account_name: method.mpesa_account_name || '',
       card_last_four: method.card_last_four || '',
       card_brand: method.card_brand || '',
       card_expiry: method.card_expiry || '',
@@ -116,7 +109,7 @@ const PaymentSettings = () => {
       setShowAddModal(false);
       await fetchPaymentMethods();
     } catch (error) {
-      console.error('Error saving payment method:', error);
+      logger.error('Error saving payment method:', error);
       toast.error('Failed to save payment method');
     } finally {
       setSaving(false);
@@ -130,7 +123,7 @@ const PaymentSettings = () => {
         toast.success('Payment method deleted successfully!');
         await fetchPaymentMethods();
       } catch (error) {
-        console.error('Error deleting payment method:', error);
+        logger.error('Error deleting payment method:', error);
         toast.error('Failed to delete payment method');
       }
     }
@@ -140,8 +133,6 @@ const PaymentSettings = () => {
     switch (methodType) {
       case 'bank_account':
         return Landmark;
-      case 'mpesa':
-        return Smartphone;
       case 'card':
         return CreditCard;
       default:
@@ -205,7 +196,6 @@ const PaymentSettings = () => {
                       <h4 className="font-medium text-gray-900">{method.display_name}</h4>
                       <p className="text-sm text-gray-500">
                         {method.payment_type === 'bank_account' && `${method.bank_name} ****${method.bank_account_number?.slice(-4)}`}
-                        {method.payment_type === 'mpesa' && method.mpesa_phone_number}
                         {method.payment_type === 'card' && `${method.card_brand} ****${method.card_last_four}`}
                       </p>
                     </div>
@@ -263,9 +253,8 @@ const PaymentSettings = () => {
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="unipay">Unipay (M-Pesa)</option>
-                  <option value="flutterwave">Flutterwave</option>
                   <option value="bank_account">Bank Account</option>
+                  <option value="card">Card</option>
                 </select>
               </div>
 
@@ -346,71 +335,10 @@ const PaymentSettings = () => {
               )}
 
               {/* Unipay M-Pesa Fields */}
-              {formData.payment_type === 'unipay' && (
-                <>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      M-Pesa Phone Number *
-                    </label>
-                    <input
-                      type="text"
-                      name="mpesa_phone_number"
-                      value={formData.mpesa_phone_number}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="254XXXXXXXXX"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">Format: 254XXXXXXXXX</p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Account Name
-                    </label>
-                    <input
-                      type="text"
-                      name="mpesa_account_name"
-                      value={formData.mpesa_account_name}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="Your M-Pesa account name"
-                    />
-                  </div>
-                </>
-              )}
+              
 
               {/* Flutterwave Fields */}
-              {formData.payment_type === 'flutterwave' && (
-                <>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Flutterwave Account Email *
-                    </label>
-                    <input
-                      type="email"
-                      name="flutterwave_email"
-                      value={formData.flutterwave_email}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="your-email@example.com"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Phone Number
-                    </label>
-                    <input
-                      type="text"
-                      name="flutterwave_phone"
-                      value={formData.flutterwave_phone}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="+254700000000"
-                    />
-                  </div>
-                </>
-              )}
+              
 
               {/* Card Fields */}
               {formData.payment_type === 'card' && (

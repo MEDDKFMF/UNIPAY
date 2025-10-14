@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { toast } from 'react-hot-toast';
 import api from '../services/api';
+import logger from '../utils/logger';
 
 const NotificationContext = createContext();
 
@@ -28,7 +29,7 @@ export const NotificationProvider = ({ children }) => {
       setNotifications(notificationData);
       setUnreadCount(notificationData.filter(n => !n.is_read).length);
     } catch (error) {
-      console.error('Error fetching notifications:', error);
+      logger.error('Error fetching notifications:', error);
     } finally {
       setLoading(false);
     }
@@ -50,7 +51,7 @@ export const NotificationProvider = ({ children }) => {
       );
       setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (error) {
-      console.error('Error marking notification as read:', error);
+      logger.error('Error marking notification as read:', error);
       toast.error('Failed to mark notification as read');
     }
   }, []);
@@ -66,7 +67,7 @@ export const NotificationProvider = ({ children }) => {
       setUnreadCount(0);
       toast.success('All notifications marked as read');
     } catch (error) {
-      console.error('Error marking all notifications as read:', error);
+      logger.error('Error marking all notifications as read:', error);
       toast.error('Failed to mark all notifications as read');
     }
   }, []);
@@ -88,7 +89,7 @@ export const NotificationProvider = ({ children }) => {
       });
       toast.success('Notification deleted');
     } catch (error) {
-      console.error('Error deleting notification:', error);
+      logger.error('Error deleting notification:', error);
       toast.error('Failed to delete notification');
     }
   }, []);

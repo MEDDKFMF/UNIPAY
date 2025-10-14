@@ -15,6 +15,7 @@ import {
   Building,
   Calendar
 } from 'lucide-react';
+import logger from '../utils/logger';
 
 const ClientList = () => {
   const [clients, setClients] = useState([]);
@@ -44,7 +45,7 @@ const ClientList = () => {
       setClients(response.results || response);
       setTotalPages(response.count ? Math.ceil(response.count / 10) : 1);
     } catch (error) {
-      console.error('Error fetching clients:', error);
+      logger.error('Error fetching clients:', error);
       toast.error('Failed to load clients');
     } finally {
       setLoading(false);
@@ -63,7 +64,7 @@ const ClientList = () => {
       setClients(response.results || response);
       setTotalPages(1);
     } catch (error) {
-      console.error('Error searching clients:', error);
+      logger.error('Error searching clients:', error);
       toast.error('Failed to search clients');
     } finally {
       setLoading(false);
@@ -80,7 +81,7 @@ const ClientList = () => {
       toast.success('Client deleted successfully');
       fetchClients();
     } catch (error) {
-      console.error('Error deleting client:', error);
+      logger.error('Error deleting client:', error);
       toast.error('Failed to delete client');
     }
   };

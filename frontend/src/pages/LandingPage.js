@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import logger from '../utils/logger';
 import { Link } from 'react-router-dom';
 import { 
   FileText, 
@@ -37,22 +38,22 @@ const LandingPage = () => {
 
   // Fetch plans from admin API
   useEffect(() => {
-    console.log('LandingPage useEffect triggered - fetching plans - v2');
+    logger.debug('LandingPage useEffect triggered - fetching plans - v2');
     const fetchPlans = async () => {
       try {
-        console.log('Fetching plans from API...');
+        logger.debug('Fetching plans from API...');
         const response = await fetch(`https://unipay-oyn6.onrender.com/api/payments/plans/public/`);
         const data = await response.json();
-        console.log('Plans API response:', data);
+        logger.debug('Plans API response:', data);
         
         // Handle both array and paginated response
         const plansData = data.results || data;
         const plansArray = Array.isArray(plansData) ? plansData : [];
-        console.log('Processed plans:', plansArray);
+  logger.debug('Processed plans:', plansArray);
         
         setPlans(plansArray);
       } catch (error) {
-        console.error('Error fetching plans:', error);
+        logger.error('Error fetching plans:', error);
         setPlans([]);
       } finally {
         setPlansLoading(false);
@@ -84,13 +85,13 @@ const LandingPage = () => {
                   setUserCurrency(currencyMap[countryCode]);
                 }
                 setLocationDetected(true);
-              } catch (error) {
-                console.log('Could not detect location, using default currency');
+                } catch (error) {
+                logger.debug('Could not detect location, using default currency');
                 setLocationDetected(true);
               }
             },
-            (error) => {
-              console.log('Location access denied, using default currency');
+                (error) => {
+              logger.debug('Location access denied, using default currency');
               setLocationDetected(true);
             }
           );
@@ -98,7 +99,7 @@ const LandingPage = () => {
           setLocationDetected(true);
         }
       } catch (error) {
-        console.log('Error detecting location:', error);
+        logger.error('Error detecting location:', error);
         setLocationDetected(true);
       }
     };
@@ -166,7 +167,7 @@ const LandingPage = () => {
 
   // Transform API plans to display format
   const pricingPlans = plans.map((plan, index) => {
-    console.log('Processing plan:', plan);
+  logger.debug('Processing plan:', plan);
     return {
       id: plan.id,
       name: plan.name,
@@ -187,7 +188,7 @@ const LandingPage = () => {
     };
   });
   
-  console.log('Final pricingPlans:', pricingPlans);
+  logger.debug('Final pricingPlans:', pricingPlans);
 
 
 

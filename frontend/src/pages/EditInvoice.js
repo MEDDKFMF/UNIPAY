@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Plus, Trash2, User, DollarSign, Percent, Send } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import logger from '../utils/logger';
 import { getInvoice, updateInvoice, getClients, updateInvoiceStatus } from '../services/invoiceService';
 import { sendInvoiceNotification } from '../services/messagingService';
 import { useNotifications } from '../context/NotificationContext';
@@ -62,7 +63,7 @@ const EditInvoice = () => {
       });
     } catch (error) {
       toast.error('Failed to fetch invoice');
-      console.error('Error fetching invoice:', error);
+      logger.error('Error fetching invoice:', error);
     } finally {
       setLoading(false);
     }
@@ -74,7 +75,7 @@ const EditInvoice = () => {
       // Ensure clients is always an array
       setClients(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error('Error fetching clients:', error);
+      logger.error('Error fetching clients:', error);
       setClients([]);
     }
   };
@@ -219,7 +220,7 @@ const EditInvoice = () => {
       navigate(`/app/invoices/${id}`);
     } catch (error) {
       toast.error('Failed to update invoice');
-      console.error('Error updating invoice:', error);
+      logger.error('Error updating invoice:', error);
     } finally {
       setSaving(false);
     }
@@ -261,7 +262,7 @@ const EditInvoice = () => {
       toast.success('Invoice sent to client successfully');
     } catch (error) {
       toast.error('Failed to send invoice');
-      console.error('Error sending invoice:', error);
+      logger.error('Error sending invoice:', error);
     } finally {
       setSaving(false);
     }

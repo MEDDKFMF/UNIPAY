@@ -1,5 +1,6 @@
 // Invoice service for API calls
 import api from './api';
+import logger from '../utils/logger';
 
 // Get all invoices with optional filters
 export const getInvoices = async (params = new URLSearchParams()) => {
@@ -8,7 +9,7 @@ export const getInvoices = async (params = new URLSearchParams()) => {
     // Return full response object for pagination support
     return response.data;
   } catch (error) {
-    console.error('Error fetching invoices:', error);
+    logger.error('Error fetching invoices:', error);
     throw error;
   }
 };
@@ -19,7 +20,7 @@ export const getInvoice = async (id) => {
     const response = await api.get(`/api/invoices/${id}/`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching invoice:', error);
+    logger.error('Error fetching invoice:', error);
     throw error;
   }
 };
@@ -31,7 +32,7 @@ export const getClients = async () => {
     // Return full response object for pagination support
     return response.data;
   } catch (error) {
-    console.error('Error fetching clients:', error);
+    logger.error('Error fetching clients:', error);
     throw error;
   }
 };
@@ -39,17 +40,17 @@ export const getClients = async () => {
 // Create a new invoice
 export const createInvoice = async (invoiceData) => {
   try {
-    console.log('Sending invoice data to API:', invoiceData);
-    console.log('API URL:', `/api/invoices/`);
+  logger.debug('Sending invoice data to API:', invoiceData);
+  logger.debug('API URL:', `/api/invoices/`);
     
     const response = await api.post('/api/invoices/', invoiceData);
     
-    console.log('API Response status:', response.status);
-    console.log('API Response headers:', response.headers);
+  logger.debug('API Response status:', response.status);
+  logger.debug('API Response headers:', response.headers);
     
     return response.data;
   } catch (error) {
-    console.error('Error creating invoice:', error);
+    logger.error('Error creating invoice:', error);
     throw error;
   }
 };
@@ -60,7 +61,7 @@ export const updateInvoice = async (id, invoiceData) => {
     const response = await api.put(`/api/invoices/${id}/`, invoiceData);
     return response.data;
   } catch (error) {
-    console.error('Error updating invoice:', error);
+    logger.error('Error updating invoice:', error);
     throw error;
   }
 };
@@ -71,7 +72,7 @@ export const deleteInvoice = async (id) => {
     await api.delete(`/api/invoices/${id}/`);
     return true;
   } catch (error) {
-    console.error('Error deleting invoice:', error);
+    logger.error('Error deleting invoice:', error);
     throw error;
   }
 };
@@ -82,7 +83,7 @@ export const updateInvoiceStatus = async (id, status) => {
     const response = await api.patch(`/api/invoices/${id}/status/`, { status });
     return response.data;
   } catch (error) {
-    console.error('Error updating invoice status:', error);
+    logger.error('Error updating invoice status:', error);
     throw error;
   }
 };
@@ -95,7 +96,7 @@ export const getInvoicePDF = async (id) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error fetching invoice PDF:', error);
+    logger.error('Error fetching invoice PDF:', error);
     throw error;
   }
 };
@@ -127,7 +128,7 @@ export const downloadInvoicePDF = async (id) => {
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
   } catch (error) {
-    console.error('Error downloading invoice PDF:', error);
+    logger.error('Error downloading invoice PDF:', error);
     throw error;
   }
 };
@@ -140,7 +141,7 @@ export const exportInvoicesCSV = async (params = new URLSearchParams()) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error exporting invoices:', error);
+    logger.error('Error exporting invoices:', error);
     throw error;
   }
 };
@@ -151,7 +152,7 @@ export const getInvoiceStats = async () => {
     const response = await api.get('/api/invoices/stats/');
     return response.data;
   } catch (error) {
-    console.error('Error fetching invoice stats:', error);
+    logger.error('Error fetching invoice stats:', error);
     throw error;
   }
 }; 

